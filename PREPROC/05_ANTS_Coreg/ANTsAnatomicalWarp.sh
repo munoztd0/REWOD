@@ -4,8 +4,6 @@
 # slightly different geometry or head position (motion, etc)
 #
 # AUTHOR : Wolfgang Pauli
-# PLACE : Caltech
-# DATES : 01/08/2015
 # LAST MODIFIED BY : DAVID MUNOZ TORD on APRIL 2019
 
 
@@ -24,16 +22,17 @@ echo subj: $subjID
 
 #############
 # set this to the directory containing antsRegistration
-ANTSPATH=/usr/local/ants/bin/
+#ANTSPATH=/usr/local/ants/bin/
+ANTSPATH=~/REWOD/REWOD/CODE/PREPROC/05_ANTS_Coreg/
 
 # path to afine transform tool
-c3d_affine_tool=/usr/local/c3d-1.1.0-Linux-gcc64/bin/c3d_affine_tool
+#c3d_affine_tool=/usr/local/c3d-1.1.0-Linux-gcc64/bin/c3d_affine_tool
 
 # paths to the subject anatomicals
-subAnatDir=/home/REWOD/DATA/STUDY/DERIVED/ICA_ANTS/sub-${subjID}/ses-second/anat/
+subAnatDir=~/REWOD/DERIVATIVES/PREPROC/sub-${subjID}/ses-second/anat/
 
 # paths to the standard anatomical images
-standardAnatDir=/home/REWOD/DATA/CANONICALS/
+standardAnatDir=~/REWOD/DERIVATIVES/PREPROC/CANONICALS/
 
 
 
@@ -73,7 +72,7 @@ echo "Done initial fixed/target alignment at $(date +"%T")"
 # convert image format so the affine tool can read it
 echo "Converting fsl transformation to ras format at $(date +"%T")"
 
-$c3d_affine_tool -ref $fixed_T1 -src $moving_T1 tmp_sub-${subjID}.mat -fsl2ras -oitk itk_transformation_sub-${subjID}.txt
+${ANTSPATH}c3d_affine_tool -ref $fixed_T1 -src $moving_T1 tmp_sub-${subjID}.mat -fsl2ras -oitk itk_transformation_sub-${subjID}.txt
 
 # shape the mask
 echo "Applying affine transformation to mask at $(date +"%T")"

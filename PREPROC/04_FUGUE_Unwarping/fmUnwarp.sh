@@ -10,10 +10,10 @@ taskID=$2
 echo "Preparing subject ${subjectID} session fo FMunwarp"
 
 # Directory containing functionals, high-res reference scans, and field-maps
-funcDir=/home/REWOD/DATA/STUDY/DERIVED/ICA_ANTS/sub-${subjectID}/ses-second/func/task-${taskID}.ica/
+funcDir=~/REWOD/DERIVATIVES/PREPROC/sub-${subjectID}/ses-second/func/task-${taskID}.ica/
 
 # Directory with run-specific files
-runDir=/home/REWOD/DATA/STUDY/DERIVED/ICA_ANTS/sub-${subjectID}/ses-second/fmap/
+runDir=~/REWOD/DERIVATIVES/PREPROC/sub-${subjectID}/ses-second/fmap/
 
 # the dwell time for fugue unwarping (in sec) check on procedure
 dwellTime=0.00069
@@ -39,10 +39,10 @@ fugue -i ${magImage}.nii.gz --dwell=${dwellTime} --loadfmap=${mapImage} --unwarp
 fslmaths ${funcScan}.nii.gz -Tmean ${funcScan}_mean.nii.gz
 
 # perform bias correction on the mean functional
-/usr/local/ants/bin/N4BiasFieldCorrection -i ${funcScan}_mean.nii.gz -o ${funcScan}_mean_bias.nii.gz --convergence [100x100x100x100,0.0] -d 3 -s 3 -b [300]
+~/REWOD/REWOD/CODE/PREPROC/04_FUGUE_Unwarping/N4BiasFieldCorrection -i ${funcScan}_mean.nii.gz -o ${funcScan}_mean_bias.nii.gz --convergence [100x100x100x100,0.0] -d 3 -s 3 -b [300]
 
 # perform bias correction on the magnitude image
-/usr/local/ants/bin/N4BiasFieldCorrection -i ${magImage}_warped.nii.gz -o ${magImage}_warped_bias.nii.gz --convergence [100x100x100x100,0.0] -d 3 -s 3 -b [300]
+~/REWOD/REWOD/CODE/PREPROC/04_FUGUE_Unwarping/N4BiasFieldCorrection -i ${magImage}_warped.nii.gz -o ${magImage}_warped_bias.nii.gz --convergence [100x100x100x100,0.0] -d 3 -s 3 -b [300]
 
 # register the magnitude image of the fieldmap acquisition to EPI to get transformation matrix by using the mag as a reference since it's better quality
 flirt -in ${funcScan}_mean_bias.nii.gz -ref ${magImage}_warped_bias.nii.gz -dof 6 -cost normcorr -out ${magImage}_EPIalign.nii.gz -omat ${magImage}_EPIalign.mat
@@ -64,6 +64,6 @@ fugue -i ${funcScan}.nii.gz --dwell=${dwellTime} --loadfmap=${mapImage}_EPIalign
 #  unwarp the reference image
 echo "Unwarping reference scan for Subject ${subjectID} Session at $(date +"%T")"
 
-refScan=/home/REWOD/DATA/STUDY/DERIVED/ICA_ANTS/sub-${subjectID}/ses-second/anat/sub-${subjectID}_ses-second_run-01_sbref_reoriented_brain_restore
+refScan=~/REWOD/DERIVATIVES/PREPROC/sub-${subjectID}/ses-second/anat/sub-${subjectID}_ses-second_run-01_sbref_reoriented_brain_restore
 
 fugue -i ${refScan} --dwell=${dwellTime} --loadfmap=${mapImage}_EPIalign --unwarpdir=y- -u ${refScan}_unwarped

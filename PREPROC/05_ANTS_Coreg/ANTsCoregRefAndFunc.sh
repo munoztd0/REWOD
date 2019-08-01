@@ -1,7 +1,11 @@
 #!/bin/bash
 
+# AUTHOR : Wolfgang Pauli
+# LAST MODIFIED BY : DAVID MUNOZ TORD on APRIL 2019
+
 # set this to the directory containing antsRegistration
-ANTSPATH=/usr/local/ants/bin/
+#ANTSPATH=/usr/local/ants/bin/
+ANTSPATH=~/REWOD/REWOD/CODE/PREPROC/05_ANTS_Coreg/
 
 # ITK thread count
 ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=1
@@ -18,26 +22,23 @@ taskID=$2
 echo subj: $subjID
 echo task: $taskID
 
-
 # path to afine transform tool
-
-c3d_affine_tool=/usr/local/c3d-1.1.0-Linux-gcc64/bin/c3d_affine_tool
+#c3d_affine_tool=/usr/local/c3d-1.1.0-Linux-gcc64/bin/c3d_affine_tool
 
 # path to the warp tool
-
-warpTool=/usr/local/ants/bin/
+#warpTool=/usr/local/ants/bin/WarpImageMultiTransform
 
 # path to the subject's anatomicals
-subAnatDir=/home/REWOD/DATA/STUDY/DERIVED/ICA_ANTS/sub-${subjID}/ses-second/anat/
+subAnatDir=~/REWOD/DERIVATIVES/PREPROC/sub-${subjID}/ses-second/anat/
 
 # Directory with run-specific files
-runDir=/home/REWOD/DATA/STUDY/DERIVED/ICA_ANTS/sub-${subjID}/ses-second/func/
+runDir=~/REWOD/DERIVATIVES/PREPROC/sub-${subjID}/ses-second/func/
 
 # directory with ICA cleaned data
-icaDir=/home/REWOD/DATA/STUDY/DERIVED/ICA_ANTS/sub-${subjID}/ses-second/func/task-${taskID}.ica/filtered_func_data_clean
+icaDir=~/REWOD/DERIVATIVES/PREPROC/sub-${subjID}/ses-second/func/task-${taskID}.ica/filtered_func_data_clean
 
 # path to standard space images
-standardAnatDir=/home/REWOD/DATA/CANONICALS/
+standardAnatDir=~/REWOD/DERIVATIVES/PREPROC/CANONICALS/
 
 
 #############
@@ -74,7 +75,7 @@ fslroi ${funcImage} ${icaDir}_sample 0 1
 fslmaths ${funcImage} -Tmean ${icaDir}_mean
 
 # perform bias correction on the mean functional
-/usr/local/ants/bin/N4BiasFieldCorrection -i ${icaDir}_mean.nii.gz -o ${icaDir}_mean_bias.nii.gz --convergence [100x100x100x100,0.0] -d 3 -s 3 -b [300]
+${ANTSPATH}N4BiasFieldCorrection -i ${icaDir}_mean.nii.gz -o ${icaDir}_mean_bias.nii.gz --convergence [100x100x100x100,0.0] -d 3 -s 3 -b [300]
 
 # run bet another time to improve brain extraction of the mean image used to create the realignement matrix
 bet ${icaDir}_mean_bias.nii.gz ${icaDir}_mean_bias.nii.gz -f 0.25 -R
@@ -90,13 +91,13 @@ flirt -in ${icaDir}_mean_bias -ref ${moving_T1} -dof 6 -cost mutualinfo -out ${i
 flirt -in ${icaDir}_mean_bias -ref ${moving_T1} -dof 12 -cost mutualinfo -init ${icaDir}_tmp_Func_to_T1.mat -nosearch -out ${icaDir}_tmp_Func_to_T1_improved -omat ${icaDir}_tmp_Func_to_T1.mat
 
 # convert to ras for ANTs
-$c3d_affine_tool -src ${icaDir}_mean_bias -ref ${moving_T1} ${icaDir}_tmp_Func_to_T1.mat -fsl2ras -oitk ${icaDir}_itk_transform_Func_To_T1.txt
+${ANTSPATH}c3d_affine_tool -src ${icaDir}_mean_bias -ref ${moving_T1} ${icaDir}_tmp_Func_to_T1.mat -fsl2ras -oitk ${icaDir}_itk_transform_Func_To_T1.txt
 
 
 # apply warp to the sample to check quality on only one volume
 echo "Applying warp to functional sample scan"
 
-${warpTool}WarpImageMultiTransform 3 ${icaDir}_sample.nii.gz ${icaDir}_sample_ANTsFuncT1.nii.gz \
+${ANTSPATH}WarpImageMultiTransform 3 ${icaDir}_sample.nii.gz ${icaDir}_sample_ANTsFuncT1.nii.gz \
         -R ${fixed_T1_lowres} \
         ${outPrefix}_xfm1Warp.nii.gz ${outPrefix}_xfm0GenericAffine.mat \
         ${icaDir}_itk_transform_Func_To_T1.txt
@@ -117,7 +118,7 @@ echo "Apply series of transformations all the way from func to lowres atlas" ##(
 
 # REAL # interpo = kNN
 # apply warp to the time image series
-${warpTool}WarpTimeSeriesImageMultiTransform 4 ${icaDir}_unwarped.nii.gz ${icaDir}_unwarped_Coreg.nii.gz \
+${ANTSPATH}WarpTimeSeriesImageMultiTransform 4 ${icaDir}_unwarped.nii.gz ${icaDir}_unwarped_Coreg.nii.gz \
 	-R ${fixed_T1_lowres} \
   ${outPrefix}_xfm1Warp.nii.gz ${outPrefix}_xfm0GenericAffine.mat \
 	${icaDir}_itk_transform_Func_To_T1.txt
@@ -125,5 +126,5 @@ ${warpTool}WarpTimeSeriesImageMultiTransform 4 ${icaDir}_unwarped.nii.gz ${icaDi
 
 echo "done ants (in MNI space) at $(date +"%T")"
 # resample the original to allow comparison
-/usr/local/ants/bin/N4BiasFieldCorrection -i ${icaDir}_sample.nii.gz -o ${icaDir}_sample_bias.nii.gz --convergence [100x100x100x100,0.0] -d 3 -s 3 -b [300]
+${ANTSPATH}N4BiasFieldCorrection -i ${icaDir}_sample.nii.gz -o ${icaDir}_sample_bias.nii.gz --convergence [100x100x100x100,0.0] -d 3 -s 3 -b [300]
 flirt -in ${icaDir}_sample_bias -ref ${fixed_T1_lowres} -dof 7 -out ${icaDir}_sample_bias_alignT1

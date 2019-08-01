@@ -1,9 +1,11 @@
 #!/bin/bash
 
+# AUTHOR : Wolfgang Pauli
+# LAST MODIFIED BY : DAVID MUNOZ TORD on APRIL 2019
 
 # set this to the directory containing antsRegistration
 #ANTSPATH=/usr/local/ANTs/build/bin/
-ANTSPATH=/usr/local/ants/bin/
+ANTSPATH=~/REWOD/REWOD/CODE/PREPROC/05_ANTS_Coreg/
 
 # ITK thread count
 ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=1
@@ -19,16 +21,16 @@ subjID=$1
 echo subj: $subjID
 
 # path to afine transform tool
-c3d_affine_tool=/usr/local/c3d-1.1.0-Linux-gcc64/bin/c3d_affine_tool
+#c3d_affine_tool=/usr/local/c3d-1.1.0-Linux-gcc64/bin/c3d_affine_tool
 
 # path to the warp tool
-warpTool=/usr/local/ants/bin/WarpImageMultiTransform
+#warpTool=/usr/local/ants/bin/WarpImageMultiTransform
 
 # paths to the T1 structurals,
-subAnatDir=/home/REWOD/DATA/STUDY/DERIVED/ICA_ANTS/sub-${subjID}/ses-second/anat/
+subAnatDir=~/REWOD/CODE/PREPROC/sub-${subjID}/ses-second/anat/
 
 # paths to the standard anatomical images
-standardAnatDir=/home/REWOD/DATA/CANONICALS/
+standardAnatDir=~/REWOD/CODE/PREPROC/CANONICALS/
 
 fixedT1=CIT168_T1w_MNI
 
@@ -64,7 +66,7 @@ echo "out prefix: ${outPrefix}"
 # apply warp to the T1 anatomical (also check coreg quality)
 echo "Apply ANTs wrap to T1 at $(date +"%T")"
 
-${warpTool} 3 ${moving_T1} ${subAnatDir}sub-${subjID}_ses-second_run-01_T1w_reoriented_brain_ANTsCoreg.nii.gz \
+${ANTSPATH}WarpImageMultiTransform 3 ${moving_T1} ${subAnatDir}sub-${subjID}_ses-second_run-01_T1w_reoriented_brain_ANTsCoreg.nii.gz \
         -R ${fixed_T1lowres} \
         ${outPrefix}_xfm1Warp.nii.gz ${outPrefix}_xfm0GenericAffine.mat
 

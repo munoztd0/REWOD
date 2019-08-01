@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-UnwarpScript=/home/REWOD/ANALYSIS/fsl_scripts/fsl_ANTS/clean_preproc/04_FUGUE_unwarping/fmUnwarp.sh
+UnwarpScript=~/REWOD/CODE/PREPROC/04_FUGUE_unwarping/fmUnwarp.sh
 
 
 # Loop over subjects
@@ -11,6 +11,6 @@ do
   # prep for each task
   for taskID in hedonic PIT
   do
-    qsub -o /home/REWOD/ClusterOutput -j oe -l walltime=0:60:00,pmem=4GB -M david.munoz@etu.unige.ch -m e -l nodes=1 -q queue1 -N Unwarp-${subjectID}-${taskID}  -F "${subjectID} ${taskID}" ${UnwarpScript}
+    qsub -o ~/REWOD/ClusterOutput -j oe -l walltime=0:60:00,pmem=4GB -M david.munoz@etu.unige.ch -m e -l nodes=1 -q queue1 -N Unwarp-${subjectID}-${taskID}  -F "${subjectID} ${taskID}" ${UnwarpScript}
   done
 done
