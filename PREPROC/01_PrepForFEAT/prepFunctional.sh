@@ -10,10 +10,10 @@ taskID=$2
 echo "Preparing subject ${subjectID} for FEAT"
 
 # Directory containing nifti data
-dataDir=/home/REWOD/DATA/STUDY/RAW/sub-${subjectID}/ses-second/
+dataDir=~/REWOD/sub-${subjectID}/ses-second/
 
 # Output directory for preprocessed files
-outDir=/home/REWOD/DATA/STUDY/DERIVED/ICA_ANTS/sub-${subjectID}/ses-second/
+outDir=~/REWOD/DERIVATIVES/PREPROC/sub-${subjectID}/ses-second/
 
 # make the subject level directory
 mkdir -p ${outDir}func

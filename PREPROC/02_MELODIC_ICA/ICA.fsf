@@ -1,4 +1,4 @@
-
+# This is the design.fsf template for ICA
 # FEAT version number
 set fmri(version) 3.14
 
@@ -30,7 +30,7 @@ set fmri(featwatcher_yn) 1
 set fmri(sscleanup_yn) 0
 
 # Output directory
-set fmri(outputdir) "/home/REWOD/DATA/STUDY/DERIVED/ICA_ANTS/sub-subXXX/ses-second/func/task-RUNYYY"
+set fmri(outputdir) "~/REWOD/DATA/STUDY/DERIVED/ICA_ANTS/sub-subXXX/ses-second/func/task-RUNYYY"
 
 # TR(s)
 set fmri(tr) 2.400000
@@ -238,8 +238,9 @@ set fmri(regstandard_yn) 0
 # Use alternate reference images?
 set fmri(alternateReference_yn) 0
 
-# Standard image
+# Standard image #or where you are storing it
 set fmri(regstandard) "/usr/local/fsl/data/standard/MNI152_T1_2mm_brain"
+
 
 # Search space for registration to standard space
 # 0   : No search
@@ -266,19 +267,19 @@ set fmri(totalVoxels) WWW
 set fmri(ncopeinputs) 0
 
 # 4D AVW data or FEAT directory (1)
-set feat_files(1) "/home/REWOD/DATA/STUDY/DERIVED/ICA_ANTS/sub-subXXX/ses-second/func/sub-subXXX_ses-second_task-RUNYYY_run-01_bold_reoriented_brain.nii.gz"
+set feat_files(1) "~/REWOD/DERIVATIVES/PREPROC/sub-subXXX/ses-second/func/sub-subXXX_ses-second_task-RUNYYY_run-01_bold_reoriented_brain.nii.gz"
 
 # Add confound EVs text file
 set fmri(confoundevs) 0
 
 # Sessions alternate reference image for analysis 1
-set alt_ex_func(1) "home/REWOD/DATA/STUDY/RAW/sub-subXXX/ses-second/anat/sub-subXXX_ses-second_run-01_sbref_reoriented_brain_restore.nii.gz"
+set alt_ex_func(1) "home/REWOD/sub-subXXX/ses-second/anat/sub-subXXX_ses-second_run-01_sbref_reoriented_brain_restore.nii.gz"
 
 # Sessions structural image for analysis 1 (single band reference)
-set initial_highres_files(1) "home/REWOD/DATA/STUDY/RAW/sub-subXXX/ses-second/anat/sub-subXXX_ses-second_run-01_sbref_reoriented_brain_restore.nii.gz"
+set initial_highres_files(1) "home/REWOD/sub-subXXX/ses-second/anat/sub-subXXX_ses-second_run-01_sbref_reoriented_brain_restore.nii.gz"
 
 # Subjects structural image for analysis 1
-set highres_files(1) "/home/REWOD/DATA/STUDY/DERIVED/ICA_ANTS/sub-subXXX/ses-second/anat/sub-subXXX_ses-second_run-01_T1w_reoriented_brain.nii.gz"
+set highres_files(1) "~/REWOD/DATA/DERIVATIVES/PREPROC/sub-subXXX/ses-second/anat/sub-subXXX_ses-second_run-01_T1w_reoriented_brain.nii.gz"
 
 # Resampling resolution
 set fmri(regstandard_res) 4

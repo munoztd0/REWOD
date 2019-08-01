@@ -10,10 +10,10 @@ taskID=$2
 echo "Preparing subject ${subjectID} task ${taskID}"
 
 # Directory containing prepped nifti data
-dataDir=/home/REWOD/DATA/STUDY/RAW/sub-${subjectID}/ses-second/func/
+dataDir=~/REWOD/sub-${subjectID}/ses-second/func/
 
 # Output directory for preprocessed files
-outDir=/home/REWOD/DATA/STUDY/DERIVED/ICA_ANTS/sub-${subjectID}/ses-second/func/
+outDir=~/REWOD/DERIVATIVES/PREPROC/sub-${subjectID}/ses-second/func/
 
 
 ###########################
