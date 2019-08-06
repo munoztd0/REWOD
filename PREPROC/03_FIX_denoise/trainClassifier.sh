@@ -1,10 +1,11 @@
 #!/bin/bash
 
+home=$(eval echo ~$user);
 #name the classfier
 classifierName=FIX_REWOD
 
 # REWOD datadir
-REWODdata=~/REWOD/CODE/PREPROC/03_FIX_denoise/
+REWODdata=${home}/REWOD/CODE/PREPROC/03_FIX_denoise/
 
 echo "data used to train the classifier: ${REWODdata}"
 # train the classifier: will generate a an Rdata (IN you home folder) file that is the classifier

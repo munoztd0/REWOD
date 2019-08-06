@@ -8,8 +8,9 @@ taskID=$2
 
 echo "Preparing subject ${subjectID} task ${taskID}"
 
+home=$(eval echo ~$user)
 # Directory containing functionals, high-res reference scans after ICA
-funcDir=~/REWOD/DERIVATIVES/PREPROC/sub-${subjectID}/ses-second/func/task-${taskID}.ica
+funcDir=${home}/REWOD/DERIVATIVES/PREPROC/sub-${subjectID}/ses-second/func/task-${taskID}.ica
 
 # the component classification rejection threshold from the REWDOdata #choosed from the fix_results
 threshold=20
@@ -20,7 +21,7 @@ threshold=20
 # generates filtered_func_data_clean in the ICA directory
 echo "started classification at $(date +"%T")"
 
-fixPath=~/REWOD/CODE/PREPROC/03_FIX_denoise/
+fixPath=${home}/REWOD/CODE/PREPROC/03_FIX_denoise/
 # the classifier path
 classifierPath=${fixPath}FIX_REWOD.RData
 

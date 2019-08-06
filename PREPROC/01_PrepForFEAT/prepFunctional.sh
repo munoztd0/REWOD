@@ -6,14 +6,16 @@ subjectID=$1
 #choose task OR runID=$2
 taskID=$2
 
+
+home=$(eval echo ~$user)
 #generates bold_reoriented_brain & fmap_rads + fmap_mag
 echo "Preparing subject ${subjectID} for FEAT"
 
 # Directory containing nifti data
-dataDir=~/REWOD/sub-${subjectID}/ses-second/
+dataDir=${home}/REWOD/sub-${subjectID}/ses-second/
 
 # Output directory for preprocessed files
-outDir=~/REWOD/DERIVATIVES/PREPROC/sub-${subjectID}/ses-second/
+outDir=${home}/REWOD/DERIVATIVES/PREPROC/sub-${subjectID}/ses-second/
 
 # make the subject level directory
 mkdir -p ${outDir}func

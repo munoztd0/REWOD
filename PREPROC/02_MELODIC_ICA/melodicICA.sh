@@ -9,11 +9,13 @@ taskID=$2
 ##echo "Preparing subject ${subjectID} session ${taskID}"
 echo "Preparing subject ${subjectID} task ${taskID}"
 
+home=$(eval echo ~$user)
+
 # Directory containing prepped nifti data
-dataDir=~/REWOD/sub-${subjectID}/ses-second/func/
+dataDir=${home}/REWOD/sub-${subjectID}/ses-second/func/
 
 # Output directory for preprocessed files
-outDir=~/REWOD/DERIVATIVES/PREPROC/sub-${subjectID}/ses-second/func/
+outDir=${home}/REWOD/DERIVATIVES/PREPROC/sub-${subjectID}/ses-second/func/
 
 
 ###########################

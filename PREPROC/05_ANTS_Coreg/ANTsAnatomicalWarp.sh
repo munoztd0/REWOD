@@ -20,19 +20,22 @@ fi
 subjID=$1
 echo subj: $subjID
 
+home=$(eval echo ~$user)
+
+
 #############
 # set this to the directory containing antsRegistration
 #ANTSPATH=/usr/local/ants/bin/
-ANTSPATH=~/REWOD/REWOD/CODE/PREPROC/05_ANTS_Coreg/
+ANTSPATH=${home}/REWOD/CODE/PREPROC/05_ANTS_Coreg/
 
 # path to afine transform tool
 #c3d_affine_tool=/usr/local/c3d-1.1.0-Linux-gcc64/bin/c3d_affine_tool
 
 # paths to the subject anatomicals
-subAnatDir=~/REWOD/DERIVATIVES/PREPROC/sub-${subjID}/ses-second/anat/
+subAnatDir=${home}/REWOD/DERIVATIVES/PREPROC/sub-${subjID}/ses-second/anat/
 
 # paths to the standard anatomical images
-standardAnatDir=~/REWOD/DERIVATIVES/PREPROC/CANONICALS/
+standardAnatDir=${home}/REWOD/DERIVATIVES/PREPROC/CANONICALS/
 
 
 

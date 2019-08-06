@@ -5,7 +5,7 @@
 
 # set this to the directory containing antsRegistration
 #ANTSPATH=/usr/local/ants/bin/
-ANTSPATH=~/REWOD/REWOD/CODE/PREPROC/05_ANTS_Coreg/
+ANTSPATH=${home}/REWOD/CODE/PREPROC/05_ANTS_Coreg/
 
 # ITK thread count
 ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=1
@@ -22,6 +22,9 @@ taskID=$2
 echo subj: $subjID
 echo task: $taskID
 
+home=$(eval echo ~$user)
+
+
 # path to afine transform tool
 #c3d_affine_tool=/usr/local/c3d-1.1.0-Linux-gcc64/bin/c3d_affine_tool
 
@@ -29,16 +32,16 @@ echo task: $taskID
 #warpTool=/usr/local/ants/bin/WarpImageMultiTransform
 
 # path to the subject's anatomicals
-subAnatDir=~/REWOD/DERIVATIVES/PREPROC/sub-${subjID}/ses-second/anat/
+subAnatDir=${home}/REWOD/DERIVATIVES/PREPROC/sub-${subjID}/ses-second/anat/
 
 # Directory with run-specific files
-runDir=~/REWOD/DERIVATIVES/PREPROC/sub-${subjID}/ses-second/func/
+runDir=${home}/REWOD/DERIVATIVES/PREPROC/sub-${subjID}/ses-second/func/
 
 # directory with ICA cleaned data
-icaDir=~/REWOD/DERIVATIVES/PREPROC/sub-${subjID}/ses-second/func/task-${taskID}.ica/filtered_func_data_clean
+icaDir=${home}/REWOD/DERIVATIVES/PREPROC/sub-${subjID}/ses-second/func/task-${taskID}.ica/filtered_func_data_clean
 
 # path to standard space images
-standardAnatDir=~/REWOD/DERIVATIVES/PREPROC/CANONICALS/
+standardAnatDir=${home}/REWOD/DERIVATIVES/PREPROC/CANONICALS/
 
 
 #############

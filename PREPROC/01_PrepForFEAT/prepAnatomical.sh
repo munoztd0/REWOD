@@ -5,10 +5,11 @@ subjectID=$1
 
 echo "Preparing subject ${subjectID} for FEAT"
 
+home=$(eval echo ~$user)
 # Directory containing un-processed nifti data
-dataDir=~/REWOD/sub-${subjectID}/ses-second/
+dataDir=${home}/REWOD/sub-${subjectID}/ses-second/
 # Output directory for preprocessed files
-outDir=~/REWOD/DERIVATIVES/PREPROC/sub-${subjectID}/ses-second/
+outDir=${home}/REWOD/DERIVATIVES/PREPROC/sub-${subjectID}/ses-second/
 
 # make the subject level directory
 mkdir -p ${outDir}anat/

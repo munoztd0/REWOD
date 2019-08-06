@@ -3,9 +3,12 @@
 # AUTHOR : Wolfgang Pauli
 # LAST MODIFIED BY : DAVID MUNOZ TORD on APRIL 2019
 
+home=$(eval echo ~$user)
+
+
 # set this to the directory containing antsRegistration
 #ANTSPATH=/usr/local/ANTs/build/bin/
-ANTSPATH=~/REWOD/REWOD/CODE/PREPROC/05_ANTS_Coreg/
+ANTSPATH=${home}/REWOD/CODE/PREPROC/05_ANTS_Coreg/
 
 # ITK thread count
 ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=1
@@ -27,10 +30,10 @@ echo subj: $subjID
 #warpTool=/usr/local/ants/bin/WarpImageMultiTransform
 
 # paths to the T1 structurals,
-subAnatDir=~/REWOD/CODE/PREPROC/sub-${subjID}/ses-second/anat/
+subAnatDir=${home}/REWOD/CODE/PREPROC/sub-${subjID}/ses-second/anat/
 
 # paths to the standard anatomical images
-standardAnatDir=~/REWOD/CODE/PREPROC/CANONICALS/
+standardAnatDir=${home}/REWOD/CODE/PREPROC/CANONICALS/
 
 fixedT1=CIT168_T1w_MNI
 
