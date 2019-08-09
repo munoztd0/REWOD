@@ -1,17 +1,19 @@
-%function GLM_01_ndLevel()
+function GLM_01_ndLevel()
 
-%PIT
-
-%does t-test and full_factorial
-% -> 1 contrasts grips
+% intended for REWOD PIT
+% get onsets for control model
+% Durations =0 (stick function)
+% Simplified model on ONSETs 3*CS with modulator and grips as control
+% No modulators
+% last modified on JULY 2019 by David MUNOZ
 
 do_ttest = 1;
 remove = 1;
-removesub = {'sub-24'} ;
+removesub = {'sub-24'} ; %list of removed subj
 removedsub = '24'; 
 
 %% define path
-%homedir = '/home/REWOD';
+
 cd ~
 home = pwd;
 homedir = [home '/REWOD/'];
@@ -108,4 +110,4 @@ if do_ttest
     end
 end
 
-%end
+end

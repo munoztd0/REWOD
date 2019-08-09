@@ -1,32 +1,36 @@
-%function GLM_07_ndLevel()
+function GLM_03_ndLevel()
 
-%PIT
-
-%does t-test and full_factorial
-% -> 7 contrasts
+% intended for REWOD PIT
+% get onsets for model with 1st level modulators
+% Durations =1 (except grips)
+% Model on ONSETs 3*CS with modulator
+% 4 simple contrasts (CSp-CSm, CSp-Base,  CSp-CSm&Base,  CSm-Base)
+% + 4 modulated contrast (*eff)
+% Ortho = 0 & modulator is mean centered
+% last modified on JULY 2019 by David Munoz
 
 do_ttest = 1;
 remove = 1;
-removesub = {'sub-24'} ;
-removedsub = '24'; 
+removesub = {'sub-24'} ; %
+removedsub = '24';
 
 %% define path
-%homedir = '/home/REWOD';
+
 cd ~
 home = pwd;
 homedir = [home '/REWOD/'];
 
-
-mdldir   = fullfile (homedir, 'DERIVATIVES/ANALYSIS/PIT');% mdl directory (timing and outputs of the analysis)
-name_ana = 'GLM-07'; % output folder for this analysis 
+mdldir   = fullfile(homedir, 'DERIVATIVES/ANALYSIS/PIT');% mdl directory (timing and outputs of the analysis)
+name_ana = 'GLM-03'; % output folder for this analysis 
 groupdir = fullfile (mdldir,name_ana, 'group/');
 
 
 %% specify spm param
-addpath /usr/local/MATLAB/R2018a/spm12 ; %watcha
-%addpath /usr/local/external_toolboxes/spm12/ ;
 
-addpath ([homedir 'CODE/ANALYSIS/fMRI/dependencies']);
+%addpath /usr/local/external_toolboxes/spm12/ ;
+addpath /usr/local/MATLAB/R2018a/spm12 ; 
+
+addpath ([homedir 'CODE/ANALYSIS/fMRI/dependencies']);;
 spm('Defaults','fMRI');
 spm_jobman('initcfg');
 
@@ -38,10 +42,24 @@ spm_jobman('initcfg');
 if do_ttest
     
     % These contrast names become folders
-    contrastNames = {'effort'};%1
+    contrastNames = {'CSp-CSm'%1
+        'CSp-Baseline'%2
+        'CSp-CSm&Baseline'%3
+        'CSm-Baseline'%4
+        'CSp_eff_CSm_eff'%5
+        'CSp_eff_Baseline_eff'%6
+        'CSp_eff_CSm_eff&Baseline_eff'%7
+        'CSm_eff_Baseline_eff'};%8
    
     
-    conImages = {'con_0001'};
+    conImages = {'con_0001'
+        'con_0002'
+        'con_0003'
+        'con_0004'
+        'con_0005'
+        'con_0006'
+        'con_0007'
+        'con_0008'};
     
     
     %% prepare batch for each contrasts
@@ -108,4 +126,5 @@ if do_ttest
     end
 end
 
-%end
+
+end

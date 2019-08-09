@@ -1,13 +1,14 @@
 function GLM_01_stLevel(subID)
 
 % intended for REWOD PIT
-
 % get onsets for control model
 % Durations =0 (stick function)
 % Simplified model on ONSETs 3*CS with modulator and grips as control
-% last modified on JULY 2019
+% No modulators
+% 1 contrasts (Grips)
+% last modified on JULY 2019  by David MUNOZ
 
-%dbstop if error
+
 
 %% What to do
 firstLevel    = 1;
@@ -17,11 +18,12 @@ copycontrasts = 1;
 %% define task variable
 %sessionX = 'second';
 task = 'PIT';
+
 %% define path
-% cd ~
-% home = pwd;
-% homedir = [home '/REWOD/'];
-homedir = '/home/REWOD';
+cd ~
+home = pwd;
+homedir = [home '/REWOD/'];
+
 
 mdldir   = fullfile(homedir, '/DERIVATIVES/ANALYSIS/PIT');% mdl directory (timing and outputs of the analysis)
 funcdir  = fullfile(homedir, '/DERIVATIVES/PREPROC');% directory with  post processed functional scans
@@ -30,15 +32,16 @@ groupdir = fullfile (mdldir,name_ana, 'group/');
 
 addpath('/usr/local/external_toolboxes/spm12/');
 %addpath /usr/local/MATLAB/R2018a/spm12 ;
+
 %% specify fMRI parameters
 param.TR = 2.4;
-param.im_format = 'nii'; %'img' or 'nii';
-param.ons_unit = 'secs'; % 'scans' or 'secs';
+param.im_format = 'nii'; 
+param.ons_unit = 'secs';
 spm('Defaults','fMRI');
 spm_jobman('initcfg');
 
 %% define experiment setting parameters
-subj       = subID; %{'01'};%'02';'03';'04';'05';'06';'07';'09';'10';'11';'12';'13';'14';'15';'16';'17';'18';'20';'21';'22';'23';'24';'25';'26';}; %subID;
+subj       = subID; %{'01';'02';'03';'04';'05';'06';'07';'09';'10';'11';'12';'13';'14';'15';'16';'17';'18';'20';'21';'22';'23';'24';'25';'26';}; %subID;
 param.task = {'PIT'};
 
 %% define experimental design parameters
@@ -177,7 +180,7 @@ end
         
         %-----------------------------
         % select post processed images for each Session
-        %for 
+        
         ses = 1:ntask;
 
         taskX = char(param.task(ses));
@@ -277,16 +280,17 @@ end
         end
         
         %-----------------------------
-        %multiple regressors for mvts parameters ( no movement regressor
-        %after ICA)
-        
-        %rnam = {'X','Y','Z','x','y','z'};
+
         for ses=1:ntask
             
             SPM.Sess(ses).C.C = [];
             SPM.Sess(ses).C.name = {};
             
-            %movement
+           %multiple regressors for mvts parameters ( BUT no movement regressor after FIX denoising)
+        
+           %rnam = {'X','Y','Z','x','y','z'};
+            
+           %movement
                         %targetfile         = dir (fullfile(smoothfolder, ['rp_*' taskX '*.txt']));
 
                         %fn = spm_select('List',smoothfolder,targetfile.name);% path
@@ -346,7 +350,7 @@ end
         
         % intrinsic autocorrelations: OPTIONS: 'none'|'AR(1) + w'
         %--------------------------------------------------------------------------
-        SPM.xVi.form       = 'AR(1)'; %AR(0.2)???? SOSART
+        SPM.xVi.form       = 'AR(1)'; 
         
         % specify SPM working dir for this sub
         %==========================================================================
@@ -386,7 +390,7 @@ end
         for j = 1:ncondition
             
             %taskN = SPM.xX.name{j} (4);
-            task  = ['task-PIT.']; %taskN in the middle
+            task  = 'task-PIT.'; %taskN in the middle
             conditionName{j} = strcat(task,SPM.xX.name{j} (7:end-6)); %this cuts off the useless parts of the names
             
         end
@@ -397,7 +401,7 @@ end
         
         % | CONSTRASTS FOR T-TESTS
         
-        % con1
+        % con1  #contrasts control grips VS everything
         Ctnames{1} = 'grips';
         weightPos  = ismember(conditionName, {'task-PIT.gripsREM', 'task-PIT.gripsPE','task-PIT.gripsPIT'}) * 1;
         Ct(1,:)    = weightPos;

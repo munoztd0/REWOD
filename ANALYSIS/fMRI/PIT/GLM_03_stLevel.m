@@ -1,12 +1,14 @@
-function GLM_07_stLevel(subID)
+function GLM_03_stLevel(subID)
 
 % intended for REWOD PIT
-% get onsets for first control model (CSp vs CSm vs Baseline)
-% Duration = 1
-% Simplified model with modulator
-% last modified on June 2019 by David MUNOZ
+% get onsets for model with 1st level modulators
+% Durations =1 (except grips)
+% Model on ONSETs 3*CS with modulator
+% 4 simple contrasts (CSp-CSm, CSp-Base,  CSp-CSm&Base,  CSm-Base)
+% + 4 modulated contrast (*eff)
+% Ortho = 0 & modulator is mean centered
+% last modified on JULY 2019 by David Munoz
 
-%dbstop if error
 
 %% What to do
 firstLevel    = 1;
@@ -17,27 +19,28 @@ copycontrasts = 1;
 %sessionX = 'second';
 task = 'PIT';
 %% define path
+
 cd ~
 home = pwd;
 homedir = [home '/REWOD/'];
-%homedir = '/home/REWOD';
 
-mdldir   = fullfile(homedir, '/DERIVATIVES/ANALYSIS/PIT');% mdl directory (timing and outputs of the analysis)
-funcdir  = fullfile(homedir, '/DERIVATIVES/PREPROC');% directory with  post processed functional scans
-name_ana = 'GLM-07'; % output folder for this analysis
+
+mdldir   = fullfile(homedir, 'DERIVATIVES/ANALYSIS/PIT');% mdl directory (timing and outputs of the analysis)
+funcdir  = fullfile(homedir, 'DERIVATIVES/PREPROC');% directory with  post processed functional scans
+name_ana = 'GLM-03'; % output folder for this analysis
 groupdir = fullfile (mdldir,name_ana, 'group/');
 
 addpath('/usr/local/external_toolboxes/spm12/');
 %addpath /usr/local/MATLAB/R2018a/spm12 ;
 %% specify fMRI parameters
 param.TR = 2.4;
-param.im_format = 'nii'; %'img' or 'nii';
-param.ons_unit = 'secs'; % 'scans' or 'secs';
+param.im_format = 'nii'; 
+param.ons_unit = 'secs';
 spm('Defaults','fMRI');
 spm_jobman('initcfg');
 
 %% define experiment setting parameters
-subj       = subID; %{'01'};%'02';'03';'04';'05';'06';'07';'09';'10';'11';'12';'13';'14';'15';'16';'17';'18';'20';'21';'22';'23';'24';'25';'26';}; %subID;
+subj       =  subID; %{'01';'02';'03';'04';'05';'06';'07';'09';'10';'11';'12';'13';'14';'15';'16';'17';'18';'20';'21';'22';'23';'24';'25';'26';}; %subID;
 param.task = {'PIT'};
 
 %% define experimental design parameters
@@ -52,35 +55,46 @@ for i = 1:length(param.task)
     % these names must correspond identically to the names from your ONS*mat.
     param.Cnam{i} = {'REM',...%1
         'PE',...%2
-        'PIT'};%3
-   
+        'CSplus',...%3
+        'CSminus',...%4
+        'Baseline'};%5
+    
     param.onset{i} = {'ONS.onsets.CS.REM',...%1
         'ONS.onsets.CS.PE',...%2
-        'ONS.onsets.CS.PIT'};%3
+        'ONS.onsets.CS.CSp',...%3
+        'ONS.onsets.CS.CSm',...%4
+        'ONS.onsets.CS.Baseline'};%5
 
     
     
     % the values must be included in your onsets in seconds
     param.duration{i} = {'ONS.durations.CS.REM',...
         'ONS.durations.CS.PE',...
-        'ONS.durations.CS.PIT'};
+        'ONS.durations.CS.CSp',...
+        'ONS.durations.CS.CSm',...
+        'ONS.durations.CS.Baseline'};
     
-   
+    
     % parametric modulation of your events or blocks (ex: linear time, or emotional value, or pupillary size, ...)
     % If you have a parametric modulation
-    param.modulName{i} = {'none',...%1
-        'none',...%2
-        'eff'};%3
+    param.modulName{i} = {'effort',...%1
+        'effort',...%2
+        'effort',...%3
+        'effort',...%4
+        'effort'};%5
     
-    param.modul{i} = {'none',...%1
-        'none',...%2
-        'ONS.modulators.CS.PIT'}; %3
+    param.modul{i} = {'ONS.modulators.CS.REM',...%1
+        'ONS.modulators.CS.PE',...%2
+        'ONS.modulators.CS.CSp',...%3
+        'ONS.modulators.CS.CSm',... %4
+        'ONS.modulators.CS.Baseline'}; %5
     
     % value of the modulators, If you have a parametric modulation
-    param.time{i} = {'0',... %1
-        '0',... %2
-        '1'};%3
-    
+    param.time{i} = {'1',... %1
+        '1',... %2
+        '1',... %3
+        '1',... %4
+        '1'};%5
     
 end
 
@@ -91,11 +105,11 @@ for i = 1:length(subj)
     % participant's specifics
     subjX = char(subj(i));
     subjoutdir =fullfile(mdldir,name_ana, [ 'sub-' subjX]); % subj{i,1}
-    subjfuncdir=fullfile(funcdir, [ 'sub-' subjX], 'ses-second'); % subj{i,1}
+    subjfuncdir=fullfile(funcdir, [ 'sub-' subjX], 'ses-second', 'func'); % subj{i,1}
     fprintf('participant number: %s \n', subj{i});
     cd (subjoutdir)
     
-    if ~exist('output','dir');
+    if ~exist('output','dir')
         mkdir ('output');
     end
     
@@ -113,7 +127,7 @@ for i = 1:length(subj)
     end
     
     %%%%%%%%%%%%%%%%%%%%% COPY CONSTRASTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   if copycontrasts == 1
+     if copycontrasts == 1
         
         mkdir (groupdir); % make the group directory where contrasts will be copied
         cd (fullfile(subjoutdir,'output'))
@@ -152,22 +166,21 @@ end
         ses = 1:ntask;
 
         taskX = char(param.task(ses));
-        smoothfolder       = [subjfuncdir '/func'];
-        targetscan         = dir (fullfile(smoothfolder, [im_style '*' taskX '*' param.im_format]));
-        tmp{ses}           = spm_select('List',smoothfolder,targetscan.name);
+        targetscan         = dir (fullfile(subjfuncdir, [im_style '*' taskX '*' param.im_format]));
+        tmp{ses}           = spm_select('List',subjfuncdir,targetscan.name);
 
         % get the number of EPI for each session
-        cd (smoothfolder);
-        V         = dir(fullfile(smoothfolder, targetscan.name));
+        cd (subjfuncdir);
+        V         = dir(fullfile(subjfuncdir, targetscan.name));
         [p,n,e]   = spm_fileparts(V(1).name);
         Vn        = spm_vol(fullfile(p,[n e]));
         nscans    = [nscans numel(Vn)];
 
         for j = 1:nscans(ses)
-            scanID    = [scanID; {[smoothfolder,'/', V.name, ',', num2str(j)]}];
+            scanID    = [scanID; {[subjfuncdir,'/', V.name, ',', num2str(j)]}];
         end
 
-        %end
+        
         
         SPM.xY.P    = char(scanID);
         SPM.nscan   = nscans;
@@ -195,22 +208,22 @@ end
             for cc=1:nconds
                 
                 if ~ std(eval(param.onset{ses}{cc}))== 0 % only if the onsets are not all 0
-                    
+               
                     c = c+1; % update counter
                     
                     SPM.Sess(ses).U(c).name      = {param.Cnam{ses}{cc}};
                     SPM.Sess(ses).U(c).ons       = eval(param.onset{ses}{cc});
                     SPM.Sess(ses).U(c).dur       = eval(param.duration{ses}{cc});
                     
+                    SPM.Sess(ses).U(c).orth = 0; %no ortho
                     SPM.Sess(ses).U(c).P(1).name = 'none';
-                    SPM.Sess(ses).U(c).orth = 0; %no ortho!!
                     
                     if isfield (param, 'modul') % this parameters are specified only if modulators are defined in the design
                         
                         if ~ strcmp (param.modul{ses}{cc}, 'none')
                             
                             if isstruct (eval(param.modul{ses}{cc}))
-                                
+                                SPM.Sess(ses).U(c).orth = 0; %!! no ortho
                                 mod_names = fieldnames (eval(param.modul{ses}{cc}));
                                 nc = 0; % intialize the modulators count
                                 
@@ -218,28 +231,30 @@ end
                                     
                                     nc = nc+1;
                                     mod_name = char(mod_names(nmod));
+                                    if  ~ round(std(eval([param.modul{ses}{cc} '.' mod_name])),10)== 0
+                                      
                                     
-                                    SPM.Sess(ses).U(c).P(nc).name  = mod_name;
-                                    SPM.Sess(ses).U(c).P(nc).P     = eval([param.modul{ses}{cc} '.' mod_name]);
-                                    SPM.Sess(ses).U(c).P(nc).h     = 1;
-                                    
+                                        SPM.Sess(ses).U(c).P(nc).name  = mod_name;
+                                        SPM.Sess(ses).U(c).P(nc).P     = eval([param.modul{ses}{cc} '.' mod_name]);
+                                        SPM.Sess(ses).U(c).P(nc).h     = 1;
+                                    else
+
+                                       SPM.Sess(ses).U(c).P(1).name  = [];
+                                       SPM.Sess(ses).U(c).P(1).P     = [];
+                                       SPM.Sess(ses).U(c).P(1).h     = []; 
+                                    end
 
                                 end
                                 
                                 
-                             else
-                                if std(eval(param.modul{ses}{cc}))== 0  %if std deviation = 0 no variability so we have to take ou P or else it will ruin contrasts
-                                    SPM.Sess(ses).U(c).P(1).name  = [];
-                                    SPM.Sess(ses).U(c).P(1).P     = [];
-                                    SPM.Sess(ses).U(c).P(1).h     = [];   
-                                    
-                                else    
-                                    SPM.Sess(ses).U(c).P(1).name  = char(param.modulName{ses}{cc});
-                                    SPM.Sess(ses).U(c).P(1).P     = eval(param.modul{ses}{cc});
-                                    SPM.Sess(ses).U(c).P(1).h     = 1;
-                                
+                            else
 
-                                end
+                                SPM.Sess(ses).U(c).P(1).name  = char(param.modulName{ses}{cc});
+                                SPM.Sess(ses).U(c).P(1).P     = eval(param.modul{ses}{cc});
+                                SPM.Sess(ses).U(c).P(1).h     = 1;
+
+
+                               
                             end
                         end
                     end
@@ -248,20 +263,22 @@ end
         end
         
         %-----------------------------
-        %multiple regressors for mvts parameters ( no movement regressor
-        %after ICA)
-        
-        %rnam = {'X','Y','Z','x','y','z'};
+  
         for ses=1:ntask
             
             SPM.Sess(ses).C.C = [];
             SPM.Sess(ses).C.name = {};
             
-            %movement
-                        %targetfile         = dir (fullfile(smoothfolder, ['rp_*' taskX '*.txt']));
+            %multiple regressors for mvts parameters ( no movement regressor after FIX denosing)
 
-                        %fn = spm_select('List',smoothfolder,targetfile.name);% path
-                        %[r1,r2,r3,r4,r5,r6] = textread([smoothfolder '/' fn(1,:)],'%f%f%f%f%f%f'); % path
+        
+            %rnam = {'X','Y','Z','x','y','z'};
+            
+            %movement
+                        %targetfile         = dir (fullfile(subjfuncdir, ['rp_*' taskX '*.txt']));
+
+                        %fn = spm_select('List',subjfuncdir,targetfile.name);% path
+                        %[r1,r2,r3,r4,r5,r6] = textread([subjfuncdir '/' fn(1,:)],'%f%f%f%f%f%f'); % path
                         %SPM.Sess(ses).C.C = [r1 r2 r3 r4 r5 r6];
                         %SPM.Sess(ses).C.name = rnam;
         end
@@ -317,7 +334,7 @@ end
         
         % intrinsic autocorrelations: OPTIONS: 'none'|'AR(1) + w'
         %--------------------------------------------------------------------------
-        SPM.xVi.form       = 'AR(1)'; %AR(0.2)???? SOSART
+        SPM.xVi.form       = 'AR(1)'; 
         
         % specify SPM working dir for this sub
         %==========================================================================
@@ -357,7 +374,7 @@ end
         for j = 1:ncondition
             
             %taskN = SPM.xX.name{j} (4);
-            task  = ['task-PIT.']; %taskN in the middle
+            task  = 'task-PIT.'; 
             conditionName{j} = strcat(task,SPM.xX.name{j} (7:end-6)); %this cuts off the useless parts of the names
             
         end
@@ -369,11 +386,56 @@ end
         % | CONSTRASTS FOR T-TESTS
         
         % con1
-        Ctnames{1} = 'effort';
-        weightPos  = ismember(conditionName, {'task-PIT.PITxeff^1'}) * 1; 
-        Ct(1,:)    = weightPos;
+        Ctnames{1} = 'CSp-CSm';
+        weightPos  = ismember(conditionName, {'task-PIT.CSplus'}) * 1;
+        weightNeg  = ismember(conditionName, {'task-PIT.CSminus'}) * -1;
+        Ct(1,:)    = weightPos+weightNeg;
 
-  
+        % con2
+        Ctnames{2} = 'CSp-Baseline';
+        weightPos  = ismember(conditionName, {'task-PIT.CSplus'}) * 1;
+        weightNeg  = ismember(conditionName, {'task-PIT.Baseline'}) * -1;
+        Ct(2,:)    = weightPos+weightNeg;
+
+        % con3
+        Ctnames{3} = 'CSp-CSm&Baseline';
+        weightPos  = ismember(conditionName, {'task-PIT.CSplus'}) * 2;
+        weightNeg  = ismember(conditionName, {'task-PIT.CSminus', 'task-PIT.Baseline'}) * -1;
+        Ct(3,:)    = weightPos+weightNeg;
+               
+        %con4
+        Ctnames{4} = 'CSm-Baseline';
+        weightPos  = ismember(conditionName, {'task-PIT.CSminus'}) * 1;
+        weightNeg  = ismember(conditionName, {'task-PIT.Baseline'}) * -1;
+        Ct(4,:)    = weightPos+weightNeg;
+        
+        
+        %% Contrast * mob effort
+        % con5
+        Ctnames{5} = 'CSp_eff_CSm_eff';
+        weightPos  = ismember(conditionName, {'task-PIT.CSplusxeffort^1'}) * 1;
+        weightNeg  = ismember(conditionName, {'task-PIT.CSminusxeffort^1'}) * -1;
+        Ct(5,:)    = weightPos+weightNeg;
+        
+        % con6
+        Ctnames{6} = 'CSp_eff_Baseline_eff';
+        weightPos  = ismember(conditionName, {'task-PIT.CSplusxeffort^1'}) * 1;
+        weightNeg  = ismember(conditionName, {'task-PIT.Baselinexeffort^1'}) * -1;
+        Ct(6,:)    = weightPos+weightNeg;
+        
+        % con7 
+        Ctnames{7} = 'CSp_eff_CSm_eff&Baseline_eff'; 
+        weightPos  = ismember(conditionName, {'task-PIT.CSplusxeffort^1'}) * 2;
+        weightNeg  = ismember(conditionName, {'task-PIT.CSminusxeffort^1', 'task-PIT.Baselinexeffort^1'}) * -1;
+        Ct(7,:)    = weightPos+weightNeg;
+                     
+        % con8
+        Ctnames{8} = 'CSm_eff_Baseline_eff';
+        weightPos  = ismember(conditionName, {'task-PIT.CSminusxeffort^1'}) * 1;
+        weightNeg  = ismember(conditionName, {'task-PIT.Baselinexeffort^1'}) * -1;
+        Ct(8,:)    = weightPos+weightNeg;
+        
+
         
         % define F constrasts
         %------------------------------------------------------------------

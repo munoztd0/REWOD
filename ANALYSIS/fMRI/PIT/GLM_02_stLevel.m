@@ -1,13 +1,12 @@
 function GLM_02_stLevel(subID)
 
 % intended for REWOD PIT
-% get onsets for first control model (CSp vs CSm vs Baseline)
-% Duration = 1
-% Simplified model, no modulators
-% 5 basic contrasts (CSp-CSm, CSp-Base,  CSp-CSm&Base, grips, CSm-Base)
-% last modified on June 2019 by David MUNOZ
-
-%dbstop if error
+% get onsets for main model
+% Durations =1 (except grips)
+% Model on ONSETs 3*CS with modulator
+% No modulators
+% 4 contrasts (CSp-CSm, CSp-Base,  CSp-CSm&Base,  CSm-Base)
+% last modified on JULY 2019 by David Munoz
 
 %% What to do
 firstLevel    = 1;
@@ -18,13 +17,14 @@ copycontrasts = 1;
 %sessionX = 'second';
 task = 'PIT';
 %% define path
-% cd ~
-% home = pwd;
-% homedir = [home '/REWOD/'];
-homedir = '/home/REWOD';
 
-mdldir   = fullfile(homedir, '/DATA/STUDY/MODELS/SPM/PIT');% mdl directory (timing and outputs of the analysis)
-funcdir  = fullfile(homedir, '/DATA/STUDY/CLEAN');% directory with  post processed functional scans
+cd ~
+home = pwd;
+homedir = [home '/REWOD/'];
+
+
+mdldir   = fullfile(homedir, '/DERIVATIVES/ANALYSIS/PIT');% mdl directory (timing and outputs of the analysis)
+funcdir  = fullfile(homedir, '/DERIVATIVES/PREPROC');% directory with  post processed functional scans
 name_ana = 'GLM-02'; % output folder for this analysis
 groupdir = fullfile (mdldir,name_ana, 'group/');
 
@@ -32,8 +32,8 @@ addpath('/usr/local/external_toolboxes/spm12/');
 %addpath /usr/local/MATLAB/R2018a/spm12 ;
 %% specify fMRI parameters
 param.TR = 2.4;
-param.im_format = 'nii'; %'img' or 'nii';
-param.ons_unit = 'secs'; % 'scans' or 'secs';
+param.im_format = 'nii'; 
+param.ons_unit = 'secs'; 
 spm('Defaults','fMRI');
 spm_jobman('initcfg');
 
@@ -103,8 +103,8 @@ for i = 1:length(subj)
     
     % participant's specifics
     subjX = char(subj(i));
-    subjoutdir =fullfile(mdldir,name_ana, [ 'sub-' subjX]); % subj{i,1}
-    subjfuncdir=fullfile(funcdir, [ 'sub-' subjX]); % subj{i,1}
+    subjoutdir =fullfile(mdldir,name_ana, [ 'sub-' subjX]); 
+    subjfuncdir=fullfile(funcdir, [ 'sub-' subjX], 'ses-second'); 
     fprintf('participant number: %s \n', subj{i});
     cd (subjoutdir)
     
@@ -261,14 +261,15 @@ end
         end
         
         %-----------------------------
-        %multiple regressors for mvts parameters ( no movement regressor
-        %after ICA)
-        
-        %rnam = {'X','Y','Z','x','y','z'};
+
         for ses=1:ntask
             
             SPM.Sess(ses).C.C = [];
             SPM.Sess(ses).C.name = {};
+            
+            %multiple regressors for mvts parameters ( no movement regressor after FIX denoising)
+        
+            %rnam = {'X','Y','Z','x','y','z'};
             
             %movement
                         %targetfile         = dir (fullfile(smoothfolder, ['rp_*' taskX '*.txt']));
@@ -330,7 +331,7 @@ end
         
         % intrinsic autocorrelations: OPTIONS: 'none'|'AR(1) + w'
         %--------------------------------------------------------------------------
-        SPM.xVi.form       = 'AR(1)'; %AR(0.2)???? SOSART
+        SPM.xVi.form       = 'AR(1)'; 
         
         % specify SPM working dir for this sub
         %==========================================================================
@@ -399,10 +400,6 @@ end
         weightNeg  = ismember(conditionName, {'task-PIT.CSminus', 'task-PIT.Baseline'}) * -1;
         Ct(3,:)    = weightPos+weightNeg;
         
-%         % con4
-%         Ctnames{4} = 'grips';
-%         weightPos  = ismember(conditionName, {'task-PIT.gripsREM', 'task-PIT.gripsPE','task-PIT.gripsPIT'}) * 1;
-%         Ct(4,:)    = weightPos;
         
         % con4
         Ctnames{4} = 'CSm-Baseline';
@@ -443,7 +440,7 @@ end
         % run the job
         spm_jobman('run',jobs)
         
-        
+        disp ('contrasts created!')
         
     end
 
