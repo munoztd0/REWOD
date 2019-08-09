@@ -12,7 +12,7 @@
 cd ~
 home = pwd;
 homedir = [home '/REWOD'];
-%homedir = '/home/REWOD';
+
 
 mdldir        = fullfile (homedir, '/DERIVATIVES/ANALYSIS');
 sourcefiles   = fullfile(homedir, '/DERIVATIVES/PREPROC');

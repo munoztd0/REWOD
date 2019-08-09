@@ -443,7 +443,8 @@ end
         % run the job
         spm_jobman('run',jobs)
         
-        disp ('contrasts created!')
+        
+        
     end
 
 

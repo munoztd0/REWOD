@@ -14,3 +14,5 @@ docker run -it -v ${home}/REWOD/SOURCE/ jmtyszka/bidskit -d ${home}/REWOD
 #or from another folder by specifying the BIDS dataset directory
 
 # bidskit -d /PATH_TO_YOUR_DATASET_FOLDER/
+
+#if that does not work you can do it manually with dcm2niix
