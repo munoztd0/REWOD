@@ -41,7 +41,7 @@ def covariate (cond):
 
     for i in s:
         subj = 'sub-' + i
-        covpath = home + '/REWOD/DATA/STUDY/MODELS/SPM/' + taskDIR + '/' + GLM + '/' + subj + '/timing/'
+        covpath = home + '/REWOD/DERIVATIVES/ANALYSIS/' + taskDIR + '/' + GLM + '/' + subj + '/timing/'
         cov_Base = pd.read_table(covpath + GLM + '_task-PIT_CS_Baseline.txt',sep='\t', header=None)
         cov_minus = pd.read_table(covpath + GLM + '_task-PIT_CS_CSm.txt',sep='\t', header=None)
         cov_plus = pd.read_table(covpath + GLM + '_task-PIT_CS_CSp.txt',sep='\t', header=None)
@@ -67,7 +67,7 @@ def covariate (cond):
         dfXX[0] = dfsubj
         dfXX[1] = dfX - dfX.mean()
         dfXX.columns = ['subj', cond]
-        dfXX['eff'] = dfXX['eff'].rank(method='first')
+        dfXX[cond] = dfXX[cond].rank(method='first')
 
 
     helper(df01,df1)
@@ -77,7 +77,7 @@ def covariate (cond):
         
         
     
-    os.chdir(home +'/REWOD/DATA/STUDY/MODELS/SPM/PIT/GLM-04/group_covariates')
+    os.chdir(home +'/REWOD/DERIVATIVES/ANALYSIS/' + taskDIR + '/' + GLM + '/group_covariates')
     df01.to_csv('CSp-CSm_' + cond + '_rank.txt',sep='\t', index=False)
     df02.to_csv('CSp-Baseline_' + cond + '_rank.txt',sep='\t', index=False)
     df03.to_csv('CSp-CSm&Baseline_' + cond + '_rank.txt',sep='\t', index=False)

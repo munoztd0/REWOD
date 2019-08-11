@@ -1,11 +1,9 @@
 function GLM_02_ndLevel()
 
 % intended for REWOD PIT
-% get onsets for main model
+% get onsets for model with 2st level covariates
 % Durations =1 (except grips)
 % Model on ONSETs 3*CS with modulator
-% No modulators
-% 4 contrasts (CSp-CSm, CSp-Base,  CSp-CSm&Base,  CSm-Base)
 % last modified on JULY 2019 by David Munoz
 
 do_ttest = 1;

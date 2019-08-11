@@ -8,7 +8,6 @@ function GLM_04_getOnsets()
 
 %% define paths
 
-%homedir = '/home/REWOD/';
 cd ~
 home = pwd;
 homedir = [home '/REWOD/'];
@@ -110,65 +109,65 @@ for j = 1:length(task)
         cd (subjdir) %save all info in the participant directory
         
         
-%         % FOR FSL #uncoment if you want to use FSL#
-%         % create text file with 3 colons: onsets, durations, parametric modulators
-%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         name = {'CS'; 'grips'};
-%         
-%         for ii = 1:length(name)
-%             
-%             nameX = char(name(ii));
-%             
-%             if strcmp (nameX, 'CS')  % for structure that contains substuctures
-%                 substr = {'CSp'; 'CSm'; 'Baseline'; 'REM'; 'PE'};% specify the substructures names
-%                 
-%                 for iii = 1:length(substr)
-%                     substrX = char(substr(iii));
-%                     nameXX  = [nameX '_' substrX]; % name that combines the structure and the substructures
-%                     % database with three rows of interest
-%                     database.(nameXX) = [num2cell(onsets.(nameX).(substrX)), num2cell(durations.(nameX).(substrX)), num2cell(modulators.(nameX).(substrX))];
-%                     % save the database in a txt file
-%                     fid = fopen ([ana_name '_task-' taskX '_' nameX '_' substrX '.txt'],'wt');
-%                     formatSpec = '%f\t%f\t%f\n';
-%                     [nrows,~] = size(database.(nameXX));
-%                     for row = 1:nrows
-%                         fprintf(fid,formatSpec,database.(nameXX){row,:});
-%                     end
-%                     fclose(fid);
-%                 end
-%                 
-%             elseif strcmp (nameX, 'grips')  % for structure that contains substuctures
-%                      substr = {'PIT'; 'PE'; 'REM'};% specify the substructures names
-% 
-%                 for iii = 1:length(substr)
-%                     substrX = char(substr(iii));
-%                     nameXX  = [nameX '_' substrX]; % name that combines the structure and the substructures
-%                     % database with three rows of interest
-%                     database.(nameXX) = [num2cell(onsets.(nameX).(substrX)), num2cell(durations.(nameX).(substrX)), num2cell(modulators.(nameX).(substrX))];
-%                     % save the database in a txt file
-%                     fid = fopen ([ana_name '_task-' taskX '_'  nameX '_' substrX '.txt'],'wt');
-%                     formatSpec = '%f\t%f\t%f\n';
-%                     [nrows,~] = size(database.(nameXX));
-%                     for row = 1:nrows
-%                         fprintf(fid,formatSpec,database.(nameXX){row,:});
-%                     end
-%                     fclose(fid);
-%                 end
-%                 
-%           else
-%                 % database with three rows of interest 
-%                 database.(nameX) = [num2cell(onsets.(nameX)), num2cell(durations.(nameX)), num2cell(modulators.(nameX))];
-%                 % save the database in a txt file
-%                 fid = fopen ([ana_name '_task-' taskX '_' nameX '.txt'],'wt');
-%                 formatSpec = '%f\t%f\t%f\n';
-%                 [nrows,~] = size(database.(nameX));
-%                 for row = 1:nrows
-%                     fprintf(fid,formatSpec,database.(nameX){row,:});
-%                 end
-%                 fclose(fid);
-%             end
-%             
-%         end
+        % FOR FSL and covariates!
+        % create text file with 3 colons: onsets, durations, parametric modulators
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        name = {'CS'; 'grips'};
+        
+        for ii = 1:length(name)
+            
+            nameX = char(name(ii));
+            
+            if strcmp (nameX, 'CS')  % for structure that contains substuctures
+                substr = {'CSp'; 'CSm'; 'Baseline'; 'REM'; 'PE'};% specify the substructures names
+                
+                for iii = 1:length(substr)
+                    substrX = char(substr(iii));
+                    nameXX  = [nameX '_' substrX]; % name that combines the structure and the substructures
+                    % database with three rows of interest
+                    database.(nameXX) = [num2cell(onsets.(nameX).(substrX)), num2cell(durations.(nameX).(substrX)), num2cell(modulators.(nameX).(substrX))];
+                    % save the database in a txt file
+                    fid = fopen ([ana_name '_task-' taskX '_' nameX '_' substrX '.txt'],'wt');
+                    formatSpec = '%f\t%f\t%f\n';
+                    [nrows,~] = size(database.(nameXX));
+                    for row = 1:nrows
+                        fprintf(fid,formatSpec,database.(nameXX){row,:});
+                    end
+                    fclose(fid);
+                end
+                
+            elseif strcmp (nameX, 'grips')  % for structure that contains substuctures
+                     substr = {'PIT'; 'PE'; 'REM'};% specify the substructures names
+
+                for iii = 1:length(substr)
+                    substrX = char(substr(iii));
+                    nameXX  = [nameX '_' substrX]; % name that combines the structure and the substructures
+                    % database with three rows of interest
+                    database.(nameXX) = [num2cell(onsets.(nameX).(substrX)), num2cell(durations.(nameX).(substrX)), num2cell(modulators.(nameX).(substrX))];
+                    % save the database in a txt file
+                    fid = fopen ([ana_name '_task-' taskX '_'  nameX '_' substrX '.txt'],'wt');
+                    formatSpec = '%f\t%f\t%f\n';
+                    [nrows,~] = size(database.(nameXX));
+                    for row = 1:nrows
+                        fprintf(fid,formatSpec,database.(nameXX){row,:});
+                    end
+                    fclose(fid);
+                end
+                
+          else
+                % database with three rows of interest 
+                database.(nameX) = [num2cell(onsets.(nameX)), num2cell(durations.(nameX)), num2cell(modulators.(nameX))];
+                % save the database in a txt file
+                fid = fopen ([ana_name '_task-' taskX '_' nameX '.txt'],'wt');
+                formatSpec = '%f\t%f\t%f\n';
+                [nrows,~] = size(database.(nameX));
+                for row = 1:nrows
+                    fprintf(fid,formatSpec,database.(nameX){row,:});
+                end
+                fclose(fid);
+            end
+            
+        end
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % save data

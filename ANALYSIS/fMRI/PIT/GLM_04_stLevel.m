@@ -1,10 +1,11 @@
 function GLM_04_stLevel(subID)
 
-% intended for REWOD PIT 
-% model 2nd level covariate
-% 4 basics 1st level +1 CSm-Baseline
-% last modified on June 2019 by David MUNOZ
-%dbstop if error
+% intended for REWOD PIT
+% get onsets for model with 2st level covariates
+% Durations =1 (except grips)
+% Model on ONSETs 3*CS with modulator
+% 4 contrasts (CSp-CSm, CSp-Base,  CSp-CSm&Base,  CSm-Base)
+% last modified on JULY 2019 by David Munoz
 
 %% What to do
 firstLevel    = 1;
@@ -16,13 +17,13 @@ copycontrasts = 1;
 task = 'PIT';
 %% define path
 
-% cd ~
-% home = pwd;
-% homedir = [home '/REWOD/'];
-homedir = '/home/REWOD';
+cd ~
+home = pwd;
+homedir = [home '/REWOD/'];
 
-mdldir   = fullfile(homedir, '/DATA/STUDY/MODELS/SPM/PIT');% mdl directory (timing and outputs of the analysis)
-funcdir  = fullfile(homedir, '/DATA/STUDY/CLEAN');% directory with  post processed functional scans
+
+mdldir   = fullfile(homedir, 'DERIVATIVES/ANALYSIS/PIT');% mdl directory (timing and outputs of the analysis)
+funcdir  = fullfile(homedir, 'DERIVATIVES/PREPROC');% directory with  post processed functional scans
 name_ana = 'GLM-04'; % output folder for this analysis
 groupdir = fullfile (mdldir,name_ana, 'group/');
 
@@ -31,8 +32,8 @@ addpath('/usr/local/external_toolboxes/spm12/');
 %addpath /usr/local/MATLAB/R2018a/spm12 ;
 %% specify fMRI parameters
 param.TR = 2.4;
-param.im_format = 'nii'; %'img' or 'nii';
-param.ons_unit = 'secs'; % 'scans' or 'secs';
+param.im_format = 'nii'; 
+param.ons_unit = 'secs'; 
 spm('Defaults','fMRI');
 spm_jobman('initcfg');
 
@@ -102,7 +103,7 @@ for i = 1:length(subj)
     % participant's specifics
     subjX = char(subj(i));
     subjoutdir =fullfile(mdldir,name_ana, [ 'sub-' subjX]); % subj{i,1}
-    subjfuncdir=fullfile(funcdir, [ 'sub-' subjX]); % subj{i,1}
+    subjfuncdir=fullfile(funcdir, [ 'sub-' subjX], 'ses-second', 'func');
     fprintf('participant number: %s \n', subj{i});
     cd (subjoutdir)
     
@@ -163,19 +164,18 @@ end
         ses = 1:ntask;
 
         taskX = char(param.task(ses));
-        smoothfolder       = [subjfuncdir '/func'];
-        targetscan         = dir (fullfile(smoothfolder, [im_style '*' taskX '*' param.im_format]));
-        tmp{ses}           = spm_select('List',smoothfolder,targetscan.name);
+        targetscan         = dir (fullfile(subjfuncdir, [im_style '*' taskX '*' param.im_format]));
+        tmp{ses}           = spm_select('List',subjfuncdir,targetscan.name);
 
         % get the number of EPI for each session
-        cd (smoothfolder);
-        V         = dir(fullfile(smoothfolder, targetscan.name));
+        cd (subjfuncdir);
+        V         = dir(fullfile(subjfuncdir, targetscan.name));
         [p,n,e]   = spm_fileparts(V(1).name);
         Vn        = spm_vol(fullfile(p,[n e]));
         nscans    = [nscans numel(Vn)];
 
         for j = 1:nscans(ses)
-            scanID    = [scanID; {[smoothfolder,'/', V.name, ',', num2str(j)]}];
+            scanID    = [scanID; {[subjfuncdir,'/', V.name, ',', num2str(j)]}];
         end
 
        
@@ -265,20 +265,22 @@ end
         end
         
         %-----------------------------
-        %multiple regressors for mvts parameters ( no movement regressor
-        %after ICA)
-        
-        %rnam = {'X','Y','Z','x','y','z'};
+
         for ses=1:ntask
             
             SPM.Sess(ses).C.C = [];
             SPM.Sess(ses).C.name = {};
             
+           %multiple regressors for mvts parameters ( no movement regressor
+           %after ICA)
+        
+            %rnam = {'X','Y','Z','x','y','z'};
+            
             %movement
-                        %targetfile         = dir (fullfile(smoothfolder, ['rp_*' taskX '*.txt']));
+                        %targetfile         = dir (fullfile(subjfuncdir, ['rp_*' taskX '*.txt']));
 
-                        %fn = spm_select('List',smoothfolder,targetfile.name);% path
-                        %[r1,r2,r3,r4,r5,r6] = textread([smoothfolder '/' fn(1,:)],'%f%f%f%f%f%f'); % path
+                        %fn = spm_select('List',subjfuncdir,targetfile.name);% path
+                        %[r1,r2,r3,r4,r5,r6] = textread([subjfuncdir '/' fn(1,:)],'%f%f%f%f%f%f'); % path
                         %SPM.Sess(ses).C.C = [r1 r2 r3 r4 r5 r6];
                         %SPM.Sess(ses).C.name = rnam;
         end
@@ -334,7 +336,7 @@ end
         
         % intrinsic autocorrelations: OPTIONS: 'none'|'AR(1) + w'
         %--------------------------------------------------------------------------
-        SPM.xVi.form       = 'AR(1)'; %AR(0.2)???? SOSART
+        SPM.xVi.form       = 'AR(1)';
         
         % specify SPM working dir for this sub
         %==========================================================================
@@ -374,7 +376,7 @@ end
         for j = 1:ncondition
             
             %taskN = SPM.xX.name{j} (4);
-            task  = 'task-PIT.'; %taskN in the middle
+            task  = 'task-PIT.'; 
             conditionName{j} = strcat(task,SPM.xX.name{j} (7:end-6)); %this cuts off the useless parts of the names
             
         end
@@ -404,10 +406,6 @@ end
         weightNeg  = ismember(conditionName, {'task-PIT.CSminus', 'task-PIT.Baseline'}) * -1;
         Ct(3,:)    = weightPos+weightNeg;
         
-%         % con4
-%         Ctnames{4} = 'grips';
-%         weightPos  = ismember(conditionName, {'task-PIT.gripsREM', 'task-PIT.gripsPE','task-PIT.gripsPIT'}) * 1;
-%         Ct(4,:)    = weightPos;
         
         % con4
         Ctnames{4} = 'CSm-Baseline';
@@ -450,7 +448,7 @@ end
         
         disp ('contrasts created!')
         
-        mkdir(covariatedir)
+        
     end
 
 

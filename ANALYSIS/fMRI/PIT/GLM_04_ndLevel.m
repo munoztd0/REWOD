@@ -1,35 +1,39 @@
-%function GLM_04_ndLevel
-% PIT
-% covariate demeaned by conditions
-% check covariatePIT_meancent.py for more info
+function GLM_04_ndLevel
 
-% does full_factorial
-%do_ttest = 1;
+% intended for REWOD PIT
+% get onsets for model with 2st level covariates mean centered by rank by conditions
+% SO BY NOW YOU SHOULD HAVE RUN THE covariate.py script !
+% Durations =1 (except grips)
+% Model on ONSETs 3*CS with modulator
+% 4 contrasts (CSp-CSm, CSp-Base,  CSp-CSm&Base,  CSm-Base)
+% + 4 modulated contrast (*eff)
+% last modified on JULY 2019 by David Munoz
+
+
 do_covariate = 1;
 remove = 1; 
-removesub = {'sub-24'}; %'sub-10';
+removesub = {'sub-24'}; 
 removedsub = '24'; 
 
 
 %% define path
 
-%homedir = '/home/REWOD';
+
 cd ~
 home = pwd;
 homedir = [home '/REWOD/'];
 
-mdldir   = fullfile(homedir, '/DATA/STUDY/MODELS/SPM/PIT');% mdl directory (timing and outputs of the analysis)
-%funcdir  = fullfile(homedir, '/DATA/STUDY/CLEAN');% directory with  post processed functional scans
-covdir   = fullfile (homedir, '/DATA/STUDY/MODELS/SPM/PIT/GLM-04/group_covariates'); % director with the extracted second level covariates
 %%
-name_ana = 'GLM-04'; % output folder for this analysis
+mdldir   = fullfile(homedir, 'DERIVATIVES/ANALYSIS/PIT');% mdl directory (timing and outputs of the analysis)
+name_ana = 'GLM-02'; % output folder for this analysis 
 groupdir = fullfile (mdldir,name_ana, 'group/');
+covdir   = fullfile (homedir, 'DERIVATIVES/ANALYSIS/PIT/GLM-04/group_covariates'); % director with the extracted second level covariates
 
 
 %% specify spm param
-%addpath('/usr/local/external_toolboxes/spm12/');
+addpath('/usr/local/external_toolboxes/spm12/');
 %addpath /usr/local/MATLAB/R2018a/spm12 ;
-addpath ([homedir '/ANALYSIS/spm_scripts/GLM/dependencies']);
+addpath ([homedir 'CODE/ANALYSIS/fMRI/dependencies']);
 spm('Defaults','fMRI');
 spm_jobman('initcfg');
 
@@ -41,10 +45,10 @@ spm_jobman('initcfg');
 if do_covariate
     
     % covariate of interest name become folder 
-    covariateNames = {'CSp-CSm_eff_meancent' %1
-        'CSp-Baseline_eff_meancent' %2
-        'CSm-Baseline_eff_meancent'%3
-        'CSp-CSm&Baseline_eff_meancent'}; %4
+    covariateNames = {'CSp-CSm_eff_rank' %1
+        'CSp-Baseline_eff_rank' %2
+        'CSm-Baseline_eff_rank'%3
+        'CSp-CSm&Baseline_eff_rank'}; %4
 
     % These contrast names become sub-folders
     contrastNames = {'CSp-CSm' %1
@@ -167,4 +171,4 @@ if do_covariate
 end
 
 
-%end
+end
