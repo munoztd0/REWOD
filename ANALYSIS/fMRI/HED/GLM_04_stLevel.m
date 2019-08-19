@@ -1,21 +1,20 @@
-function GLM_02_stLevel(subID)
+function GLM_04_stLevel(subID) 
 
-% intended for REWOD PIT
-% get onsets for main model
-% Durations =1 (except grips)
-% Model on ONSETs 3*CS with modulator
-% No modulators
-% 4 contrasts (CSp-CSm, CSp-Base,  CSp-CSm&Base,  CSm-Base)
-% last modified on JULY 2019 by David Munoz
+% intended for REWOD hedonic reactivity
+% get onsets for model with 2st level covariates
+% Duration =1 + modulators
+% Model on ONSETs (STARTTRIAL, 3*odor + 2*questions liking&intensity)
+% last modified on July 2019 by David Munoz
 
 %% What to do
 firstLevel    = 1;
-constrasts    = 1;
+contrasts    = 1;
 copycontrasts = 1;
 
 %% define task variable
 %sessionX = 'second';
-task = 'PIT';
+task = 'hedonic';
+
 %% define path
 
 cd ~
@@ -25,11 +24,12 @@ homedir = [home '/REWOD/'];
 
 mdldir   = fullfile(homedir, '/DERIVATIVES/ANALYSIS/', task);% mdl directory (timing and outputs of the analysis)
 funcdir  = fullfile(homedir, '/DERIVATIVES/PREPROC');% directory with  post processed functional scans
-name_ana = 'GLM-02'; % output folder for this analysis
+name_ana = 'GLM-04'; % output folder for this analysis
 groupdir = fullfile (mdldir,name_ana, 'group/');
 
 addpath('/usr/local/external_toolboxes/spm12/');
 %addpath /usr/local/MATLAB/R2018a/spm12 ;
+
 %% specify fMRI parameters
 param.TR = 2.4;
 param.im_format = 'nii'; 
@@ -39,7 +39,7 @@ spm_jobman('initcfg');
 
 %% define experiment setting parameters
 subj       =  subID; %{'01';'02';'03';'04';'05';'06';'07';'09';'10';'11';'12';'13';'14';'15';'16';'17';'18';'20';'21';'22';'23';'24';'25';'26';}; %subID;
-param.task = {'PIT'};
+param.task = {'hedonic'};
 
 %% define experimental design parameters
 param.Cnam     = cell (length(param.task), 1);
@@ -51,48 +51,55 @@ for i = 1:length(param.task)
     % Specify each conditions of your desing matrix separately for each session. The sessions
     % represent a line in Cnam, and the conditions correspond to a item in the line
     % these names must correspond identically to the names from your ONS*mat.
-    param.Cnam{i} = {'REM',...%1
-        'PE',...%2
-        'CSplus',...%3
-        'CSminus',...%4
-        'Baseline'};%5
-   
-    param.onset{i} = {'ONS.onsets.CS.REM',...%1
-        'ONS.onsets.CS.PE',...%2
-        'ONS.onsets.CS.CSp',...%3
-        'ONS.onsets.CS.CSm',...%4
-        'ONS.onsets.CS.Baseline'};%5
+    param.Cnam{i} = {'start',... %1
+        'reward',...%2
+        'control',...%3
+        'neutral',...%4
+        'liking',...%5 
+        'intensity'};%6
+
+        
+     param.onset{i} = {'ONS.onsets.trialstart',... %1
+        'ONS.onsets.odor.reward',...%2
+        'ONS.onsets.odor.control',...%3
+        'ONS.onsets.odor.neutral',...%4
+        'ONS.onsets.liking',...%5 
+        'ONS.onsets.intensity'};%6
 
     
-    
+    % duration of the blocks (if events, put '0'). Specify it for each condition of each session
     % the values must be included in your onsets in seconds
-    param.duration{i} = {'ONS.durations.CS.REM',...
-        'ONS.durations.CS.PE',...
-        'ONS.durations.CS.CSp',...
-        'ONS.durations.CS.CSm',...
-        'ONS.durations.CS.Baseline'};
+    param.duration{i} = {'ONS.durations.trialstart',...
+        'ONS.durations.odor.reward',...
+        'ONS.durations.odor.control',...
+        'ONS.durations.odor.neutral',... 
+        'ONS.durations.liking',...
+        'ONS.durations.intensity'};
+
     
-   
     % parametric modulation of your events or blocks (ex: linear time, or emotional value, or pupillary size, ...)
     % If you have a parametric modulation
     param.modulName{i} = {'none',...%1
         'none',...%2
         'none',...%3
-        'none',...%4
-        'none'};%5
+        'none',...%4 
+        'none',...%5
+        'none'}; %6
     
     param.modul{i} = {'none',...%1
-        'none',...%2
-        'none',...%3
+        'none',... %2
+        'none',... %3
         'none',... %4
-        'none'}; %5
+        'none',... %5
+        'none'}; %6
     
     % value of the modulators, If you have a parametric modulation
     param.time{i} = {'0',... %1
         '0',... %2
         '0',... %3
         '0',... %4
-        '0'};%5
+        '0',... %5
+        '0'};%6
     
     
 end
@@ -120,12 +127,12 @@ for i = 1:length(subj)
         load SPM
     end
     
-    %%%%%%%%%%%%%%%%%%%%%%%  DO CONSTRASTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    if constrasts == 1
+    %%%%%%%%%%%%%%%%%%%%%%%  DO CONTRASTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    if contrasts == 1
         doContrasts(subjoutdir,param, SPM);
     end
     
-    %%%%%%%%%%%%%%%%%%%%% COPY CONSTRASTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%% COPY CONTRASTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    if copycontrasts == 1
         
         mkdir (groupdir); % make the group directory where contrasts will be copied
@@ -353,7 +360,7 @@ end
         disp ('first level done');
     end
 
-
+ 
     function [] = doContrasts(subjoutdir, param, SPM)
         
         % define the SPM.mat that contains the design of the first level analysis
@@ -362,7 +369,7 @@ end
         [files]=spm_select('List',path_ana,'SPM.mat');
         jobs{1}.stats{1}.con.spmmat = {fullfile(path_ana,files)};
         
-        % define  T constrasts in a human friendly readable way
+        % define  T contrasts in a human friendly readable way
         %------------------------------------------------------------------
         
         % | GET THE NAMES FROM THE ONSETS PARAMETERS OF THE SPM MODEL
@@ -370,56 +377,52 @@ end
         
         for j = 1:ncondition
             
-            %taskN = SPM.xX.name{j} (4);
-            task  = ['task-PIT.']; %taskN in the middle
+            task  = 'task-hed.'; %taskN in the middle
             conditionName{j} = strcat(task,SPM.xX.name{j} (7:end-6)); %this cuts off the useless parts of the names
             
         end
-        
         conditionName{ncondition} = strcat(task,'constant'); %just for the last condition
         
-        Ct = []; Ctnames = []; ntask = size(param.task,1);
+         Ct = []; Ctnames = []; ntask = size(param.task,1);
         
-        % | CONSTRASTS FOR T-TESTS
+        % | contrasts FOR T-TESTS
         
         % con1
-        Ctnames{1} = 'CSp-CSm';
-        weightPos  = ismember(conditionName, {'task-PIT.CSplus'}) * 1;
-        weightNeg  = ismember(conditionName, {'task-PIT.CSminus'}) * -1;
+        Ctnames{1} = 'reward-control';
+        weightPos  = ismember(conditionName, {'task-hed.reward'}) * 1; %
+        weightNeg  = ismember(conditionName, {'task-hed.control'})* -1;%
         Ct(1,:)    = weightPos+weightNeg;
-
+        
         % con2
-        Ctnames{2} = 'CSp-Baseline';
-        weightPos  = ismember(conditionName, {'task-PIT.CSplus'}) * 1;
-        weightNeg  = ismember(conditionName, {'task-PIT.Baseline'}) * -1;
-        Ct(2,:)    = weightPos+weightNeg;
+        Ctnames{2} = 'reward-neutral';
+        weightPos  = ismember(conditionName, {'task-hed.reward'}) * 1;
+        weightNeg  = ismember(conditionName, {'task-hed.neutral'})* -1;
+        Ct(2,:)    = weightPos+weightNeg;  
         
         % con3
-        Ctnames{3} = 'CSp-CSm&Baseline';
-        weightPos  = ismember(conditionName, {'task-PIT.CSplus'}) * 2;
-        weightNeg  = ismember(conditionName, {'task-PIT.CSminus', 'task-PIT.Baseline'}) * -1;
+        Ctnames{3} = 'Odor-NoOdor';
+        weightPos  = ismember(conditionName, {'task-hed.reward', 'task-hed.neutral'}) * 1; %here it was rinse
+        weightNeg  = ismember(conditionName, {'task-hed.control'}) * -2;
         Ct(3,:)    = weightPos+weightNeg;
         
+        % con4 
+        Ctnames{4} = 'odor_presence';
+        weightPos  = ismember(conditionName, {'task-hed.reward', 'task-hed.neutral'}) * 1;
+        Ct(4,:)    = weightPos;
+
         
-        % con4
-        Ctnames{4} = 'CSm-Baseline';
-        weightPos  = ismember(conditionName, {'task-PIT.CSminus'}) * 1;
-        weightNeg  = ismember(conditionName, {'task-PIT.Baseline'}) * -1;
-        Ct(4,:)    = weightPos+weightNeg;
-        
-  
-        
-        % define F constrasts
+
+        % define F contrasts
         %------------------------------------------------------------------
         Cf = []; Cfnames = [];
         
-        Cfnames{end+1} = 'F_PIT';
+        Cfnames{end+1} = 'F_HED';
         
         %create a identidy matrix (nconditionXncondition) 
-        F_PIT = eye(ncondition);
-
+        F_hedonic = eye(ncondition);
+  
         
-        Cf = repmat(F_PIT,1,ntask);
+        Cf = repmat(F_hedonic,1,ntask);
         
         % put the contrast matrix
         %------------------------------------------------------------------
@@ -430,18 +433,17 @@ end
             jobs{1}.stats{1}.con.consess{icon}.tcon.convec = Ct(icon,:);
         end
         
-        % F constrats
-        for iconf = 1:1 % until the number of F constrast computed
-            jobs{1}.stats{1}.con.consess{iconf+icon}.fcon.name = Cfnames{iconf};
-            jobs{1}.stats{1}.con.consess{iconf+icon}.fcon.convec = Cf(iconf);
-        end
+         % F contrats
+         for iconf = 1:1 % until the number of F contrast computed
+             jobs{1}.stats{1}.con.consess{iconf+icon}.fcon.name = Cfnames{iconf};
+             jobs{1}.stats{1}.con.consess{iconf+icon}.fcon.convec = Cf(iconf);
+         end
         
         
         % run the job
         spm_jobman('run',jobs)
         
         disp ('contrasts created!')
-        
     end
 
 

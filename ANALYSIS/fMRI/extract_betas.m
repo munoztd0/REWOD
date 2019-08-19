@@ -2,8 +2,8 @@ function exctract_betas(glm, task)
 
 %clear
 %clc
-glm= 'GLM';
-task='HED';
+glm= 'GLM-02';
+task='hedonic';
 
 %% which model?
 ana_name = glm;
@@ -17,7 +17,6 @@ con_names = {'reward-neutral'};
 
 con_list = {'con_0002.nii,1'}; %
 
-%con_list = {'con_0002.nii,1'}; %
 
 % path
 

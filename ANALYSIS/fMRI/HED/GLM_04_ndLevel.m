@@ -1,38 +1,40 @@
-function GLM_04_ndLevel
+function GLM_04_ndLevel()
 
-% intended for REWOD PIT
-% get onsets for model with 2st level covariates mean centered by rank by conditions
-% SO BY NOW YOU SHOULD HAVE RUN THE covariate.py script !
-% Durations =1 (except grips)
-% Model on ONSETs 3*CS with modulator
-% 4 contrasts (CSp-CSm, CSp-Base,  CSp-CSm&Base,  CSm-Base)
-% + 4 modulated contrast (*eff)
-% last modified on JULY 2019 by David Munoz
+% intended for REWOD hedonic reactivity
+% get onsets for model with 2st level covariates
+% Duration =1 + modulators
+% Model on ONSETs (STARTTRIAL, 3*odor + 2*questions liking&intensity)
+% covariate demeaned by conditions
+% check covariate_meancent.py for more info
+% last modified on July 2019 by David Munoz
 
-
+%does t-test and full_factorial
 do_covariate = 1;
-remove = 1; 
-removesub = {'sub-24'}; 
-removedsub = '24'; 
+remove = 1;
+removesub = {'sub-24'} ;
+removedsub = '24';
 
+
+%% define task variable
+%sessionX = 'second';
+task = 'hedonic';
+name_ana = 'GLM-04'; 
 
 %% define path
-
 
 cd ~
 home = pwd;
 homedir = [home '/REWOD/'];
 
-%%
-mdldir   = fullfile(homedir, 'DERIVATIVES/ANALYSIS/PIT');% mdl directory (timing and outputs of the analysis)
-name_ana = 'GLM-04'; % output folder for this analysis 
-groupdir = fullfile (mdldir,name_ana, 'group/');
-covdir   = fullfile (homedir, 'DERIVATIVES/ANALYSIS/PIT/GLM-04/group_covariates'); % director with the extracted second level covariates
+mdldir   = fullfile(homedir, 'DERIVATIVES/ANALYSIS/', task);% mdl directory (timing and outputs of the analysis)
+covdir   = fullfile (homedir, 'DERIVATIVES/ANALYSIS/', task, name_ana, 'group_covariates'); % director with the extracted second level covariates
 
+groupdir = fullfile (mdldir,name_ana, 'group/');
 
 %% specify spm param
-addpath('/usr/local/external_toolboxes/spm12/');
-%addpath /usr/local/MATLAB/R2018a/spm12 ;
+addpath /usr/local/MATLAB/R2018a/spm12 ; 
+%addpath /usr/local/external_toolboxes/spm12/ ;
+
 addpath ([homedir 'CODE/ANALYSIS/fMRI/dependencies']);
 spm('Defaults','fMRI');
 spm_jobman('initcfg');
@@ -42,26 +44,34 @@ spm_jobman('initcfg');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% define constrasts and constrasts names
-if do_covariate
-    
-    % covariate of interest name become folder 
-    covariateNames = {'CSp-CSm_eff_rank' %1
-        'CSp-Baseline_eff_rank' %2
-        'CSm-Baseline_eff_rank'%3
-        'CSp-CSm&Baseline_eff_rank'}; %4
+if do_covariate % covariate of interest name become folder
 
-    % These contrast names become sub-folders
-    contrastNames = {'CSp-CSm' %1
-        'CSp-Baseline'% 2
-        'CSp-CSm&Baseline'%3
-        'CSm-Baseline'}; %4
+   covariateNames = {'reward-neutral_lik_meancent' %1
+  'reward-control_lik_meancent' %2
+  'Odor-NoOdor_lik_meancent' %3
+  'Odor_presence_lik_meancent'%4
+  'reward_lik_meancent'%5
+  'reward-neutral_int_meancent' %6
+  'reward-control_int_meancent' %7
+  'Odor-NoOdor_int_meancent'%8
+  'Odor_presence_int_meancent'%9
+  'reward_int_meancent'}; %10
+
+
+    % These contrast names become folders
+    contrastNames = {'reward-control'%1
+        'reward-neutral'%2
+        'Odor-NoOdor'%3
+        'odor_presence'};%4
+    
     
     conImages = {'con_0001'
         'con_0002'
         'con_0003'
         'con_0004'};
     
-    %% prepare batch for each contrasts
+    
+  %% prepare batch for each contrasts
     
     for c = 1:length(covariateNames)
         
@@ -75,7 +85,6 @@ if do_covariate
         cov.ID   = C.data(:,1);
         cov.data = C.data(:,2);
         
-   
 
         if remove
             for i = 1:length(removesub)
@@ -169,6 +178,5 @@ if do_covariate
         end
     end
 end
-
 
 end

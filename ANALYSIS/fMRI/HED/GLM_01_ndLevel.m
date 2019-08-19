@@ -1,11 +1,12 @@
-function GLM_02_ndLevel()
+function GLM_01_ndLevel()
 
 % intended for REWOD HED
-% get onsets for main model
-% Durations =1 
-% Model on ONSETs (start, 3*odor + 2*questions)
-% 4 basic contrasts Reward-Control, Reward-Neutral, Odor-NoOdor, odor_presence
-% last modified on July 2019 by David Munoz
+% get onsets for control model
+% Durations =0 (stick function)
+% Simplified model on ONSETs (start, 3*odor + 2*questions)
+% No modulators
+% 1 contrasts (Presence Odor)
+% last modified on JULY 2019  by David MUNOZ
 
 %does t-test and full_factorial
 do_ttest = 1;
@@ -25,7 +26,7 @@ homedir = [home '/REWOD/'];
 
 
 mdldir   = fullfile (homedir, 'DERIVATIVES/ANALYSIS/', task);% mdl directory (timing and outputs of the analysis)
-name_ana = 'GLM-02'; % output folder for this analysis 
+name_ana = 'GLM-01'; % output folder for this analysis 
 groupdir = fullfile (mdldir,name_ana, 'group/');
 
 
@@ -44,17 +45,11 @@ spm_jobman('initcfg');
 %% define contrasts and contrasts names
 if do_ttest
     
-       % These contrast names become folders
-    contrastNames = {'reward-control'%1
-        'reward-neutral'%2
-        'Odor-NoOdor'%3
-        'odor_presence'};%4
+    % These contrast names become folders
+    contrastNames = {'odor_presence'};%1
    
     
-    conImages = {'con_0001'
-        'con_0002'
-        'con_0003'
-        'con_0004'};
+    conImages = {'con_0001'};
     
     
     %% prepare batch for each contrasts

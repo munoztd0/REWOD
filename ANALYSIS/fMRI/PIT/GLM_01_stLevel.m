@@ -25,7 +25,7 @@ home = pwd;
 homedir = [home '/REWOD/'];
 
 
-mdldir   = fullfile(homedir, '/DERIVATIVES/ANALYSIS/PIT');% mdl directory (timing and outputs of the analysis)
+mdldir   = fullfile(homedir, '/DERIVATIVES/ANALYSIS/', task);% mdl directory (timing and outputs of the analysis)
 funcdir  = fullfile(homedir, '/DERIVATIVES/PREPROC');% directory with  post processed functional scans
 name_ana = 'GLM-01'; % output folder for this analysis
 groupdir = fullfile (mdldir,name_ana, 'group/');
@@ -139,12 +139,12 @@ for i = 1:length(subj)
         load SPM
     end
     
-    %%%%%%%%%%%%%%%%%%%%%%%  DO CONSTRASTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%  DO CONTRASTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     if constrasts == 1
         doContrasts(subjoutdir,param, SPM);
     end
     
-    %%%%%%%%%%%%%%%%%%%%% COPY CONSTRASTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%% COPY CONTRASTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    if copycontrasts == 1
         
         mkdir (groupdir); % make the group directory where contrasts will be copied
@@ -381,7 +381,7 @@ end
         [files]=spm_select('List',path_ana,'SPM.mat');
         jobs{1}.stats{1}.con.spmmat = {fullfile(path_ana,files)};
         
-        % define  T constrasts in a human friendly readable way
+        % define  T contrasts in a human friendly readable way
         %------------------------------------------------------------------
         
         % | GET THE NAMES FROM THE ONSETS PARAMETERS OF THE SPM MODEL
@@ -399,7 +399,7 @@ end
         
         Ct = []; Ctnames = []; ntask = size(param.task,1);
         
-        % | CONSTRASTS FOR T-TESTS
+        % | CONTRASTS FOR T-TESTS
         
         % con1  #contrasts control grips VS everything
         Ctnames{1} = 'grips';
@@ -408,7 +408,7 @@ end
 
   
         
-        % define F constrasts
+        % define F contrasts
         %------------------------------------------------------------------
         Cf = []; Cfnames = [];
         
@@ -429,7 +429,7 @@ end
             jobs{1}.stats{1}.con.consess{icon}.tcon.convec = Ct(icon,:);
         end
         
-        % F constrats
+        % F contrats
         for iconf = 1:1 % until the number of F constrast computed
             jobs{1}.stats{1}.con.consess{iconf+icon}.fcon.name = Cfnames{iconf};
             jobs{1}.stats{1}.con.consess{iconf+icon}.fcon.convec = Cf(iconf);

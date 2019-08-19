@@ -1,7 +1,7 @@
 #!/bin/bash
 home=$(eval echo ~$user);
 
-task="PIT"
+task="HED"
 GLM="GLM_04"
 codeDir="${home}/REWOD/CODE/ANALYSIS/fMRI/${task}"
 matlab_script="${GLM}_stLevel"

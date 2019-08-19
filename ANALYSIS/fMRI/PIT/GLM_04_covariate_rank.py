@@ -6,7 +6,7 @@ Created on Mon Jun 10 14:13:20 2019
 
 @author: David Munoz
 
-takes the condition name as input 
+takes the condition name as input ('lik', 'int')
 """
 
 def covariate (cond):
