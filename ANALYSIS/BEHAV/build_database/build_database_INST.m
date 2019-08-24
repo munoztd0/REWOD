@@ -2,51 +2,52 @@
 % BUILD DATABASE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % created by Eva
-% last modified by David on September 27 2018
+% last modified by David on August 2019
 
 % note: this scripts works only on participants who followed the full
-% protocol (from obsese200 on)
 
+
+dbstop if error
 clear all
 
-analysis_name = 'REWOD_INSTRUMENTAL';
-task          = 'instrumental_learning';
-
+analysis_name = 'REWOD_INSTRU_ses_first';
+task          = 'instrulearning';
 %% DEFINE WHAT WE WANT TO DO
 
-save_RResultsInstrubase = 1; % leave 1 when saving all subjects
+save_Rdatabase = 1; % leave 1 when saving all subjects
 
 %% DEFINE PATH
 
-home = '/home/cisa/rewod';
-%home = 'home/david/mountpoint';
-%home = '/Users/davidmunoz/mountpoint';
+cd ~
+home = pwd;
+homedir = [home '/REWOD/'];
 
-analysis_dir = fullfile(home, '/ANALYSIS/build_databases');
-R_dir        = fullfile(home,'/DATABASES');
+
+analysis_dir = fullfile(homedir, 'ANALYSIS/BEHAV/build_database');
+R_dir        = fullfile(homedir,'DERIVATIVES/BEHAV');
 % add tools
-addpath (genpath(fullfile(home, '/ANALYSIS/my_tools')));
+addpath (genpath(fullfile(homedir, 'CODE/ANALYSIS/BEHAV/my_tools')));
 
 %% DEFINE POPULATION
-subj    = {'02';'03';'04';'05';'06';'07';'08';'09';'10';'11';'12';'13';'14';'15';'16';'17';'18';'19';'20';'21';'22';'23';'24';'25';'26'};    % subject ID excluding 8 & 1
-%group   = {'1'} % control or obsese
+
+subj    = {'02';'03';'04';'05';'06';'07';'09';'10';'11';'12';'13';'14';'15';'16';'17';'18';'20';'21';'22';'23';'24';'25';'26'};    % number 01 has not instru
+
 session = {'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'};
-%ntrials = ResultsInstru.Trial(end) %
 
+ses = {'ses-first'};
 
-for i = 1:length(subj);
+for i = 1:length(subj)
         
-    subjX=subj(i,1);
-    subjX=char(subjX);
+    subjO=subj(i,1);
+    subjX=char(subjO);
     %conditionX=char(group(i,1))
-    sessionX  =char(session(i,1));   
+    sessionX  =char(ses);   
     
     disp (['****** PARTICIPANT: ' subjX ' *******']);
    
     %load behavioral file
-    
-            behavior_dir = fullfile(home,'/DATA/RAW/BEHAVIORAL/INSTRUMENTAL', num2str(subjX), sessionX);
-            cd (behavior_dir)
+    behavior_dir = fullfile(homedir, 'SOURCEDATA', subjO, [sessionX '_task-' task]);
+            cd (behavior_dir{1})
             load (['instrumental' num2str(subjX) ])
    
    ntrials = ResultsInstru.Trial(end);
@@ -130,15 +131,12 @@ for i = 1:length(subj);
         
     %end
     
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%% save mat file
-    matfile_name = ['sub-' num2str(subjX) '_ses-first' '_task-' task '_run-01_events.mat'];
-    cd (behavior_dir)
-    save(matfile_name, 'ONSETS', 'DURATIONS',  'REWARD', 'FORCE', 'TRIAL', 'DRIFT' )
-    func_dir = fullfile (home, 'DATA/derivatives/', ['sub-' num2str(subjX)], 'ses-first', 'behav');
+    func_dir = fullfile (homedir, 'DERIVATIVES', 'PREPROC', ['sub-' num2str(subjX)], 'ses-first', 'beh');
     cd (func_dir)
-    
-    
+    matfile_name = ['sub-' num2str(subjX) '_ses-first' '_task-' task '_run-01_events.mat'];
+    save(matfile_name, 'ONSETS', 'DURATIONS',  'REWARD', 'FORCE', 'TRIAL', 'DRIFT' )
    
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

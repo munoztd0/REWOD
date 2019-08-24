@@ -2,49 +2,52 @@
 % BUILD DATABASE FOR PAVLOVIAN LEARNING
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % created by Eva
-% last modified by David on October 27 2018
+% last modified by David on August 2019
 
 % note: this scripts works only on participants who followed the full
 % protocol (from obsese200 on)
 
+dbstop if error
 clear all
-analysis_name = 'REWOD_PAVLOVIAN';
-task          = 'pavlovian_learning';
 
+analysis_name = 'REWOD_PAVCOND_ses_first';
+task          = 'pavconditioning';
 %% DEFINE WHAT WE WANT TO DO
 
 save_Rdatabase = 1; % leave 1 when saving all subjects
 
 %% DEFINE PATH
 
-home = '/home/cisa/rewod';
-%home = '/Users/Lavinia/mountpoint';
-%home = '/Users/davidmunoz/mountpoint';
+cd ~
+home = pwd;
+homedir = [home '/REWOD/'];
 
-analysis_dir = fullfile(home, '/ANALYSIS/build_databases');
-R_dir        = fullfile(home,'/DATABASES');
+
+analysis_dir = fullfile(homedir, 'ANALYSIS/BEHAV/build_database');
+R_dir        = fullfile(homedir,'DERIVATIVES/BEHAV');
 % add tools
-addpath (genpath(fullfile(home, '/ANALYSIS/my_tools')));
+addpath (genpath(fullfile(homedir, 'CODE/ANALYSIS/BEHAV/my_tools')));
 
 %% DEFINE POPULATION
-subj    = {'02';'03';'04';'05';'06';'07';'08';'09';'10';'11';'12';'13';'14';'15';'16';'17';'18';'19';'20';'21';'22';'23';'24';'25';'26'};    % subject ID excluding 8 & 1
-%group   = {'1'} % control or obsese
-session = {'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one';'one'};
 
+subj    = {'02';'03';'04';'05';'06';'07';'09';'10';'11';'12';'13';'14';'15';'16';'17';'18';'20';'21';'22';'23';'24';'25';'26'};    % number 01 has not instru
 
+session = {'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'};
+
+ses = {'ses-first'};
 
 for i = 1:length(subj)
         
-    subjX=subj(i,1);
-    subjX=char(subjX);
-    %conditionX=char(group(i,1));
-    sessionX  =char(session(i,1));
+    subjO=subj(i,1);
+    subjX=char(subjO);
+    %conditionX=char(group(i,1))
+    sessionX  =char(ses);   
     
     disp (['****** PARTICIPANT: ' subjX ' *******']);
-    
+   
     %load behavioral file
-            behavior_dir = fullfile(home,'/DATA/RAW/BEHAVIORAL/CONDITIONING', [ num2str(subjX)], sessionX);
-            cd (behavior_dir)
+    behavior_dir = fullfile(homedir, 'SOURCEDATA', subjO, [sessionX '_task-' task]);
+            cd (behavior_dir{1})
             load (['conditioning' num2str(subjX) ])
    
     ntrials = size(responseTimes,1) +1;
@@ -172,12 +175,10 @@ for i = 1:length(subj)
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%% save mat file
-    matfile_name = ['sub-' num2str(subjX) '_ses-first' '_task-' task '_run-01_events.mat'];
-    cd (behavior_dir)
-    save(matfile_name, 'ROUNDS', 'TRIAL', 'TASK' , 'BEHAVIOR', 'CONDITIONS')
-    func_dir = fullfile (home, 'DATA/derivatives/', ['sub-' num2str(subjX)], 'ses-first', 'func');
+    func_dir = fullfile (homedir, 'DERIVATIVES', 'PREPROC', ['sub-' num2str(subjX)], 'ses-first', 'beh');
     cd (func_dir)
-    
+    matfile_name = ['sub-' num2str(subjX) '_ses-first' '_task-' task '_run-01_events.mat'];
+    save(matfile_name, 'ROUNDS', 'TRIAL', 'TASK' , 'BEHAVIOR', 'CONDITIONS')
     
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -311,27 +312,27 @@ if save_Rdatabase
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% CREATE FIGURE
-
-for id = 1:length(subj)
-    
-    % get data for that participant
-    subjX=subj(id,1);
-    subjX=char(subjX);
-    
-    idx = strcmp(db.id, subjX);
-    
-    tmp.condition = db.condition(idx);
-    tmp.RT        = db.RT(idx);
-    tmp.ratings    = db.ratings(idx);
-    
-    all.RT.CSplus(id,:)   = nanmean(tmp.RT (strcmp ('CSplus', tmp.condition)));
-    all.RT.CSminus(id,:)  = nanmean(tmp.RT (strcmp ('CSminus', tmp.condition)));
-    
-    all.ratings.CSplus(id,:)  = tmp.ratings(strcmp ('CSplus', tmp.condition));
-    all.ratings.CSminus(id,:) = tmp.ratings(strcmp ('CSminus', tmp.condition));
-    
-end
+% %% CREATE FIGURE
+% 
+% for id = 1:length(subj)
+%     
+%     % get data for that participant
+%     subjX=subj(id,1);
+%     subjX=char(subjX);
+%     
+%     idx = strcmp(db.id, subjX);
+%     
+%     tmp.condition = db.condition(idx);
+%     tmp.RT        = db.RT(idx);
+%     tmp.ratings    = db.ratings(idx);
+%     
+%     all.RT.CSplus(id,:)   = nanmean(tmp.RT (strcmp ('CSplus', tmp.condition)));
+%     all.RT.CSminus(id,:)  = nanmean(tmp.RT (strcmp ('CSminus', tmp.condition)));
+%     
+%     all.ratings.CSplus(id,:)  = tmp.ratings(strcmp ('CSplus', tmp.condition));
+%     all.ratings.CSminus(id,:) = tmp.ratings(strcmp ('CSminus', tmp.condition));
+%     
+% end
 
 
 
@@ -339,9 +340,9 @@ end
 
 % get means and std
 
-bysub.ratingsCSp  =  PavCheck.ratings(strcmp('CSplus.jpg',PavCheck.imagesName));
-bysub.ratingsCSm  =  PavCheck.ratings(strcmp('CSminu.jpg',PavCheck.imagesName));
-bysub.ratingsbase = PavCheck.ratings(strcmp('CSbaseli.jpg',PavCheck.imagesName));
+% bysub.ratingsCSp  =  PavCheck.ratings(strcmp('CSplus.jpg',PavCheck.imagesName));
+% bysub.ratingsCSm  =  PavCheck.ratings(strcmp('CSminu.jpg',PavCheck.imagesName));
+% bysub.ratingsbase = PavCheck.ratings(strcmp('CSbaseli.jpg',PavCheck.imagesName));
 
 %f.ratings.means.CSp = nanmean(bysub.ratingsCSp,1);
 %f.ratings.means.CSm = nanmean(bysub.ratingsCSm,1);

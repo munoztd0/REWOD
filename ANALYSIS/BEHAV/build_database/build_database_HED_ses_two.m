@@ -2,11 +2,12 @@
 % BUILD DATABASE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % created by Eva
-% last modified by David on September 27 2018
+% last modified by David on JULY 2019
 
 % note: this scripts works only on participants who followed the full
-% protocol (from obsese200 on)
+% protocol 
 
+dbstop if error
 clear all
 
 analysis_name = 'REWOD_HEDONIC_ses_second';
@@ -17,36 +18,36 @@ save_Rdatabase = 1; % leave 1 when saving all subjects
 
 %% DEFINE PATH
 
-home = '/home/cisa/rewod';
-out = '/home/cisa/REWOD';
-%home = 'home/david/mountpoint';
-%home = '/Users/davidmunoz/mountpoint';
+cd ~
+home = pwd;
+homedir = [home '/REWOD/'];
 
-analysis_dir = fullfile(home, '/ANALYSIS/build_databases');
-R_dir        = fullfile(home,'/DATABASES');
+
+analysis_dir = fullfile(homedir, 'ANALYSIS/BEHAV/build_database');
+R_dir        = fullfile(homedir,'DERIVATIVES/BEHAV');
 % add tools
-addpath (genpath(fullfile(home, '/ANALYSIS/my_tools')));
+addpath (genpath(fullfile(homedir, 'CODE/ANALYSIS/BEHAV/my_tools')));
 
 %% DEFINE POPULATION
 
-subj    = {'01'; '02';'03';'04';'05';'06';'07';'09';'10';'11';'12';'13';'14';'15';'16';'17';'18';'19';'20';'21';'22';'23';'24';'25';'26'};    % subject ID excluding 8 & 1
-%group   = {'1'} % control or obsese
-session = {'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'};
-%group   = {'1'} % control or obsese
+subj    = {'01'; '02';'03';'04';'05';'06';'07';'09';'10';'11';'12';'13';'14';'15';'16';'17';'18';'20';'21';'22';'23';'24';'25';'26'};    % outliers and removed ?? subject ID excluding 8 & 1
+session = {'two';'two';'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'};
+
+ses = {'ses-second'};
 
 
-for i = 1:length(subj);
+for i = 1:length(subj)
         
-    subjX=subj(i,1);
-    subjX=char(subjX);
+    subjO=subj(i,1);
+    subjX=char(subjO);
     %conditionX=char(group(i,1))
-    sessionX  =char(session(i,1));   
+    sessionX  =char(ses);   
     
     disp (['****** PARTICIPANT: ' subjX ' *******']);
    
     %load behavioral file
-    behavior_dir = fullfile(home,'/DATA/RAW/BEHAVIORAL/HEDONIC', num2str(subjX), sessionX);
-            cd (behavior_dir)
+    behavior_dir = fullfile(homedir, 'SOURCEDATA', subjO, [sessionX '_task-' task]);
+            cd (behavior_dir{1})
             load (['hedonic_S' num2str(subjX) ])
     
     
@@ -127,15 +128,14 @@ for i = 1:length(subj);
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%% save mat file
-    func_dir = fullfile (home, 'DATA/derivatives/', ['sub-' num2str(subjX)], 'ses-second', 'func');
+    func_dir = fullfile (homedir, 'DERIVATIVES', 'PREPROC', ['sub-' num2str(subjX)], 'ses-second', 'func');
     cd (func_dir)
     matfile_name = ['sub-' num2str(subjX) '_ses-second' '_task-' task '_run-01_events.mat'];
     %cd (behavior_dir)
     save(matfile_name, 'ONSETS', 'DURATIONS',  'BEHAVIOR', 'CONDITIONS', 'ODOR', 'TRIAL', 'DRIFT' )
     
-    %func_dir = fullfile (out, 'DATA/STUDY/RAW/', ['sub-' num2str(subjX)], 'ses-second', 'func');
-    
-    cd (func_dir)
+
+
     
     
    

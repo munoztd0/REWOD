@@ -2,52 +2,53 @@
 % BUILD DATABASE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % created by Eva
-% last modified by David on September 27 2018
+% last modified by David on August 2019
 
 % note: this scripts works only on participants who followed the full
-% protocol (from obsese200 on)
 
+dbstop if error
 clear all
 
 analysis_name = 'REWOD_HEDONIC_ses_first';
 task          = 'hedonic';
-
 %% DEFINE WHAT WE WANT TO DO
 
 save_Rdatabase = 1; % leave 1 when saving all subjects
 
 %% DEFINE PATH
 
-home = '/home/cisa/rewod';
-%home = 'home/david/mountpoint';
-%home = '/Users/davidmunoz/mountpoint';
+cd ~
+home = pwd;
+homedir = [home '/REWOD/'];
 
-analysis_dir = fullfile(home, '/ANALYSIS/build_databases');
-R_dir        = fullfile(home,'/DATABASES');
+
+analysis_dir = fullfile(homedir, 'ANALYSIS/BEHAV/build_database');
+R_dir        = fullfile(homedir,'DERIVATIVES/BEHAV');
 % add tools
-addpath (genpath(fullfile(home, '/ANALYSIS/my_tools')));
+addpath (genpath(fullfile(homedir, 'CODE/ANALYSIS/BEHAV/my_tools')));
 
 %% DEFINE POPULATION
 
-subj    = {'02';'03';'04';'05';'06';'07';'08';'09';'10';'11';'12';'13';'14';'15';'16';'17';'18';'19';'20';'21';'22';'23';'24';'25';'26'};    % subject ID excluding 8 & 1
-%group   = {'1'} % control or obsese
+subj    = {'02';'03';'04';'05';'06';'07';'09';'10';'11';'12';'13';'14';'15';'16';'17';'18';'20';'21';'22';'23';'24';'25';'26'};    % number 01 has not the same number of trials !
+
 session = {'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'; 'one'};
-%group   = {'1'} % control or obsese
+
+ses = {'ses-first'};
 
 
-for i = 1:length(subj);
+for i = 1:length(subj)
         
-    subjX=subj(i,1);
-    subjX=char(subjX);
+    subjO=subj(i,1);
+    subjX=char(subjO);
     %conditionX=char(group(i,1))
-    sessionX  =char(session(i,1));   
+    sessionX  =char(ses);   
     
     disp (['****** PARTICIPANT: ' subjX ' *******']);
    
     %load behavioral file
-     behavior_dir = fullfile(home,'/DATA/RAW/BEHAVIORAL/HEDONIC', num2str(subjX), sessionX);
-     cd (behavior_dir)
-     load (['hedonic_S' num2str(subjX) ])
+    behavior_dir = fullfile(homedir, 'SOURCEDATA', subjO, [sessionX '_task-' task]);
+            cd (behavior_dir{1})
+            load (['hedonic_S' num2str(subjX) ])
   
     
     
@@ -130,13 +131,16 @@ for i = 1:length(subj);
         
     end
     
+
+    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%% save mat file
-    matfile_name = ['sub-' num2str(subjX) '_ses-first' '_task-' task '_run-01_events.mat'];
-    cd (behavior_dir)
-    save(matfile_name, 'ONSETS', 'DURATIONS',  'BEHAVIOR', 'CONDITIONS', 'ODOR', 'TRIAL', 'DRIFT' )
-    func_dir = fullfile (home, 'DATA/derivatives/', ['sub-' num2str(subjX)], 'ses-first', 'func');
+    func_dir = fullfile (homedir, 'DERIVATIVES', 'PREPROC', ['sub-' num2str(subjX)], 'ses-first', 'beh');
     cd (func_dir)
+    matfile_name = ['sub-' num2str(subjX) '_ses-first' '_task-' task '_run-01_events.mat'];
+    %cd (behavior_dir)
+    save(matfile_name, 'ONSETS', 'DURATIONS',  'BEHAVIOR', 'CONDITIONS', 'ODOR', 'TRIAL', 'DRIFT' )
+    
     
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -266,118 +270,118 @@ fclose(fid);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% CREATE FIGURE
+% %% CREATE FIGURE
+% 
+% for id = 1:length(subj)
+%     
+%     % get data for that participant
+%     subjX=subj(id,1);
+%     subjX=char(subjX);
+%     
+%     idx = strcmp(db.id, subjX);
+%     
+%     s.condition   = db.condition(idx);
+%     s.liking      = db.liking(idx);
+%     %s.familiarity = db.familiarity(idx);
+%     s.intensity   = db.intensity(idx);
+%     
+%     ratings.liking.reward(id,:)      = s.liking (strcmp ('chocolate', s.condition));
+%     ratings.liking.control(id,:)     = s.liking (strcmp ('empty', s.condition));
+%     ratings.liking.neutral(id,:)     = s.liking (strcmp ('neutral', s.condition));
+%    
+%     %ratings.familiarity.reward(id,:) = s.familiarity (strcmp ('chocolate', s.condition));
+%     %ratings.familiarity.control(id,:)= s.familiarity (strcmp ('empty', s.condition));
+% 
+%     ratings.intensity.reward(id,:)   = s.intensity (strcmp ('chocolate', s.condition));
+%     ratings.intensity.control(id,:)  = s.intensity (strcmp ('empty', s.condition));
+%     ratings.intensity.neutral(id,:)  = s.intensity (strcmp ('neutral', s.condition));
+% 
+%     
+% end
+% 
+% % get means and std
+% list = {'liking'; 'intensity'};
+% 
+% for ii = 1:length(list)
+%     
+%     conditionX = char(list(ii));
+%     
+%     means.(conditionX).reward = nanmean(ratings.(conditionX).reward,1);
+%     means.(conditionX).control= nanmean(ratings.(conditionX).control,1);
+%     means.(conditionX).neutral= nanmean(ratings.(conditionX).neutral,1);
+%     
+%     
+%     stnd.(conditionX).reward = nanstd(ratings.(conditionX).reward,1)/sqrt(length(subj));
+%     stnd.(conditionX).control= nanstd(ratings.(conditionX).control,1)/sqrt(length(subj));%eva, you put reward twice?
+%     stnd.(conditionX).neutral= nanstd(ratings.(conditionX).neutral,1)/sqrt(length(subj));
+%     
+% end
 
-for id = 1:length(subj)
-    
-    % get data for that participant
-    subjX=subj(id,1);
-    subjX=char(subjX);
-    
-    idx = strcmp(db.id, subjX);
-    
-    s.condition   = db.condition(idx);
-    s.liking      = db.liking(idx);
-    %s.familiarity = db.familiarity(idx);
-    s.intensity   = db.intensity(idx);
-    
-    ratings.liking.reward(id,:)      = s.liking (strcmp ('chocolate', s.condition));
-    ratings.liking.control(id,:)     = s.liking (strcmp ('empty', s.condition));
-    ratings.liking.neutral(id,:)     = s.liking (strcmp ('neutral', s.condition));
-   
-    %ratings.familiarity.reward(id,:) = s.familiarity (strcmp ('chocolate', s.condition));
-    %ratings.familiarity.control(id,:)= s.familiarity (strcmp ('empty', s.condition));
 
-    ratings.intensity.reward(id,:)   = s.intensity (strcmp ('chocolate', s.condition));
-    ratings.intensity.control(id,:)  = s.intensity (strcmp ('empty', s.condition));
-    ratings.intensity.neutral(id,:)  = s.intensity (strcmp ('neutral', s.condition));
-
-    
-end
-
-% get means and std
-list = {'liking'; 'intensity'};
-
-for ii = 1:length(list)
-    
-    conditionX = char(list(ii));
-    
-    means.(conditionX).reward = nanmean(ratings.(conditionX).reward,1);
-    means.(conditionX).control= nanmean(ratings.(conditionX).control,1);
-    means.(conditionX).neutral= nanmean(ratings.(conditionX).neutral,1);
-    
-    
-    stnd.(conditionX).reward = nanstd(ratings.(conditionX).reward,1)/sqrt(length(subj));
-    stnd.(conditionX).control= nanstd(ratings.(conditionX).control,1)/sqrt(length(subj));%eva, you put reward twice?
-    stnd.(conditionX).neutral= nanstd(ratings.(conditionX).neutral,1)/sqrt(length(subj));
-    
-end
-
-
-% plot the means and std
-figure;
-
-set(gcf, 'Color', 'w')
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%% liking pannel
-subplot(3,1,1)
-
-% reward
-forplot.liking.reward = plot(means.liking.reward,'-o');
-set(forplot.liking.reward(1),'MarkerEdgeColor','none','MarkerFaceColor', [1 1 1],'MarkerEdgeColor', [0 0 0], 'Color', [0 0 0])
-hold
-% control
-forplot.liking.control= plot(means.liking.control,'--o');
-set(forplot.liking.control(1),'MarkerEdgeColor','none','MarkerFaceColor', [0.4 0.4 0.4],'MarkerEdgeColor', [0.7 0.7 0.7], 'Color', [0 0 0])
-
-% neutral
-%forplot.liking.neutral= plot(means.liking.neutral,'--o');
-%set(forplot.liking.neutral(1),'MarkerEdgeColor','none','MarkerFaceColor', [0.3 0.4 0.4],'MarkerEdgeColor', [0.3 0.7 0.7], 'Color', [0 0 0])
-
-%axis
-xlabel('Trial', 'FontSize', 15)
-ylabel('Liking', 'FontSize', 18)
-ylim ([0 100])
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%% intesity pannel
-subplot(3,1,2)
-
-% reward
-forplot.intensity.reward = plot(means.intensity.reward,'-o');
-set(forplot.intensity.reward(1),'MarkerEdgeColor','none','MarkerFaceColor', [1 1 1],'MarkerEdgeColor', [0 0 0], 'Color', [0 0 0])
-hold
-% control
-forplot.intensity.control= plot(means.intensity.control,'--o');
-set(forplot.intensity.control(1),'MarkerEdgeColor','none','MarkerFaceColor', [0.4 0.4 0.4],'MarkerEdgeColor', [0.7 0.7 0.7], 'Color', [0 0 0])
-
-% neutral
-%forplot.intensity.neutral= plot(means.intensity.neutral,'--o');
-%set(forplot.intensity.neutral(1),'MarkerEdgeColor','none','MarkerFaceColor', [0.3 0.4 0.4],'MarkerEdgeColor', [0.3 0.7 0.7], 'Color', [0 0 0])
-
-%axis
-xlabel('Trial', 'FontSize', 15)
-ylabel('Intensity', 'FontSize', 18)
-ylim ([0 100])
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%  familiarity pannel
-%subplot(3,1,3)
-
-% reward
-%forplot.familiarity.reward = plot(means.familiarity.reward,'-o');
-%set(forplot.familiarity.reward(1),'MarkerEdgeColor','none','MarkerFaceColor', [1 1 1],'MarkerEdgeColor', [0 0 0], 'Color', [0 0 0])
-%hold
-% control
-%forplot.familiarity.control= plot(means.familiarity.control,'--o');
-%set(forplot.familiarity.control(1),'MarkerEdgeColor','none','MarkerFaceColor', [0.4 0.4 0.4],'MarkerEdgeColor', [0.7 0.7 0.7], 'Color', [0 0 0])
-
-%axis
-%xlabel('Trial', 'FontSize', 15)
-%ylabel('Familiarity', 'FontSize', 18)
-%ylim ([0 100])
-
-%legend
-LEG = legend ('reward','control');  % 'neutral');
-set(LEG,'FontSize',18);
+% % plot the means and std
+% figure;
+% 
+% set(gcf, 'Color', 'w')
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%% liking pannel
+% subplot(3,1,1)
+% 
+% % reward
+% forplot.liking.reward = plot(means.liking.reward,'-o');
+% set(forplot.liking.reward(1),'MarkerEdgeColor','none','MarkerFaceColor', [1 1 1],'MarkerEdgeColor', [0 0 0], 'Color', [0 0 0])
+% hold
+% % control
+% forplot.liking.control= plot(means.liking.control,'--o');
+% set(forplot.liking.control(1),'MarkerEdgeColor','none','MarkerFaceColor', [0.4 0.4 0.4],'MarkerEdgeColor', [0.7 0.7 0.7], 'Color', [0 0 0])
+% 
+% % neutral
+% %forplot.liking.neutral= plot(means.liking.neutral,'--o');
+% %set(forplot.liking.neutral(1),'MarkerEdgeColor','none','MarkerFaceColor', [0.3 0.4 0.4],'MarkerEdgeColor', [0.3 0.7 0.7], 'Color', [0 0 0])
+% 
+% %axis
+% xlabel('Trial', 'FontSize', 15)
+% ylabel('Liking', 'FontSize', 18)
+% ylim ([0 100])
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%% intesity pannel
+% subplot(3,1,2)
+% 
+% % reward
+% forplot.intensity.reward = plot(means.intensity.reward,'-o');
+% set(forplot.intensity.reward(1),'MarkerEdgeColor','none','MarkerFaceColor', [1 1 1],'MarkerEdgeColor', [0 0 0], 'Color', [0 0 0])
+% hold
+% % control
+% forplot.intensity.control= plot(means.intensity.control,'--o');
+% set(forplot.intensity.control(1),'MarkerEdgeColor','none','MarkerFaceColor', [0.4 0.4 0.4],'MarkerEdgeColor', [0.7 0.7 0.7], 'Color', [0 0 0])
+% 
+% % neutral
+% %forplot.intensity.neutral= plot(means.intensity.neutral,'--o');
+% %set(forplot.intensity.neutral(1),'MarkerEdgeColor','none','MarkerFaceColor', [0.3 0.4 0.4],'MarkerEdgeColor', [0.3 0.7 0.7], 'Color', [0 0 0])
+% 
+% %axis
+% xlabel('Trial', 'FontSize', 15)
+% ylabel('Intensity', 'FontSize', 18)
+% ylim ([0 100])
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%  familiarity pannel
+% %subplot(3,1,3)
+% 
+% % reward
+% %forplot.familiarity.reward = plot(means.familiarity.reward,'-o');
+% %set(forplot.familiarity.reward(1),'MarkerEdgeColor','none','MarkerFaceColor', [1 1 1],'MarkerEdgeColor', [0 0 0], 'Color', [0 0 0])
+% %hold
+% % control
+% %forplot.familiarity.control= plot(means.familiarity.control,'--o');
+% %set(forplot.familiarity.control(1),'MarkerEdgeColor','none','MarkerFaceColor', [0.4 0.4 0.4],'MarkerEdgeColor', [0.7 0.7 0.7], 'Color', [0 0 0])
+% 
+% %axis
+% %xlabel('Trial', 'FontSize', 15)
+% %ylabel('Familiarity', 'FontSize', 18)
+% %ylim ([0 100])
+% 
+% %legend
+% LEG = legend ('reward','control');  % 'neutral');
+% set(LEG,'FontSize',18);

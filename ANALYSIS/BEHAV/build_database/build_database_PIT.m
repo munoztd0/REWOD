@@ -8,46 +8,46 @@
 % note: this scripts works only on participants who followed the full
 % protocol (from obsese200 on)
 
+dbstop if error
 clear all
 
-analysis_name = 'REWOD_PIT';
+analysis_name = 'REWOD_PIT_ses_second';
 task          = 'PIT';
-
 %% DEFINE WHAT WE WANT TO DO
 
 save_Rdatabase = 1; % leave 1 when saving all subjects
 
 %% DEFINE PATH
 
-home = '/home/cisa/rewod';
-%home = '/Users/evapool/mountpoint';
-%home = '/Users/davidmunoz/mountpoint';
-out = '/home/cisa/REWOD';
+cd ~
+home = pwd;
+homedir = [home '/REWOD/'];
 
 
-analysis_dir = fullfile(home, '/ANALYSIS/build_databases');
-R_dir        = fullfile(home,'/DATABASES');
+analysis_dir = fullfile(homedir, 'ANALYSIS/BEHAV/build_database');
+R_dir        = fullfile(homedir,'DERIVATIVES/BEHAV');
 % add tools
-addpath (genpath(fullfile(home, '/ANALYSIS/my_tools')));
+addpath (genpath(fullfile(homedir, 'CODE/ANALYSIS/BEHAV/my_tools')));
 
 %% DEFINE POPULATION
 subj    = {'01';'02';'03';'04';'05';'06';'07';'09';'10';'11';'12';'13';'14';'15';'16';'17';'18';'20';'21';'22';'23';'24';'25';'26'};    % subject ID excluding 8 & 19
-%group   = {'1'} % control or obsese
-session = {'two';'two';'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'};
-%ntrials = data.Trial(end) % ?
+session = {'two';'two';'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'; 'two'};
+
+ses = {'ses-second'};
 
 
-for i = 1:length(subj);
+for i = 1:length(subj)
         
-    subjX=subj(i,1);
-    subjX=char(subjX);
-    sessionX=char(session(i,1));   
+    subjO=subj(i,1);
+    subjX=char(subjO);
+    %conditionX=char(group(i,1))
+    sessionX  =char(ses);   
     
     disp (['****** PARTICIPANT: ' subjX ' *******']);
    
     %load behavioral file
-     behavior_dir = fullfile(home,'/DATA/RAW/BEHAVIORAL/PIT', num2str(subjX), sessionX);
-            cd (behavior_dir)
+    behavior_dir = fullfile(homedir, 'SOURCEDATA', subjO, [sessionX '_task-' task]);
+            cd (behavior_dir{1})
             load (['PIT_S' num2str(subjX) ])
    
     
@@ -242,21 +242,20 @@ for i = 1:length(subj);
         
     end
     
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%% save mat file
-    func_dir = fullfile (home, 'DATA/derivatives/', ['sub-' num2str(subjX)], 'ses-second', 'func');
-    out_dir = fullfile (out, 'DATA/STUDY/CLEAN/', ['sub-' num2str(subjX)], 'func');
-    %cd (func_dir)
-    cd (out_dir)
-    %matfile_name = ['sub-' num2str(subjX) '_ses-second' '_task-' task '_run-01_events.mat'];
-    matfile_name = ['sub-' num2str(subjX) '_ses-second' '_task-' task '_run-01_events.mat'];
-    %cd (behavior_dir)
-    save(matfile_name, 'ONSETS', 'DURATIONS',  'BEHAVIOR', 'CONDITIONS', 'REWARD', 'TRIAL', 'RIM', 'PE', 'PIT')
-    func_dir = fullfile (home, 'DATA/derivatives/', ['sub-' num2str(subjX)], 'ses-second', 'func');
+    func_dir = fullfile (homedir, 'DERIVATIVES', 'PREPROC', ['sub-' num2str(subjX)], 'ses-second', 'func');
     cd (func_dir)
+    matfile_name = ['sub-' num2str(subjX) '_ses-second' '_task-' task '_run-01_events.mat'];
+
+
+    save(matfile_name, 'ONSETS', 'DURATIONS',  'BEHAVIOR', 'CONDITIONS', 'REWARD', 'TRIAL', 'RIM', 'PE', 'PIT')
+
+
     
     
-  
+
+
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%% save tvs file according to BIDS format
@@ -387,66 +386,66 @@ fclose(fid);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% CREATE FIGURE
-
-for id = 1:length(subj)
-    
-    % get data for that participant
-    subjX=subj(id,1);
-    subjX=char(subjX);
-    
-    idx = strcmp(db.id, subjX);
-    
-    condition = db.condition(idx);
-    gripsFreq = db.gripFreq(idx);
-    
-    grips.CSplus(id,:)   = gripsFreq (strcmp ('CSplus', condition));
-    grips.CSminus(id,:)  = gripsFreq (strcmp ('CSminus', condition));
-    grips.baseline(id,:) = gripsFreq (strcmp ('Baseline', condition));
-    %grips.none(id,:) = gripsFreq (strcmp ('None', condition));
-    
-end
-
-% get means and std
-f.means.CSp = nanmean(grips.CSplus,1);
-f.means.CSm = nanmean(grips.CSminus,1);
-f.means.B   = nanmean(grips.baseline,1);
-%f.means.none   = nanmean(grips.none,1);
-
-%f.stnd.CSp  = nanstd(grips.CSplus,1)/sqrt(length(subj));
-%f.stnd.CSm  = nanstd(grips.CSminus,1)/sqrt(length(subj));
-%f.stnd.B    = nanstd(grips.baseline,1)/sqrt(length(subj));
-
-
-figure; hold;
-
-% cs plus
-csp = plot(f.means.CSp,'-o');
-set(csp(1),'MarkerEdgeColor','none','MarkerFaceColor', [1 1 1],'MarkerEdgeColor', [0 0 0], 'Color', [0 0 0])
-
-
-% csminus
-csm = plot(f.means.CSm,'-o');
-set(csm(1),'MarkerEdgeColor','none','MarkerFaceColor', [0 0 0],'MarkerEdgeColor', [0 0 0], 'Color', [0 0 0])
-
-
-% baseline
-b = plot(f.means.B,'--o');
-set(b(1),'MarkerEdgeColor','none','MarkerFaceColor', [0.4 0.4 0.4],'MarkerEdgeColor', [0.7 0.7 0.7], 'Color', [0 0 0])
-
-%none
-%none = plot(f.means.none,'--o');
-%set(b(1),'MarkerEdgeColor','none','MarkerFaceColor', [0.7 0.7 0.7],'MarkerEdgeColor', [0.4 0.4 0.4], 'Color', [0 0 0])
-
-
-%legend
-LEG = legend ('CS+','CS-','baseline');
-set(LEG,'FontSize',18)
-
-%axis
- xlabel('Trial', 'FontSize', 18)
- ylabel('Grips', 'FontSize', 18)
- 
-%plot
-title ('Pavlovian Instrumental Transfer', 'FontSize', 18)
-set(gcf, 'Color', 'w')
+% %% CREATE FIGURE
+% 
+% for id = 1:length(subj)
+%     
+%     % get data for that participant
+%     subjX=subj(id,1);
+%     subjX=char(subjX);
+%     
+%     idx = strcmp(db.id, subjX);
+%     
+%     condition = db.condition(idx);
+%     gripsFreq = db.gripFreq(idx);
+%     
+%     grips.CSplus(id,:)   = gripsFreq (strcmp ('CSplus', condition));
+%     grips.CSminus(id,:)  = gripsFreq (strcmp ('CSminus', condition));
+%     grips.baseline(id,:) = gripsFreq (strcmp ('Baseline', condition));
+%     %grips.none(id,:) = gripsFreq (strcmp ('None', condition));
+%     
+% end
+% 
+% % get means and std
+% f.means.CSp = nanmean(grips.CSplus,1);
+% f.means.CSm = nanmean(grips.CSminus,1);
+% f.means.B   = nanmean(grips.baseline,1);
+% %f.means.none   = nanmean(grips.none,1);
+% 
+% %f.stnd.CSp  = nanstd(grips.CSplus,1)/sqrt(length(subj));
+% %f.stnd.CSm  = nanstd(grips.CSminus,1)/sqrt(length(subj));
+% %f.stnd.B    = nanstd(grips.baseline,1)/sqrt(length(subj));
+% 
+% 
+% figure; hold;
+% 
+% % cs plus
+% csp = plot(f.means.CSp,'-o');
+% set(csp(1),'MarkerEdgeColor','none','MarkerFaceColor', [1 1 1],'MarkerEdgeColor', [0 0 0], 'Color', [0 0 0])
+% 
+% 
+% % csminus
+% csm = plot(f.means.CSm,'-o');
+% set(csm(1),'MarkerEdgeColor','none','MarkerFaceColor', [0 0 0],'MarkerEdgeColor', [0 0 0], 'Color', [0 0 0])
+% 
+% 
+% % baseline
+% b = plot(f.means.B,'--o');
+% set(b(1),'MarkerEdgeColor','none','MarkerFaceColor', [0.4 0.4 0.4],'MarkerEdgeColor', [0.7 0.7 0.7], 'Color', [0 0 0])
+% 
+% %none
+% %none = plot(f.means.none,'--o');
+% %set(b(1),'MarkerEdgeColor','none','MarkerFaceColor', [0.7 0.7 0.7],'MarkerEdgeColor', [0.4 0.4 0.4], 'Color', [0 0 0])
+% 
+% 
+% %legend
+% LEG = legend ('CS+','CS-','baseline');
+% set(LEG,'FontSize',18)
+% 
+% %axis
+%  xlabel('Trial', 'FontSize', 18)
+%  ylabel('Grips', 'FontSize', 18)
+%  
+% %plot
+% title ('Pavlovian Instrumental Transfer', 'FontSize', 18)
+% set(gcf, 'Color', 'w')
