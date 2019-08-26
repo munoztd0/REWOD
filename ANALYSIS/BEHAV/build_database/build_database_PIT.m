@@ -3,7 +3,7 @@
 % BUILD DATABASE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % created by Eva
-% last modified by David on October 17 2018
+% last modified by David on August 2019
 
 % note: this scripts works only on participants who followed the full
 % protocol (from obsese200 on)

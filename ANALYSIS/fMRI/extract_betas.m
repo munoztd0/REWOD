@@ -2,21 +2,25 @@ function exctract_betas(glm, task)
 
 %clear
 %clc
+dbstop if error
+
 glm= 'GLM-02';
-task='hedonic';
+task='PIT';
 
 %% which model?
 ana_name = glm;
 
 % which task?
 task_name = task; %
-con_name = 'R_N';
+threshold = '0.01';
+con_name = 'CSp_CSm';
 
 % which contrast
-con_names = {'reward-neutral'};
+con_names = {'CSp-CSm'};
 
-con_list = {'con_0002.nii,1'}; %
-
+con_list = {'con_0001.nii,1'}; %
+%R_C = CONTRAT 1   
+%R_N = CONTRAT 2   
 
 % path
 
@@ -25,7 +29,7 @@ home = pwd;
 homedir = [home '/REWOD'];
 
 dir_data   =  fullfile (homedir, '/DERIVATIVES/ANALYSIS', task_name, ana_name, 'group');
-dir_output = fullfile (homedir, '/DERIVATIVES/ANALYSIS',task_name, 'ROI', con_name);
+roi_dir = fullfile(homedir, '/DERIVATIVES/ANALYSIS',task_name, 'ROI', threshold, con_name);
 
 % intialize spm 
 spm('defaults','fmri');
@@ -37,7 +41,6 @@ sub_list = ['01';'02';'03';'04';'05';'06';'07';'09';'10';'11';'12';'13';'14';'15
 
 
 %list ROIs/clusters from which to extract betas
-roi_dir = fullfile(homedir, '/DERIVATIVES/ANALYSIS',task_name, 'ROI', con_name);
 
 roi_list = char(spm_select('FPList', roi_dir, ['^'  '.*' 'nii']));
 
@@ -104,7 +107,7 @@ for r=1:size(roi_list,1)
 
             result(2:length(v)+1,c) = num2cell(m); 
 
-            cd (dir_output)
+            cd (roi_dir)
             save(outputFile,'result');
 
         end
