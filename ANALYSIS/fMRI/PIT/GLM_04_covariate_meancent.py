@@ -63,24 +63,16 @@ def covariate (cond):
         CSm_Baseline = cov_minus[2] - cov_Base[2]
         df4 = np.append(df4, CSm_Baseline.mean())
 
-    def helper(dfXX,dfX):
-        dfXX[0] = dfsubj
-        dfXX[1] = dfX - dfX.mean()
-        dfXX.columns = ['subj', cond]
-        dfXX[cond] = dfXX[cond].rank(method='first')
-
-
-    helper(df01,df1)
-    helper(df02,df2)
-    helper(df03,df3)
-    helper(df04,df4)
-        
+    df01[1] = df1 - df1.mean()
+    df02[1] = df2 - df2.mean()
+    df03[1] = df3 - df3.mean()
+    df04[1] = df4 - df4.mean()
         
     
     os.chdir(home +'/REWOD/DERIVATIVES/ANALYSIS/' + taskDIR + '/' + GLM + '/group_covariates')
-    df01.to_csv('CSp-CSm_' + cond + '_rank.txt',sep='\t', index=False)
-    df02.to_csv('CSp-Baseline_' + cond + '_rank.txt',sep='\t', index=False)
-    df03.to_csv('CSp-CSm&Baseline_' + cond + '_rank.txt',sep='\t', index=False)
-    df04.to_csv('CSm-Baseline_' + cond + '_rank.txt',sep='\t', index=False)
+    df01.to_csv('CSp-CSm_' + cond + '_meancent.txt',sep='\t', index=False)
+    df02.to_csv('CSp-Baseline_' + cond + '_meancent.txt',sep='\t', index=False)
+    df03.to_csv('CSp-CSm&Baseline_' + cond + '_meancent.txt',sep='\t', index=False)
+    df04.to_csv('CSm-Baseline_' + cond + '_meancent.txt',sep='\t', index=False)
     
     print("covariates done")

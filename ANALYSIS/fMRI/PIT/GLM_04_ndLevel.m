@@ -2,7 +2,7 @@ function GLM_04_ndLevel
 
 % intended for REWOD PIT
 % get onsets for model with 2st level covariates mean centered by rank by conditions
-% SO BY NOW YOU SHOULD HAVE RUN THE covariate.py script !
+% SO BY NOW YOU SHOULD HAVE RUN THE normalize_PIT.R script !
 % Durations =1 (except grips)
 % Model on ONSETs 3*CS with modulator
 % 4 contrasts (CSp-CSm, CSp-Base,  CSp-CSm&Base,  CSm-Base)
@@ -11,9 +11,9 @@ function GLM_04_ndLevel
 
 
 do_covariate = 1;
-remove = 1; 
-removesub = {'sub-24'}; 
-removedsub = '24'; 
+remove = 1;
+removesub = {'sub-24'};
+removedsub = '24';
 
 
 %% define path
@@ -25,7 +25,7 @@ homedir = [home '/REWOD/'];
 
 %%
 mdldir   = fullfile(homedir, 'DERIVATIVES/ANALYSIS/PIT');% mdl directory (timing and outputs of the analysis)
-name_ana = 'GLM-04'; % output folder for this analysis 
+name_ana = 'GLM-04'; % output folder for this analysis
 groupdir = fullfile (mdldir,name_ana, 'group/');
 covdir   = fullfile (homedir, 'DERIVATIVES/ANALYSIS/PIT/GLM-04/group_covariates'); % director with the extracted second level covariates
 
@@ -43,8 +43,8 @@ spm_jobman('initcfg');
 
 %% define constrasts and constrasts names
 if do_covariate
-    
-    % covariate of interest name become folder 
+
+    % covariate of interest name become folder
     covariateNames = {'CSp-CSm_eff_rank' %1
         'CSp-Baseline_eff_rank' %2
         'CSm-Baseline_eff_rank'%3
@@ -55,27 +55,27 @@ if do_covariate
         'CSp-Baseline'% 2
         'CSp-CSm&Baseline'%3
         'CSm-Baseline'}; %4
-    
+
     conImages = {'con_0001'
         'con_0002'
         'con_0003'
         'con_0004'};
-    
+
     %% prepare batch for each contrasts
-    
+
     for c = 1:length(covariateNames)
-        
+
         covariateX = covariateNames{c};
-        
+
         filename = fullfile(covdir, [covariateX '.txt']);
         delimiterIn = '\t';
         headerlinesIn = 1;
         C = importdata(filename,delimiterIn,headerlinesIn); %importdata
-        
+
         cov.ID   = C.data(:,1);
         cov.data = C.data(:,2);
-        
-   
+
+
 
         if remove
             for i = 1:length(removesub)
@@ -86,37 +86,37 @@ if do_covariate
                 cov.data(torm) = [];
             end
         end
-        
+
         for n = 1:length(contrastNames)
-            
+
             clear matlabbatch
-            
+
             conImageX = conImages{n};
             contrastX = contrastNames{n};
-            
-            if remove 
+
+            if remove
                 contrastFolder = fullfile (groupdir, 'covariate', covariateX, ['removing-' removedsub], contrastX);
             else
                 contrastFolder = fullfile (groupdir, 'covariate', covariateX, 'all', contrastX);
             end
-            
+
             mkdir(contrastFolder);
-            
+
             % create the group level spm file
             matlabbatch{1}.spm.stats.factorial_design.dir = {contrastFolder}; % directory
-            
+
             % select contrasts only for participants that have the behavioral covariate
             for s = 1:length(cov.ID)
                 cov.IDX      = cov.ID(s);
-           
+
                 Scue = deblank(['sub-' sprintf('%02d ', cov.IDX)]);
                 conAll (s,:) = spm_select('List',groupdir,['^' Scue '.*' conImageX '.nii']); % select constrasts
             end
-            
+
             for j =1:size(conAll,1)
                 matlabbatch{1}.spm.stats.factorial_design.des.t1.scans{j,1} = [groupdir conAll(j,:) ',1'];
             end
-            
+
             if remove % remove subject from analysis
                 disp(['removing subject: ' removedsub]);
                 allsub = matlabbatch{1}.spm.stats.factorial_design.des.t1.scans; % let's put this in a smaller variable
@@ -127,12 +127,12 @@ if do_covariate
                     allsub = matlabbatch{1}.spm.stats.factorial_design.des.t1.scans;
                 end
             end
-            
+
             matlabbatch{1}.spm.stats.factorial_design.cov.c      = cov.data;
             matlabbatch{1}.spm.stats.factorial_design.cov.cname  = covariateX;
             matlabbatch{1}.spm.stats.factorial_design.cov.iCFI = 1;
             matlabbatch{1}.spm.stats.factorial_design.cov.iCC = 1;
-            
+
             matlabbatch{1}.spm.stats.factorial_design.multi_cov = struct('files', {}, 'iCFI', {}, 'iCC', {});
             matlabbatch{1}.spm.stats.factorial_design.masking.tm.tm_none = 1;
             matlabbatch{1}.spm.stats.factorial_design.masking.im = 1; %%??
@@ -140,11 +140,11 @@ if do_covariate
             matlabbatch{1}.spm.stats.factorial_design.globalc.g_omit = 1;
             matlabbatch{1}.spm.stats.factorial_design.globalm.gmsca.gmsca_no = 1;
             matlabbatch{1}.spm.stats.factorial_design.globalm.glonorm = 1;
-            
+
             % extimate design matrix
             matlabbatch{2}.spm.stats.fmri_est.spmmat = {[contrastFolder  '/SPM.mat']};
             matlabbatch{2}.spm.stats.fmri_est.method.Classical = 1;
-            
+
             % specify one sample tconstrast
             matlabbatch{3}.spm.stats.con.spmmat(1)                = {[contrastFolder  '/SPM.mat']};
             matlabbatch{3}.spm.stats.con.consess{1}.tcon.name     = contrastX (1:end);
@@ -159,13 +159,13 @@ if do_covariate
             matlabbatch{3}.spm.stats.con.consess{4}.tcon.name     = ['Neg ' covariateX(1:end)];
             matlabbatch{3}.spm.stats.con.consess{4}.tcon.weights  = [0 -1];
             matlabbatch{3}.spm.stats.con.consess{4}.tcon.sessrep  = 'none';
-            
-            disp ('***************************************************************') 
-            disp (['running batch for: '  contrastX ': ' covariateX] ) 
-            disp ('***************************************************************') 
-               
+
+            disp ('***************************************************************')
+            disp (['running batch for: '  contrastX ': ' covariateX] )
+            disp ('***************************************************************')
+
             spm_jobman('run',matlabbatch)
-            
+
         end
     end
 end

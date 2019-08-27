@@ -123,6 +123,7 @@ corrplot(corr_R_N.coeff , method = "circle",
 # Get the R^2 and adj R* FOR LIKING
 R_C_R_squared_lik <- data_frame()
 R_C_R_adj_lik <- data_frame()
+namesRC = c("AMY_Left","AMY_Right", "Piri_Left", "Piri_Right", "subcal_Left", "subcal_Right")
 
 R_C_R_squared_lik[1,1] <- summary(lm(R_C_df$AMY_Left~lik))$r.squared
 R_C_R_adj_lik[1,1] <- summary(lm(R_C_df$AMY_Left~lik))$adj.r.squared
@@ -149,7 +150,6 @@ R_C_R_squared_lik[,2] <- namesRC
 
 R_C_R_squared_int <- data_frame()
 R_C_R_adj_int <- data_frame()
-namesRC = c("AMY_Left","AMY_Right", "Piri_Left", "Piri_Right", "subcal_Left", "subcal_Right")
 
 R_C_R_squared_int[1,1] <- summary(lm(R_C_df$AMY_Left~int))$r.squared
 R_C_R_adj_int[1,1] <- summary(lm(R_C_df$AMY_Left~int))$adj.r.squared
@@ -181,13 +181,13 @@ namesRN = c("Nacc_Left","Nacc_Right", "subcal_Left", "subcal_Right")
 R_N_R_squared_lik[1,1] <- summary(lm(R_N_df$Nacc_Left~lik))$r.squared
 R_N_R_adj_lik[1,1] <- summary(lm(R_N_df$Nacc_Left~lik))$adj.r.squared
 
-R_N_R_squared_lik[2,1].AmRi <- summary(lm(R_N_df$Nacc_Right~lik))$r.squared
+R_N_R_squared_lik[2,1] <- summary(lm(R_N_df$Nacc_Right~lik))$r.squared
 R_N_R_adj_lik[2,1] <- summary(lm(R_N_df$Nacc_Right~lik))$adj.r.squared
 
-R_N_R_squared_lik[3,1].SuLe <- summary(lm(R_N_df$subcal_Left~lik))$r.squared
+R_N_R_squared_lik[3,1] <- summary(lm(R_N_df$subcal_Left~lik))$r.squared
 R_N_R_adj_lik[3,1] <- summary(lm(R_N_df$subcal_Left~lik))$adj.r.squared
 
-R_N_R_squared_lik[4,1].SuRi <- summary(lm(R_N_df$subcal_Right~lik))$r.squared
+R_N_R_squared_lik[4,1] <- summary(lm(R_N_df$subcal_Right~lik))$r.squared
 R_N_R_adj_lik[4,1] <- summary(lm(R_N_df$subcal_Right~lik))$adj.r.squared
 
 R_N_R_adj_lik[,2] <- namesRN 
