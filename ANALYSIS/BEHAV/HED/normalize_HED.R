@@ -1,7 +1,7 @@
 
 library("RNOmni")
 
-analysis_path <-'~/REWOD/DATA/STUDY/MODELS/SPM/hedonic/GLM-04/group_covariates'
+analysis_path <-'~/REWOD/DERIVATIVES/ANALYSIS/hedonic/GLM-04/group_covariates'
 
 setwd(analysis_path)
 
