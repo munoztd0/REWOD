@@ -4,7 +4,7 @@
 
 # -----------------------  PRELIMINARY STUFF ----------------------------------------
 # load libraries
-pacman::p_load(ggplot2, dplyr, plyr, tidyr, reshape, reshape2, Hmisc, corrplot, ggpubr)
+pacman::p_load(ggplot2, dplyr, plyr, tidyr, reshape, reshape2, Hmisc, corrplot, ggpubr, gridExtra)
 
 if(!require(pacman)) {
   install.packages("pacman")
@@ -85,9 +85,15 @@ figure1 <- ggarrange(A,B,C,D,E,G,
                      labels = c("A", "B", "C", "D", "E", "F"),
                      ncol = 2, nrow = 3) 
 
-annotate_figure(figure1,
-                top = text_grob("Coeficient of determination: REWARD-CONTROL for LIKING", color = "black", face = "bold", size = 14),
+figure1 <- annotate_figure(figure1,
+                top = text_grob("Coefficient of determination: REWARD-CONTROL for LIKING", color = "black", face = "bold", size = 14),
                 bottom = "Figure 1", fig.lab.face = "bold")
+
+pdf('~/REWOD/DERIVATIVES/BEHAV/HED/R_C_lik_coeff.pdf')
+plot(figure1)
+dev.off()
+
+
 # For intensity
 
 int = R_C_df$int
@@ -103,11 +109,13 @@ figure2 <- ggarrange(H,I,J,K,L,M,
                      labels = c("G", "H", "I", "J", "K", "L"),
                      ncol = 2, nrow = 3) 
 
-annotate_figure(figure2,
+figure2 <- annotate_figure(figure2,
                 top = text_grob("Coeficient of determination: REWARD-CONTROL for INTENSITY", color = "black", face = "bold", size = 14),
                 bottom = "Figure 1", fig.lab.face = "bold")
 
-
+pdf('~/REWOD/DERIVATIVES/BEHAV/HED/R_C_int_coeff.pdf')
+plot(figure2)
+dev.off()
 
 
 #  Plot for R_N  ----------------------------------------------------------
@@ -125,9 +133,14 @@ figure3 <- ggarrange(N,O,P,Q,
                      labels = c("M", "N", "O", "P"),
                      ncol = 2, nrow = 3) 
 
-annotate_figure(figure3,
+figure3 <- annotate_figure(figure3,
                 top = text_grob("Coeficient of determination: REWARD-NEUTRAL for LIKING", color = "black", face = "bold", size = 14),
                 bottom = "Figure 1", fig.lab.face = "bold")
+
+pdf('~/REWOD/DERIVATIVES/BEHAV/HED/R_N_lik_coeff.pdf')
+plot(figure3)
+dev.off()
+
 
 # For intensity
 
@@ -141,11 +154,13 @@ figure4 <- ggarrange(R,S,U,V,
                      labels = c("Q", "R", "S", "T"),
                      ncol = 2, nrow = 3) 
 
-annotate_figure(figure4,
+figure4 <- annotate_figure(figure4,
                 top = text_grob("Coeficient of determination: REWARD-NEUTRAL for INTENSITY", color = "black", face = "bold", size = 14),
                 bottom = "Figure 1", fig.lab.face = "bold")
 
-
+pdf('~/REWOD/DERIVATIVES/BEHAV/HED/R_N_int_coeff.pdf')
+plot(figure4)
+dev.off()
 
 # CORRELATIONS R_C------------------------------------------------------------
 
@@ -154,12 +169,13 @@ corr_R_C.coeff = corr_R_C.rcorr$r[2:7,8:9]
 corr_R_C.p = corr_R_C.rcorr$P[2:7,8:9]
 
 # PLOT CORR
-corrplot(corr_R_C.coeff , method = "circle",
-         tl.col = "black", tl.srt = 45)
+
+pdf('~/REWOD/DERIVATIVES/BEHAV/HED/R_C_corrplot.pdf')
+corrplot(corr_R_C.coeff , method = "circle",tl.col = "black", tl.srt = 45)
+dev.off()
 
 
 # CORRELATIONS R_N ------------------------------------------------------
-
 
 corr_R_N.rcorr = rcorr(as.matrix(R_N_df))
 corr_R_N.coeff = corr_R_N.rcorr$r[2:5,6:7]
@@ -167,10 +183,9 @@ corr_R_N.p = corr_R_N.rcorr$P[2:5,6:7]
 
 # PLOT CORR
 
-corrplot(corr_R_N.coeff , method = "circle",
-         tl.col = "black", tl.srt = 45)
-
-
+pdf('~/REWOD/DERIVATIVES/BEHAV/HED/R_N_corrplot.pdf')
+corrplot(corr_R_N.coeff , method = "circle",tl.col = "black", tl.srt = 45)
+dev.off()
 
 
 #  Get R.adj & R.squared for R_C ------------------------------------------
@@ -203,6 +218,15 @@ R_C_R_adj_lik[6,1] <- summary(lm(R_C_df$subcal_Right~lik))$adj.r.squared
 R_C_R_adj_lik[,2] <- namesRC 
 R_C_R_squared_lik[,2] <- namesRC 
 
+pdf('~/REWOD/DERIVATIVES/BEHAV/HED/R_C_lik_R_adj.pdf')
+grid.table(R_C_R_adj_lik)
+dev.off()
+
+
+pdf('~/REWOD/DERIVATIVES/BEHAV/HED/R_C_lik_R_squa.pdf')
+grid.table(R_C_R_squared_lik)
+dev.off()
+
 # FOR INTENSITY
 
 R_C_R_squared_int <- data_frame()
@@ -230,8 +254,15 @@ R_C_R_adj_int[6,1] <- summary(lm(R_C_df$subcal_Right~int))$adj.r.squared
 R_C_R_adj_int[,2] <- namesRC 
 R_C_R_squared_int[,2] <- namesRC 
 
-View(R_C_R_adj_int)
-View(R_C_R_squared_int)
+
+pdf('~/REWOD/DERIVATIVES/BEHAV/HED/R_C_int_R_adj.pdf')
+grid.table(R_C_R_adj_int)
+dev.off()
+
+
+pdf('~/REWOD/DERIVATIVES/BEHAV/HED/R_C_int_R_squa.pdf')
+grid.table(R_C_R_squared_int)
+dev.off()
 
 
 #  Get R.adj & R.squared for R_N ------------------------------------------
@@ -257,6 +288,16 @@ R_N_R_adj_lik[4,1] <- summary(lm(R_N_df$subcal_Right~lik))$adj.r.squared
 R_N_R_adj_lik[,2] <- namesRN 
 R_N_R_squared_lik[,2] <- namesRN 
 
+#
+pdf('~/REWOD/DERIVATIVES/BEHAV/HED/R_N_lik_R_adj.pdf')
+grid.table(R_N_R_adj_lik)
+dev.off()
+
+
+pdf('~/REWOD/DERIVATIVES/BEHAV/HED/R_N_lik_R_squa.pdf')
+grid.table(R_N_R_squared_lik)
+dev.off()
+
 
 # FOR INTENSITY
 R_N_R_squared_int <- data_frame()
@@ -278,8 +319,16 @@ R_N_R_adj_int[4,1] <- summary(lm(R_N_df$subcal_Right~int))$adj.r.squared
 R_N_R_adj_int[,2] <- namesRN 
 R_N_R_squared_int[,2] <- namesRN 
 
-View(R_N_R_adj_int)
-View(R_N_R_squared_int)
+
+#
+pdf('~/REWOD/DERIVATIVES/BEHAV/HED/R_N_int_R_adj.pdf')
+grid.table(R_N_R_adj_int)
+dev.off()
+
+
+pdf('~/REWOD/DERIVATIVES/BEHAV/HED/R_N_int_R_squa.pdf')
+grid.table(R_N_R_squared_int)
+dev.off()
 
 ## SUMMARY ##
 # so basically contrast 
