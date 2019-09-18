@@ -152,7 +152,7 @@ V <-  ggplotRegression(lm(R_N_df$subcal_Right~int)) + rremove("x.title")
 
 figure4 <- ggarrange(R,S,U,V, 
                      labels = c("Q", "R", "S", "T"),
-                     ncol = 2, nrow = 3) 
+                     ncol = 2, nrow = 2) 
 
 figure4 <- annotate_figure(figure4,
                 top = text_grob("Coeficient of determination: REWARD-NEUTRAL for INTENSITY", color = "black", face = "bold", size = 14),
@@ -188,7 +188,7 @@ corrplot(corr_R_N.coeff , method = "circle",tl.col = "black", tl.srt = 45)
 dev.off()
 
 
-#  Get R.adj & R.squared for R_C ------------------------------------------
+# Get R.adj & R.squared for R_C ------------------------------------------
 
 
 # FOR LIKING

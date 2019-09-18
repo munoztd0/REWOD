@@ -5,7 +5,10 @@ analysis_path <-'~/REWOD/DERIVATIVES/ANALYSIS/hedonic/GLM-04/group_covariates'
 
 setwd(analysis_path)
 
-#_____________LIKING____________#
+
+# LIKING ------------------------------------------------------------------
+
+
 Odor_NoOdor_lik <- read.delim(file.path(analysis_path, "Odor-NoOdor_lik_meancent.txt"))
 Odor_presence_lik <- read.delim(file.path(analysis_path, "Odor_presence_lik_meancent.txt"))
 reward_control_lik <- read.delim(file.path(analysis_path, "reward-control_lik_meancent.txt"))

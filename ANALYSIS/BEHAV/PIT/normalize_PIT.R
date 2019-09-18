@@ -5,10 +5,16 @@ analysis_path <-'~/REWOD/DERIVATIVES/ANALYSIS/PIT/GLM-04/group_covariates/'
 
 setwd(analysis_path)
 
+
 CSm_Baseline <- read.delim(file.path(analysis_path, "CSm-Baseline_eff_meancent.txt"))
 CSp_Baseline <- read.delim(file.path(analysis_path, "CSp-Baseline_eff_meancent.txt"))
 CSp_CSmANDBaseline <- read.delim(file.path(analysis_path, "CSp-CSm&Baseline_eff_meancent.txt"))
 CSp_CSm <- read.delim(file.path(analysis_path, "CSp-CSm_eff_meancent.txt"))
+
+
+
+# COVARIATE RANKNORM ------------------------------------------------------
+
 
 
 # Draw from chi-1 distribution
