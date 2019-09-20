@@ -1,4 +1,4 @@
-% Exctract betas to .txt FOR PIT 
+% Exctract betas to .txt FOR HED 
 
 % create text file with colons: ID, & Betas
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

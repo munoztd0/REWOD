@@ -78,7 +78,7 @@ if do_ttest
         matlabbatch{1}.spm.stats.factorial_design.dir = {contrastFolder}; % directory
         
         %  FORMAT [dirs] = spm_select('List',direc,'dir',filt)
-        conAll     = spm_select('List',groupdir,['^'  '.*' conImageX '.nii']); % select contrasts ?WHat is LIST?
+        conAll     = spm_select('List',groupdir,['^'  '.*' conImageX '.nii']); % select contrasts 
         for j =1:length(conAll)
             matlabbatch{1}.spm.stats.factorial_design.des.t1.scans{j,1} = [groupdir conAll(j,:) ',1'];
         end

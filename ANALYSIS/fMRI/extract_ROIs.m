@@ -37,15 +37,15 @@ con_names2 = {'reward-neutral'};
 
 
 con_list1 = {'con_0001.nii,1'}; %
-con_list2 = {'con_0001.nii,1'}; %
+con_list2 = {'con_0002.nii,1'}; %
 %R_C = CONTRAT 1   
 %R_N = CONTRAT 2   
 
 
 dir_data   =  fullfile (homedir, '/DERIVATIVES/ANALYSIS', task_name, ana_name, 'group');
 
-roi_R_C = fullfile(homedir, '/DERIVATIVES/ANALYSIS',task_name, 'ROI', threshold, con_name1);
-roi_R_N = fullfile(homedir, '/DERIVATIVES/ANALYSIS',task_name, 'ROI', threshold, con_name2);
+roi_R_C = fullfile(homedir, '/DERIVATIVES/ANALYSIS',task_name, 'ROI',  threshold, glm, con_name1);
+roi_R_N = fullfile(homedir, '/DERIVATIVES/ANALYSIS',task_name, 'ROI',  threshold, glm, con_name2);
 
 
 % %% DOING FOR R_C
@@ -57,16 +57,16 @@ sphere1.AMY_PIRI_RIGHT = struct('centre', [22 -5 -13],'radius', 2); % in mm
 sphere1.AMY_BLA_LEFT = struct('centre', [-27 -2 -22],'radius', 2); % in mm
 sphere1.AMY_BLA_RIGHT = struct('centre', [25 -2 -20],'radius', 2); % in mm
 
-sphere1.CAUD_POST_LEFT = struct('centre', [-16 -23 16],'radius', 2); % in mm %in FSL its NAcc
-sphere1.CAUD_POST_RIGHT = struct('centre', [23 -32 7],'radius', 2); % in mm %in FSL its NAcc
+sphere1.CAUD_POST_LEFT = struct('centre', [-16 -23 16],'radius', 2); % in mm 
+sphere1.CAUD_POST_RIGHT = struct('centre', [23 -32 7],'radius', 2); % in mm 
 
-sphere1.CAUD_ANT_LEFT = struct('centre', [-9 16 -7],'radius', 2); % in mm %in FSL its NAcc
-sphere1.CAUD_ANT_RIGHT = struct('centre', [10 20 2],'radius', 2); % in mm %in FSL its NAcc
+sphere1.CAUD_ANT_LEFT = struct('centre', [-9 16 -7],'radius', 2); % in mm  
+sphere1.CAUD_ANT_RIGHT = struct('centre', [10 20 2],'radius', 2); % in mm   
 
-sphere1.PUT_RIGHT = struct('centre', [22 -2 9],'radius', 2); % in mm %in FSL its NAcc
+sphere1.PUT_RIGHT = struct('centre', [22 -2 9],'radius', 2); % in mm  
 
-sphere1.NACC_LEFT = struct('centre', [-9 9 -13],'radius', 2); % in mm %in FSL its NAcc
-sphere1.NACC_RIGHT = struct('centre', [7 9 -11],'radius', 2); % in mm %in FSL its NAcc
+sphere1.NACC_LEFT = struct('centre', [-9 9 -13],'radius', 2); % in mm  
+sphere1.NACC_RIGHT = struct('centre', [7 9 -11],'radius', 2); % in mm  
 
 fns = fieldnames(sphere1);
 
@@ -117,13 +117,11 @@ con_list1 = {'con_0001.nii,1'}; %
 
 dir_data   =  fullfile (homedir, '/DERIVATIVES/ANALYSIS', task_name, ana_name, 'group');
 
-roi_CSp_CSm = fullfile(homedir, '/DERIVATIVES/ANALYSIS',task_name, 'ROI', threshold, con_name1);
+roi_CSp_CSm = fullfile(homedir, '/DERIVATIVES/ANALYSIS',task_name, 'ROI', threshold, glm, con_name1);
 
 %% DOING FOR CSp-CSm
 
 cd (roi_CSp_CSm)
-
-sphere3.AMY_BM_LEFT = struct('centre', [-20 -5 -25],'radius', 2); % in mm
 
 sphere3.CAUD_ANT_RIGHT = struct('centre', [9 20 5],'radius', 2); % in mm %in FSL its NAcc
 
