@@ -1,11 +1,13 @@
-function GLM_05_ndLevel() %NAcc
+function GLM_03_ndLevel()
 
 % intended for REWOD HED
-% get onsets for main model
+% get onsets for model with 1st level modulators
+% GLM control for odor.all, mod by intenisty and liking
 % Durations =1 
 % Model on ONSETs (start, 3*odor + 2*questions)
-% 4 basic contrasts Reward-Control, Reward-Neutral, Odor-NoOdor, odor_presence
+% 1 contrast odor*liking & odor*intensity,
 % last modified on July 2019 by David Munoz
+
 
 %does t-test and full_factorial
 do_ttest = 1;
@@ -25,7 +27,7 @@ homedir = [home '/REWOD/'];
 
 
 mdldir   = fullfile (homedir, 'DERIVATIVES/ANALYSIS/', task);% mdl directory (timing and outputs of the analysis)
-name_ana = 'GLM-05'; % output folder for this analysis 
+name_ana = 'GLM-03_NAcc'; % output folder for this analysis 
 groupdir = fullfile (mdldir,name_ana, 'group/');
 
 
@@ -45,16 +47,12 @@ spm_jobman('initcfg');
 if do_ttest
     
        % These contrast names become folders
-    contrastNames = {'reward-control'%1
-        'reward-neutral'%2
-        'Odor-NoOdor'%3
-        'odor_presence'};%4
+    contrastNames = {'odor_int'%1
+        'odor_lik'};%2
    
     
     conImages = {'con_0001'
-        'con_0002'
-        'con_0003'
-        'con_0004'};
+        'con_0002'};
     
     
     %% prepare batch for each contrasts
@@ -98,7 +96,8 @@ if do_ttest
         matlabbatch{1}.spm.stats.factorial_design.multi_cov = struct('files', {}, 'iCFI', {}, 'iCC', {});
         matlabbatch{1}.spm.stats.factorial_design.masking.tm.tm_none = 1;
         matlabbatch{1}.spm.stats.factorial_design.masking.im = 1;
-        matlabbatch{1}.spm.stats.factorial_design.masking.em = {'/home/cisa/REWOD/DERIVATIVES/PREPROC/CANONICALS/reward_labels_pauli/nacc0.5.nii'};  
+        matlabbatch{1}.spm.stats.factorial_design.masking.em = {'/home/cisa/REWOD/DERIVATIVES/PREPROC/CANONICALS/reward_labels_pauli/nacc0.5.nii'};
+        %change here  
         matlabbatch{1}.spm.stats.factorial_design.globalc.g_omit = 1;
         matlabbatch{1}.spm.stats.factorial_design.globalm.gmsca.gmsca_no = 1;
         matlabbatch{1}.spm.stats.factorial_design.globalm.glonorm = 1;

@@ -48,16 +48,17 @@ eff_df$ID <- factor(eff_df$ID)
 
 # PLOT FUNCTIONS ----------------------------------------------------------
 
-
 ggplotRegression <- function (fit) {
   
   ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) + 
     geom_point() +
     stat_smooth(method = "lm", col = "red") +
     labs(title = paste("Adj R2 = ",signif(summary(fit)$adj.r.squared, 5),
-                       "Intercept =",signif(fit$coef[[1]],5 ),
-                       " Slope =",signif(fit$coef[[2]], 5),
-                       " P =",signif(summary(fit)$coef[2,4], 5)))
+                       #"Intercept =",signif(fit$coef[[1]],5 ),
+                       #" Slope =",signif(fit$coef[[2]], 5),
+                       "  &  P =",signif(summary(fit)$coef[2,4], 5))) +
+    theme(plot.title = element_text(size = 10))
+  
 }
 
 
@@ -80,7 +81,7 @@ figure1 <- annotate_figure(figure1,
                            bottom = "Figure 1", fig.lab.face = "bold")
 
 pdf('~/REWOD/DERIVATIVES/BEHAV/PIT/CSp_CSm_eff_coeff.pdf')
-plot(figure4)
+plot(figure1)
 dev.off()
 
 
@@ -101,34 +102,34 @@ dev.off()
 # Get R.adj & R.squared for CSp-CSm ---------------------------------------
 
 
-CSp_CSp_R_squared_eff <- data_frame()
-CSp_CSp_R_adj_eff<- data_frame()
+CSp_CSm_R_squared_eff <- data_frame()
+CSp_CSm_R_adj_eff<- data_frame()
 namesEff = c("Nacc_Left","Nacc_Right", "vmPFC_Left", "vmPFC_Right")
 
-CSp_CSp_R_squared_eff[1,1] <- summary(lm(eff_df$Nacc_Left~eff))$r.squared
-CSp_CSp_R_adj_eff[1,1] <- summary(lm(eff_df$Nacc_Left~eff))$adj.r.squared
+CSp_CSm_R_squared_eff[1,1] <- summary(lm(eff_df$Nacc_Left~eff))$r.squared
+CSp_CSm_R_adj_eff[1,1] <- summary(lm(eff_df$Nacc_Left~eff))$adj.r.squared
 
-CSp_CSp_R_squared_eff[2,1] <- summary(lm(eff_df$Nacc_Right~eff))$r.squared
-CSp_CSp_R_adj_eff[2,1] <- summary(lm(eff_df$Nacc_Right~eff))$adj.r.squared
+CSp_CSm_R_squared_eff[2,1] <- summary(lm(eff_df$Nacc_Right~eff))$r.squared
+CSp_CSm_R_adj_eff[2,1] <- summary(lm(eff_df$Nacc_Right~eff))$adj.r.squared
 
-CSp_CSp_R_squared_eff[3,1] <- summary(lm(eff_df$vmPFC_Left~eff))$r.squared
-CSp_CSp_R_adj_eff[3,1] <- summary(lm(eff_df$vmPFC_Left~eff))$adj.r.squared
+CSp_CSm_R_squared_eff[3,1] <- summary(lm(eff_df$vmPFC_Left~eff))$r.squared
+CSp_CSm_R_adj_eff[3,1] <- summary(lm(eff_df$vmPFC_Left~eff))$adj.r.squared
 
-CSp_CSp_R_squared_eff[4,1] <- summary(lm(eff_df$vmPFC_Right~eff))$r.squared
-CSp_CSp_R_adj_eff[4,1] <- summary(lm(eff_df$vmPFC_Right~eff))$adj.r.squared
+CSp_CSm_R_squared_eff[4,1] <- summary(lm(eff_df$vmPFC_Right~eff))$r.squared
+CSp_CSm_R_adj_eff[4,1] <- summary(lm(eff_df$vmPFC_Right~eff))$adj.r.squared
 
-CSp_CSp_R_squared_eff[,2] <- namesEff
-CSp_CSp_R_adj_eff[,2] <- namesEff
+CSp_CSm_R_squared_eff[,2] <- namesEff
+CSp_CSm_R_adj_eff[,2] <- namesEff
 
 
 #
 pdf('~/REWOD/DERIVATIVES/BEHAV/PIT/CSp-CSm_eff_R_adj.pdf')
-grid.table(CSp_CSp_R_adj_eff)
+grid.table(CSp_CSm_R_adj_eff)
 dev.off()
 
 
-pdf('~/REWOD/DERIVATIVES/BEHAVPIT/CSp-CSm_eff_R_squa.pdf')
-grid.table(CSp_CSp_R_squared_eff)
+pdf('~/REWOD/DERIVATIVES/BEHAV/PIT/CSp-CSm_eff_R_squa.pdf')
+grid.table(CSp_CSm_R_squared_eff)
 dev.off()
 
 ## SUMMARY ##

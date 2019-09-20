@@ -1,21 +1,15 @@
-function GLM_05_ndLevel() %NAcc
+function GLM_02_ndLevel()
 
-% intended for REWOD HED
-% get onsets for main model
-% Durations =1 
-% Model on ONSETs (start, 3*odor + 2*questions)
-% 4 basic contrasts Reward-Control, Reward-Neutral, Odor-NoOdor, odor_presence
-% last modified on July 2019 by David Munoz
+% intended for REWOD PIT
+% get onsets for model with 2st level covariates
+% Durations =1 (except grips)
+% Model on ONSETs 3*CS with modulator
+% last modified on JULY 2019 by David Munoz
 
-%does t-test and full_factorial
 do_ttest = 1;
 remove = 1;
 removesub = {'sub-24'} ;
-removedsub = '24';
-
-%% define task variable
-%sessionX = 'second';
-task = 'hedonic';
+removedsub = '24'; 
 
 %% define path
 
@@ -24,13 +18,13 @@ home = pwd;
 homedir = [home '/REWOD/'];
 
 
-mdldir   = fullfile (homedir, 'DERIVATIVES/ANALYSIS/', task);% mdl directory (timing and outputs of the analysis)
-name_ana = 'GLM-05'; % output folder for this analysis 
+mdldir   = fullfile(homedir, 'DERIVATIVES/ANALYSIS/PIT');% mdl directory (timing and outputs of the analysis)
+name_ana = 'GLM-02_Caud'; % output folder for this analysis 
 groupdir = fullfile (mdldir,name_ana, 'group/');
 
 
 %% specify spm param
-addpath /usr/local/MATLAB/R2018a/spm12 ; 
+addpath /usr/local/MATLAB/R2018a/spm12 ; %watcha
 %addpath /usr/local/external_toolboxes/spm12/ ;
 
 addpath ([homedir 'CODE/ANALYSIS/fMRI/dependencies']);
@@ -41,14 +35,14 @@ spm_jobman('initcfg');
 % DO TESTS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% define contrasts and contrasts names
+%% define constrasts and constrasts names
 if do_ttest
     
-       % These contrast names become folders
-    contrastNames = {'reward-control'%1
-        'reward-neutral'%2
-        'Odor-NoOdor'%3
-        'odor_presence'};%4
+    % These contrast names become folders
+    contrastNames = {'CSp-CSm'%1
+        'CSp-Baseline'%2
+        'CSp-CSm&Baseline'%3
+        'CSm-Baseline'};%4
    
     
     conImages = {'con_0001'
@@ -78,7 +72,7 @@ if do_ttest
         matlabbatch{1}.spm.stats.factorial_design.dir = {contrastFolder}; % directory
         
         %  FORMAT [dirs] = spm_select('List',direc,'dir',filt)
-        conAll     = spm_select('List',groupdir,['^'  '.*' conImageX '.nii']); % select contrasts ?WHat is LIST?
+        conAll     = spm_select('List',groupdir,['^'  '.*' conImageX '.nii']); % select constrasts ?WHat is LIST?
         for j =1:length(conAll)
             matlabbatch{1}.spm.stats.factorial_design.des.t1.scans{j,1} = [groupdir conAll(j,:) ',1'];
         end
@@ -98,7 +92,8 @@ if do_ttest
         matlabbatch{1}.spm.stats.factorial_design.multi_cov = struct('files', {}, 'iCFI', {}, 'iCC', {});
         matlabbatch{1}.spm.stats.factorial_design.masking.tm.tm_none = 1;
         matlabbatch{1}.spm.stats.factorial_design.masking.im = 1;
-        matlabbatch{1}.spm.stats.factorial_design.masking.em = {'/home/cisa/REWOD/DERIVATIVES/PREPROC/CANONICALS/reward_labels_pauli/nacc0.5.nii'};  
+        matlabbatch{1}.spm.stats.factorial_design.masking.em = {'/home/cisa/REWOD/DERIVATIVES/PREPROC/CANONICALS/reward_labels_pauli/caud0.5.nii'};
+        %change here  
         matlabbatch{1}.spm.stats.factorial_design.globalc.g_omit = 1;
         matlabbatch{1}.spm.stats.factorial_design.globalm.gmsca.gmsca_no = 1;
         matlabbatch{1}.spm.stats.factorial_design.globalm.glonorm = 1;
@@ -107,7 +102,7 @@ if do_ttest
         matlabbatch{2}.spm.stats.fmri_est.spmmat = {[contrastFolder  '/SPM.mat']};
         matlabbatch{2}.spm.stats.fmri_est.method.Classical = 1;
         
-        % specify one sample tcontrast
+        % specify one sample tconstrast
         matlabbatch{3}.spm.stats.con.spmmat(1)               = {[contrastFolder  '/SPM.mat']};
         matlabbatch{3}.spm.stats.con.consess{1}.tcon.name     = contrastX (1:end);
         matlabbatch{3}.spm.stats.con.consess{1}.tcon.weights  = [1];

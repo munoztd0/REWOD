@@ -54,7 +54,6 @@ R_N_df$ID <- factor(R_N_df$ID)
 # PLOT FUNCTIONS --------------------------------------------------------------------
 
 
-# plot perceived_likings by time with regression lign
 ggplotRegression <- function (fit) {
   
   ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) + 

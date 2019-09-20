@@ -1,4 +1,4 @@
-function GLM_05_ndLevel() %NAcc
+function GLM_05_ndLevel() %PUTAMEN
 
 % intended for REWOD HED
 % get onsets for main model
@@ -25,7 +25,7 @@ homedir = [home '/REWOD/'];
 
 
 mdldir   = fullfile (homedir, 'DERIVATIVES/ANALYSIS/', task);% mdl directory (timing and outputs of the analysis)
-name_ana = 'GLM-05'; % output folder for this analysis 
+name_ana = 'GLM-02_Put'; % output folder for this analysis 
 groupdir = fullfile (mdldir,name_ana, 'group/');
 
 
@@ -98,7 +98,8 @@ if do_ttest
         matlabbatch{1}.spm.stats.factorial_design.multi_cov = struct('files', {}, 'iCFI', {}, 'iCC', {});
         matlabbatch{1}.spm.stats.factorial_design.masking.tm.tm_none = 1;
         matlabbatch{1}.spm.stats.factorial_design.masking.im = 1;
-        matlabbatch{1}.spm.stats.factorial_design.masking.em = {'/home/cisa/REWOD/DERIVATIVES/PREPROC/CANONICALS/reward_labels_pauli/nacc0.5.nii'};  
+        matlabbatch{1}.spm.stats.factorial_design.masking.em = {'/home/cisa/REWOD/DERIVATIVES/PREPROC/CANONICALS/reward_labels_pauli/put0.5.nii'};
+        %change here  
         matlabbatch{1}.spm.stats.factorial_design.globalc.g_omit = 1;
         matlabbatch{1}.spm.stats.factorial_design.globalm.gmsca.gmsca_no = 1;
         matlabbatch{1}.spm.stats.factorial_design.globalm.glonorm = 1;

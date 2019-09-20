@@ -50,12 +50,10 @@ if do_covariate % covariate of interest name become folder
   'reward-control_lik_meancent' %2
   'Odor-NoOdor_lik_meancent' %3
   'Odor_presence_lik_meancent'%4
-  'reward_lik_meancent'%5
-  'reward-neutral_int_meancent' %6
-  'reward-control_int_meancent' %7
-  'Odor-NoOdor_int_meancent'%8
-  'Odor_presence_int_meancent'%9
-  'reward_int_meancent'}; %10
+  'reward-neutral_int_meancent' %5
+  'reward-control_int_meancent' %6
+  'Odor-NoOdor_int_meancent'%7
+  'Odor_presence_int_meancent'}; %9
 
 
     % These contrast names become folders
