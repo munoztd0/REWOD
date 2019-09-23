@@ -13,8 +13,10 @@ if(!require(pacman)) {
 
 
 #SETUP
-task = 'PIT'
-con_name1 = 'CSp_CSm'
+taskHED = 'hedonic'
+taskPIT = 'PIT'
+
+con_name1 = 'R_N'
 
 con1 = 'CSp-CSm'
 
@@ -25,17 +27,18 @@ mod1 = 'eff'
 # Set working directory ---------------------------------------------------
 
 
-analysis_path <- file.path('~/REWOD/DERIVATIVES/ANALYSIS', task) 
+analysis_path <- file.path('~/REWOD/DERIVATIVES/ANALYSIS', taskHED) 
+analysis_path_EFF <- file.path('~/REWOD/DERIVATIVES/ANALYSIS', taskPIT) 
 setwd(analysis_path)
 
 # open dataset 
-BETAS_CSp_CSm <- read.delim(file.path(analysis_path, 'ROI', paste('extracted_betas_',con_name1,'.txt',sep="")), header = T, sep ='\t') # read in dataset
+BETAS_R_N <- read.delim(file.path(analysis_path, 'ROI', paste('extracted_betas_inversed_', con_name1,'.txt',sep="")), header = T, sep ='\t') # read in dataset
 
-EFF <- read.delim(file.path(analysis_path, 'GLM-04', 'group_covariates', paste(con1,'_', mod1, '_rank.txt',sep="")), header = T, sep ='\t') # read in dataset
+EFF <- read.delim(file.path(analysis_path_EFF, 'GLM-04', 'group_covariates', paste(con1,'_', mod1, '_rank.txt',sep="")), header = T, sep ='\t') # read in dataset
 
 
 # merge
-eff_df = merge(BETAS_CSp_CSm, EFF, by.x = "ID", by.y = "subj", all.x = TRUE)
+eff_df = merge(BETAS_R_N, EFF, by.x = "ID", by.y = "subj", all.x = TRUE)
 
 
 
@@ -63,7 +66,7 @@ ggplotRegression <- function (fit) {
 
 
 
-# Plot CSp_CSm  -----------------------------------------------------------
+# Plot R_N  -----------------------------------------------------------
 
 # For effort
 
@@ -88,7 +91,7 @@ figure1 <- annotate_figure(figure1,
                            top = text_grob("Coeficient of determination: CSp - CSm for EFFORT", color = "black", face = "bold", size = 14),
                            bottom = "Figure 1", fig.lab.face = "bold")
 
-pdf('~/REWOD/DERIVATIVES/BEHAV/PIT/CSp_CSm_eff_coeff.pdf')
+pdf('~/REWOD/DERIVATIVES/BEHAV/HED/R_N_eff_coeff.pdf')
 plot(figure1)
 dev.off()
 
@@ -96,15 +99,15 @@ dev.off()
 # CORRELATIONS ------------------------------------------------------------
 
 
-corr_CSp_CSm.rcorr = rcorr(as.matrix(eff_df))
-corr_CSp_CSm.coeff = corr_CSp_CSm.rcorr$r[2:11,12]
-corr_CSp_CSm.p = corr_CSp_CSm.rcorr$P[2:11,12]
+corr_R_N.rcorr = rcorr(as.matrix(eff_df))
+corr_R_N.coeff = corr_R_N.rcorr$r[2:11,12]
+corr_R_N.p = corr_R_N.rcorr$P[2:11,12]
 
 col3 <- colorRampPalette(c("blue", "white", "red")) 
 
 # PLOT CORR
-pdf('~/REWOD/DERIVATIVES/BEHAV/PIT/CSp-CSm_corrplot.pdf')
-corrplot(as.matrix(corr_CSp_CSm.coeff), method = "circle", tl.col = "black", tl.srt = 45, col = col3(20))
+pdf('~/REWOD/DERIVATIVES/BEHAV/HED/R_N_eff_corrplot.pdf')
+corrplot(as.matrix(corr_R_N.coeff), method = "circle", tl.col = "black", tl.srt = 45, col = col3(20))
 dev.off()
 
 
@@ -112,8 +115,8 @@ dev.off()
 # Get R.adj & R.squared for CSp-CSm ---------------------------------------
 
 
-CSp_CSm_R_squared_eff <- data_frame()
-CSp_CSm_R_adj_eff<- data_frame()
+R_N_R_squared_eff <- data_frame()
+R_N_R_adj_eff<- data_frame()
 #namesEff = c("Nacc_Left","Nacc_Right", "vmPFC_Left", "vmPFC_Right")
 
 #CSp_CSm_R_squared_eff[1,1] <- summary(lm(eff_df$Nacc_Left~eff))$r.squared

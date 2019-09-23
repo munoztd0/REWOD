@@ -70,55 +70,72 @@ ggplotRegression <- function (fit) {
 
 # PLOT FOR R_C ------------------------------------------------------------
 
-# # For liking
-# 
-# lik = R_C_df$lik
-# A <- ggplotRegression(lm(R_C_df[[2]]~lik)) + rremove("x.title")
-# B <- ggplotRegression(lm(R_C_df[[3]]~lik)) + rremove("x.title")
-# C <- ggplotRegression(lm(R_C_df[[4]]~lik)) + rremove("x.title")
-# D <- ggplotRegression(lm(R_C_df[[5]]~lik)) + rremove("x.title")
-# A1 <- ggplotRegression(lm(R_C_df[[6]]~lik)) + rremove("x.title")
-# B1 <- ggplotRegression(lm(R_C_df[[7]]~lik))+ rremove("x.title")
-# C1 <- ggplotRegression(lm(R_C_df[[8]]~lik)) + rremove("x.title")
-# D1 <- ggplotRegression(lm(R_C_df[[9]]~lik)) + rremove("x.title")
-# 
-# 
-# 
-# figure1 <- ggarrange(A,B,C,D,A1,B1,C1,D1, 
-#                      labels = c("A: AMY_BLA_L", "B: AMY_BM_L", "C: CAUD_VENTR_L", "D", "E", "F"),
-#                      ncol = 2, nrow = 3) 
-# 
-# figure1 <- annotate_figure(figure1,
-#                 top = text_grob("Coefficient of determination: REWARD-CONTROL for LIKING", color = "black", face = "bold", size = 14),
-#                 bottom = "Figure 1", fig.lab.face = "bold")
-# 
-# pdf('~/REWOD/DERIVATIVES/BEHAV/HED/R_C_lik_coeff.pdf')
-# plot(figure1)
-# dev.off()
-# 
-# 
-# # For intensity
-# 
-# int = R_C_df$int
-# H <- ggplotRegression(lm(R_C_df$AMY_Left~int)) + rremove("x.title")
-# I <- ggplotRegression(lm(R_C_df$AMY_Right~int)) + rremove("x.title")
-# J <- ggplotRegression(lm(R_C_df$Piri_Left~int)) + rremove("x.title")
-# K <- ggplotRegression(lm(R_C_df$Piri_Right~int)) + rremove("x.title")
-# L <- ggplotRegression(lm(R_C_df$subcal_Left~int)) + rremove("x.title")
-# M <- ggplotRegression(lm(R_C_df$subcal_Right~int)) + rremove("x.title")
-# 
-# 
-# figure2 <- ggarrange(H,I,J,K,L,M, 
-#                      labels = c("G", "H", "I", "J", "K", "L"),
-#                      ncol = 2, nrow = 3) 
-# 
-# figure2 <- annotate_figure(figure2,
-#                 top = text_grob("Coeficient of determination: REWARD-CONTROL for INTENSITY", color = "black", face = "bold", size = 14),
-#                 bottom = "Figure 1", fig.lab.face = "bold")
-# 
-# pdf('~/REWOD/DERIVATIVES/BEHAV/HED/R_C_int_coeff.pdf')
-# plot(figure2)
-# dev.off()
+# For liking
+
+lik = R_C_df$lik
+A <- ggplotRegression(lm(R_C_df[[2]]~lik)) + rremove("x.title")
+B <- ggplotRegression(lm(R_C_df[[3]]~lik)) + rremove("x.title")
+C <- ggplotRegression(lm(R_C_df[[4]]~lik)) + rremove("x.title")
+D <- ggplotRegression(lm(R_C_df[[5]]~lik)) + rremove("x.title")
+A1 <- ggplotRegression(lm(R_C_df[[6]]~lik)) + rremove("x.title")
+B1 <- ggplotRegression(lm(R_C_df[[7]]~lik))+ rremove("x.title")
+C1 <- ggplotRegression(lm(R_C_df[[8]]~lik)) + rremove("x.title")
+D1 <- ggplotRegression(lm(R_C_df[[9]]~lik)) + rremove("x.title")
+A2 <- ggplotRegression(lm(R_C_df[[10]]~lik)) + rremove("x.title")
+B2 <- ggplotRegression(lm(R_C_df[[11]]~lik))+ rremove("x.title")
+C2 <- ggplotRegression(lm(R_C_df[[12]]~lik)) + rremove("x.title")
+D2 <- ggplotRegression(lm(R_C_df[[13]]~lik)) + rremove("x.title")
+A3 <- ggplotRegression(lm(R_C_df[[14]]~lik)) + rremove("x.title")
+B3 <- ggplotRegression(lm(R_C_df[[15]]~lik))+ rremove("x.title")
+
+
+
+figure1 <- ggarrange(A,B,C,D,A1,B1,C1,D1,A2,B2,C2,D2,A3,B3,
+                     labels = c("A: AMY_BLA_L", "B: AMY_BLA_R", "C: AMY_PIRI_L", "D: AMY_PIRI_R", "E:  AMY_full_L", "F: caud_ant_L", "D: caud_ant_R", 
+                    "G: thala_L", "H: thala_R", "I: nacct_L", "j: nacc_R", "k: Put_R", "l: caud_pauli", "m: nacc_pauli"),
+                     ncol = 2, nrow = 7)
+
+figure1 <- annotate_figure(figure1,
+                top = text_grob("Coefficient of determination: REWARD-CONTROL for LIKING", color = "black", face = "bold", size = 14),
+                bottom = "Figure 1", fig.lab.face = "bold")
+
+pdf('~/REWOD/DERIVATIVES/BEHAV/HED/R_C_lik_coeff.pdf')
+plot(figure1)
+dev.off()
+
+
+# For intensity
+
+int = R_C_df$int
+A <- ggplotRegression(lm(R_C_df[[2]]~int)) + rremove("x.title")
+B <- ggplotRegression(lm(R_C_df[[3]]~int)) + rremove("x.title")
+C <- ggplotRegression(lm(R_C_df[[4]]~int)) + rremove("x.title")
+D <- ggplotRegression(lm(R_C_df[[5]]~int)) + rremove("x.title")
+A1 <- ggplotRegression(lm(R_C_df[[6]]~int)) + rremove("x.title")
+B1 <- ggplotRegression(lm(R_C_df[[7]]~int))+ rremove("x.title")
+C1 <- ggplotRegression(lm(R_C_df[[8]]~int)) + rremove("x.title")
+D1 <- ggplotRegression(lm(R_C_df[[9]]~int)) + rremove("x.title")
+A2 <- ggplotRegression(lm(R_C_df[[10]]~int)) + rremove("x.title")
+B2 <- ggplotRegression(lm(R_C_df[[11]]~int))+ rremove("x.title")
+C2 <- ggplotRegression(lm(R_C_df[[12]]~int)) + rremove("x.title")
+D2 <- ggplotRegression(lm(R_C_df[[13]]~int)) + rremove("x.title")
+A3 <- ggplotRegression(lm(R_C_df[[14]]~int)) + rremove("x.title")
+B3 <- ggplotRegression(lm(R_C_df[[15]]~int))+ rremove("x.title")
+
+
+
+figure2 <- ggarrange(A,B,C,D,A1,B1,C1,D1,A2,B2,C2,D2,A3,B3,
+                     labels = c("A: AMY_BLA_L", "B: AMY_BLA_R", "C: AMY_PIRI_L", "D: AMY_PIRI_R", "E:  AMY_full_L", "F: caud_ant_L", "D: caud_ant_R", 
+                                "G: thala_L", "H: thalam_R", "I: nacct_L", "j: nacc_R", "k: Put_R", "l: caud_pauli", "m: nacc_pauli"),
+                     ncol = 2, nrow = 7)
+
+figure2 <- annotate_figure(figure2,
+                top = text_grob("Coeficient of determination: REWARD-CONTROL for INTENSITY", color = "black", face = "bold", size = 14),
+                bottom = "Figure 1", fig.lab.face = "bold")
+
+pdf('~/REWOD/DERIVATIVES/BEHAV/HED/R_C_int_coeff.pdf')
+plot(figure2)
+dev.off()
 
 
 #  Plot for R_N  ----------------------------------------------------------
@@ -132,13 +149,11 @@ C <- ggplotRegression(lm(R_N_df[[4]]~lik)) + rremove("x.title")
 D <- ggplotRegression(lm(R_N_df[[5]]~lik)) + rremove("x.title")
 A1 <- ggplotRegression(lm(R_N_df[[6]]~lik)) + rremove("x.title")
 B1 <- ggplotRegression(lm(R_N_df[[7]]~lik))+ rremove("x.title")
-C1 <- ggplotRegression(lm(R_N_df[[8]]~lik)) + rremove("x.title")
-D1 <- ggplotRegression(lm(R_N_df[[9]]~lik)) + rremove("x.title")
 
 
-figure3 <- ggarrange(A,B,C,D,A1,B1,C1,D1, 
-                     labels = c("A: AMY_BLA_L", "B: AMY_BM_L", "C: CAUD_VENTR_L", "D: CAUD_VENTR_R", "E: PUT_L", "F: PUT_R", "G: caud_PAULI", "H: nacc_PAULI"),
-                     ncol = 2, nrow = 4,
+figure3 <- ggarrange(A,B,C,D,A1,B1,
+                     labels = c("A: AMY_BLA_L", "B: AMY_full_L", "C: CAUD_VENTR_L", "D: PUT_L", "E: PUT_R", "F: caud_PAULI", "G: nacc_PAULI"),
+                     ncol = 2, nrow = 3,
                      vjust=3, hjust=-1) 
 
 figure3 <- annotate_figure(figure3,
@@ -150,44 +165,48 @@ plot(figure3)
 dev.off()
 
 
-# # For intensity
-# 
-# int = R_N_df$int
-# R <- ggplotRegression(lm(R_N_df$Nacc_Left~int)) + rremove("x.title")
-# S <- ggplotRegression(lm(R_N_df$Nacc_Right~int)) + rremove("x.title")
-# U <- ggplotRegression(lm(R_N_df$subcal_Left~int)) + rremove("x.title")
-# V <-  ggplotRegression(lm(R_N_df$subcal_Right~int)) + rremove("x.title")
-# 
-# figure4 <- ggarrange(R,S,U,V, 
-#                      labels = c("Q", "R", "S", "T"),
-#                      ncol = 2, nrow = 2) 
-# 
-# figure4 <- annotate_figure(figure4,
-#                 top = text_grob("Coeficient of determination: REWARD-NEUTRAL for INTENSITY", color = "black", face = "bold", size = 14),
-#                 bottom = "Figure 1", fig.lab.face = "bold")
-# 
-# pdf('~/REWOD/DERIVATIVES/BEHAV/HED/R_N_int_coeff.pdf')
-# plot(figure4)
-# dev.off()
+# For intensity
 
-# # CORRELATIONS R_C------------------------------------------------------------
-# 
-# corr_R_C.rcorr = rcorr(as.matrix(R_C_df))
-# corr_R_C.coeff = corr_R_C.rcorr$r[2:7,8:9]
-# corr_R_C.p = corr_R_C.rcorr$P[2:7,8:9]
-# 
-# # PLOT CORR
-# 
-# pdf('~/REWOD/DERIVATIVES/BEHAV/HED/R_C_corrplot.pdf')
-# corrplot(corr_R_C.coeff , method = "circle",tl.col = "black", tl.srt = 45)
-# dev.off()
+int = R_N_df$int
+A2 <- ggplotRegression(lm(R_N_df[[2]]~int)) + rremove("x.title")
+B2 <- ggplotRegression(lm(R_N_df[[3]]~int)) + rremove("x.title")
+C2 <- ggplotRegression(lm(R_N_df[[4]]~int)) + rremove("x.title")
+D2 <- ggplotRegression(lm(R_N_df[[5]]~int)) + rremove("x.title")
+A3 <- ggplotRegression(lm(R_N_df[[6]]~int)) + rremove("x.title")
+B3 <- ggplotRegression(lm(R_N_df[[7]]~int))+ rremove("x.title")
+
+figure4 <- ggarrange(A2,B2,C2,D2,A3,B3,
+                     labels = c("A: AMY_BLA_L", "B: AMY_full_L", "C: CAUD_VENTR_L", "D: PUT_L", "E: PUT_R", "F: caud_PAULI", "G: nacc_PAULI"),
+                     ncol = 2, nrow = 3)
+
+figure4 <- annotate_figure(figure4,
+                top = text_grob("Coeficient of determination: REWARD-NEUTRAL for INTENSITY", color = "black", face = "bold", size = 14),
+                bottom = "Figure 1", fig.lab.face = "bold")
+
+pdf('~/REWOD/DERIVATIVES/BEHAV/HED/R_N_int_coeff.pdf')
+plot(figure4)
+dev.off()
+
+# CORRELATIONS R_C ------------------------------------------------------
+
+corr_R_C.rcorr = rcorr(as.matrix(R_C_df))
+corr_R_C.coeff = corr_R_C.rcorr$r[2:15,16:17]
+corr_R_C.p = corr_R_C.rcorr$P[2:15,16:17]
+
+col3 <- colorRampPalette(c("blue", "white", "red")) 
+# PLOT CORR
+
+pdf('~/REWOD/DERIVATIVES/BEHAV/HED/R_C_corrplot.pdf')
+corrplot(corr_R_C.coeff , method = "circle",tl.col = "black", tl.srt = 45, col = col3(20))
+dev.off()
+
 
 
 # CORRELATIONS R_N ------------------------------------------------------
 
 corr_R_N.rcorr = rcorr(as.matrix(R_N_df))
-corr_R_N.coeff = corr_R_N.rcorr$r[2:9,10:11]
-corr_R_N.p = corr_R_N.rcorr$P[2:9,10:11]
+corr_R_N.coeff = corr_R_N.rcorr$r[2:7,8:9]
+corr_R_N.p = corr_R_N.rcorr$P[2:7,8:9]
 
 col3 <- colorRampPalette(c("blue", "white", "red")) 
 # PLOT CORR

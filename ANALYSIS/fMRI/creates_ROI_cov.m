@@ -103,7 +103,6 @@ cd (roi_lik)
 
 sphere2a.FRONTAL_RIGHT = struct('centre', [36 54 -14],'radius', 2); % in mm 
 
-
 sphere2a.vmPFC_LEFT = struct('centre', [-17 50 -18],'radius', 2); % in mm 
 sphere2a.vmPFC_RIGHT = struct('centre', [38 31 -20],'radius', 2); % in mm 
 

@@ -12,9 +12,10 @@ homedir = [home '/REWOD'];
 
 %% def var
 task = 'PIT'; %
-glm = 'GLM-02';
+glm = 'GLM-02_HED';
 threshold = '0.01';
-con_name = 'CSp_CSm';
+con_name = 'R_N';
+con_name_rev = 'CSp_CSm';
 
 
 
@@ -44,6 +45,6 @@ cd (out_dir)
 T = cell2table(database(2:end,:),'VariableNames',database(1,:));
  
 % Write the table to a CSV file
-writetable(T, ['extracted_betas_' con_name '.txt'],'Delimiter','\t');
+writetable(T, ['extracted_betas_inversed' con_name_rev '.txt'],'Delimiter','\t');
 
 clear all

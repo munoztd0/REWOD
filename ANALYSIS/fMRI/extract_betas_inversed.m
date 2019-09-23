@@ -13,10 +13,11 @@ ana_name = glm;
 % which task?
 task_name = task; %
 threshold = '0.01';
-con_name = 'CSp_CSm';
+con_name = 'R_N';
+glm_roi= 'GLM-02_HED';
 
 % which contrast
-con_names = {'CSp_CSm'};
+con_names = {'CSp-CSm'};
 
 con_list = {'con_0001.nii'}; %
 %R_C = CONTRAT 1   
@@ -29,7 +30,7 @@ home = pwd;
 homedir = [home '/REWOD'];
 
 dir_data   =  fullfile (homedir, '/DERIVATIVES/ANALYSIS', task_name, ana_name, 'group');
-roi_dir = fullfile(homedir, '/DERIVATIVES/ANALYSIS',task_name, 'ROI', threshold, glm, con_name);
+roi_dir = fullfile(homedir, '/DERIVATIVES/ANALYSIS',task_name, 'ROI', threshold, glm_roi, con_name);
 
 % intialize spm 
 spm('defaults','fmri');
