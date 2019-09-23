@@ -27,7 +27,7 @@ homedir = [home '/REWOD/'];
 
 mdldir   = fullfile(homedir, '/DERIVATIVES/ANALYSIS/', task);% mdl directory (timing and outputs of the analysis)
 funcdir  = fullfile(homedir, '/DERIVATIVES/PREPROC');% directory with  post processed functional scans
-name_ana = 'GLM-02'; % output folder for this analysis
+name_ana = 'GLM-04'; % output folder for this analysis
 groupdir = fullfile (mdldir,name_ana, 'group/');
 
 addpath('/usr/local/external_toolboxes/spm12/');
@@ -411,6 +411,12 @@ end
         Ctnames{4} = 'odor_presence';
         weightPos  = ismember(conditionName, {'task-hed.reward', 'task-hed.neutral'}) * 1;
         Ct(4,:)    = weightPos;
+        
+        % con5
+        Ctnames{5} = 'Reward-NoReward';
+        weightPos  = ismember(conditionName, {'task-hed.reward'}) * 2; %here it was rinse
+        weightNeg  = ismember(conditionName, {'task-hed.control', 'task-hed.neutral'}) * -1;
+        Ct(5,:)    = weightPos+weightNeg;
 
         
 

@@ -5,7 +5,7 @@ function GLM_04_ndLevel()
 % Duration =1 + modulators
 % Model on ONSETs (STARTTRIAL, 3*odor + 2*questions liking&intensity)
 % covariate demeaned by conditions
-% check covariate_meancent.py for more info
+% check covariate_rank.py for more info
 % last modified on July 2019 by David Munoz
 
 %does t-test and full_factorial
@@ -18,7 +18,7 @@ removedsub = '24';
 %% define task variable
 %sessionX = 'second';
 task = 'hedonic';
-name_ana = 'GLM-04'; 
+name_ana = 'GLM-04_ranked'; 
 
 %% define path
 
@@ -46,31 +46,23 @@ spm_jobman('initcfg');
 %% define constrasts and constrasts names
 if do_covariate % covariate of interest name become folder
 
-   covariateNames = {'reward-neutral_lik_meancent' %1
-  'reward-control_lik_meancent' %2
-  'Odor-NoOdor_lik_meancent' %3
-  'Odor_presence_lik_meancent'%4
-  'Reward_NoReward_lik_meancent'
-  'reward-neutral_int_meancent' %5
-  'reward-control_int_meancent' %6
-  'Odor-NoOdor_int_meancent'%7
-  'Odor_presence_int_meancent'
-  'Reward_NoReward_int_meancent'}; %9
+   covariateNames = {'reward-neutral_lik_rank' %1
+  'reward-control_lik_rank' %2
+  'Odor-NoOdor_lik_rank' %3
+  'Odor_presence_lik_rank'};
 
 
     % These contrast names become folders
     contrastNames = {'reward-control'%1
         'reward-neutral'%2
         'Odor-NoOdor'%3
-        'odor_presence'
-        'Reward-NoReward'};%4
+        'odor_presence'};%4
     
     
     conImages = {'con_0001'
         'con_0002'
         'con_0003'
-        'con_0004'
-        'con_0005'};
+        'con_0004'};
     
     
   %% prepare batch for each contrasts

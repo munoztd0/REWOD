@@ -145,7 +145,7 @@ mkdir (fullfile (mdldir, char(task), ana_name));
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % save data
         mat_name = [ana_name '_task-' taskX '_onsets'];
-        save (mat_name, 'onsets', 'durations', 'modulators')
+        %save (mat_name, 'onsets', 'durations', 'modulators')
 
     
         end

@@ -1,4 +1,4 @@
-% Exctract betas to .txt FOR HED 
+% Exctract betas to .txt FOR REWOD
 
 % create text file with colons: ID, & Betas
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -11,10 +11,11 @@ home = pwd;
 homedir = [home '/REWOD'];
 
 %% def var
-task = 'PIT'; %
-glm = 'GLM-03';
+task = 'hedonic'; %
+glm = 'GLM-02';
 threshold = '0.01';
-con_name = 'eff';
+con_name = 'R_N';
+
 
 
 %% create database

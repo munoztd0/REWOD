@@ -30,6 +30,7 @@ def covariate (cond):
     df2 = []
     df3 = []
     df4 = []
+    df5 = []
     
     dfsubj = []
     
@@ -37,6 +38,7 @@ def covariate (cond):
     df02 = pd.DataFrame()
     df03 = pd.DataFrame()
     df04 = pd.DataFrame()
+    df05 = pd.DataFrame()
     
 
     for i in s:
@@ -59,23 +61,29 @@ def covariate (cond):
     
         Odor_presence = (cov_reward[2] + cov_neutral[2])/2
         df4 = np.append(df4, Odor_presence.mean())
+        
+        Reward_NoReward = cov_reward[2] - (cov_neutral[2] + cov_control[2])/2
+        df5 = np.append(df5, Reward_NoReward.mean())
     
         
     df01[0] = dfsubj
     df02[0] = dfsubj
     df03[0] = dfsubj
     df04[0] = dfsubj
+    df05[0] = dfsubj
     
     # mean center BY CONDITION
     df01[1] = df1 - df1.mean()
     df02[1] = df2 - df2.mean()
     df03[1] = df3 - df3.mean()
     df04[1] = df4 - df4.mean()
+    df05[1] = df5 - df5.mean()
     
     df01.columns = ['subj', cond]
     df02.columns = ['subj', cond]
     df03.columns = ['subj', cond]
     df04.columns = ['subj', cond]
+    df05.columns = ['subj', cond]
     
 
     os.chdir(home +'/REWOD/DERIVATIVES/ANALYSIS/' + taskDIR + '/' + GLM + '/group_covariates')
@@ -83,5 +91,6 @@ def covariate (cond):
     df02.to_csv('reward-neutral_' + cond + '_meancent.txt',sep='\t', index=False)
     df03.to_csv('Odor-NoOdor_' + cond + '_meancent.txt',sep='\t', index=False)
     df04.to_csv('Odor_presence_' + cond + '_meancent.txt',sep='\t', index=False)
+    df05.to_csv('Reward_NoReward_' + cond + '_meancent.txt',sep='\t', index=False)
     
     print("covariates done")

@@ -68,14 +68,21 @@ ggplotRegression <- function (fit) {
 # For effort
 
 eff = eff_df$eff
-A  <- ggplotRegression(lm(eff_df$Nacc_Left~eff)) + rremove("x.title")
-B  <- ggplotRegression(lm(eff_df$Nacc_Right~eff)) + rremove("x.title")
-C  <- ggplotRegression(lm(eff_df$vmPFC_Left~eff)) + rremove("x.title")
-D  <- ggplotRegression(lm(eff_df$vmPFC_Right~eff)) + rremove("x.title")
+A  <- ggplotRegression(lm(eff_df[[2]]~eff)) + rremove("x.title")
+B  <- ggplotRegression(lm(eff_df[[3]]~eff)) + rremove("x.title")
+C  <- ggplotRegression(lm(eff_df[[4]]~eff)) + rremove("x.title")
+D  <- ggplotRegression(lm(eff_df[[5]]~eff)) + rremove("x.title")
+A1  <- ggplotRegression(lm(eff_df[[6]]~eff)) + rremove("x.title")
+B1  <- ggplotRegression(lm(eff_df[[7]]~eff)) + rremove("x.title")
+C1  <- ggplotRegression(lm(eff_df[[8]]~eff)) + rremove("x.title")
+D1  <- ggplotRegression(lm(eff_df[[9]]~eff)) + rremove("x.title")
+E  <- ggplotRegression(lm(eff_df[[10]]~eff)) + rremove("x.title")
 
-figure1 <- ggarrange(A,B,C,D, 
-                     labels = c("A", "B", "C", "D"),
-                     ncol = 2, nrow = 2) 
+figure1 <- ggarrange(A,B,C,D,A1,B1,C1,D1, E
+                     labels = c("A: AMY_BM_L", "B: CAUD_ANT_R", "C: CAUD_VENTR_L", "D: CAUD_VENTR_R","E: NACC_L", "F: NACC_R", "G: PUT_L", "H: PUT_R"),
+                     ncol = 2, nrow = 4,
+                     vjust=3, hjust=-1) 
+
 figure1 <- annotate_figure(figure1,
                            top = text_grob("Coeficient of determination: CSp - CSm for EFFORT", color = "black", face = "bold", size = 14),
                            bottom = "Figure 1", fig.lab.face = "bold")
@@ -89,12 +96,14 @@ dev.off()
 
 
 corr_CSp_CSm.rcorr = rcorr(as.matrix(eff_df))
-corr_CSp_CSm.coeff = corr_CSp_CSm.rcorr$r[2:5,6]
-corr_CSp_CSm.p = corr_CSp_CSm.rcorr$P[2:5,6]
+corr_CSp_CSm.coeff = corr_CSp_CSm.rcorr$r[2:9,10]
+corr_CSp_CSm.p = corr_CSp_CSm.rcorr$P[2:9,10]
+
+col3 <- colorRampPalette(c("blue", "white", "red")) 
 
 # PLOT CORR
 pdf('~/REWOD/DERIVATIVES/BEHAV/PIT/CSp-CSm_corrplot.pdf')
-corrplot(as.matrix(corr_CSp_CSm.coeff), method = "circle", tl.col = "black", tl.srt = 45)
+corrplot(as.matrix(corr_CSp_CSm.coeff), method = "circle", tl.col = "black", tl.srt = 45, col = col3(20))
 dev.off()
 
 
@@ -104,33 +113,33 @@ dev.off()
 
 CSp_CSm_R_squared_eff <- data_frame()
 CSp_CSm_R_adj_eff<- data_frame()
-namesEff = c("Nacc_Left","Nacc_Right", "vmPFC_Left", "vmPFC_Right")
+#namesEff = c("Nacc_Left","Nacc_Right", "vmPFC_Left", "vmPFC_Right")
 
-CSp_CSm_R_squared_eff[1,1] <- summary(lm(eff_df$Nacc_Left~eff))$r.squared
-CSp_CSm_R_adj_eff[1,1] <- summary(lm(eff_df$Nacc_Left~eff))$adj.r.squared
+#CSp_CSm_R_squared_eff[1,1] <- summary(lm(eff_df$Nacc_Left~eff))$r.squared
+#CSp_CSm_R_adj_eff[1,1] <- summary(lm(eff_df$Nacc_Left~eff))$adj.r.squared
 
-CSp_CSm_R_squared_eff[2,1] <- summary(lm(eff_df$Nacc_Right~eff))$r.squared
-CSp_CSm_R_adj_eff[2,1] <- summary(lm(eff_df$Nacc_Right~eff))$adj.r.squared
+#CSp_CSm_R_squared_eff[2,1] <- summary(lm(eff_df$Nacc_Right~eff))$r.squared
+#CSp_CSm_R_adj_eff[2,1] <- summary(lm(eff_df$Nacc_Right~eff))$adj.r.squared
 
-CSp_CSm_R_squared_eff[3,1] <- summary(lm(eff_df$vmPFC_Left~eff))$r.squared
-CSp_CSm_R_adj_eff[3,1] <- summary(lm(eff_df$vmPFC_Left~eff))$adj.r.squared
+#CSp_CSm_R_squared_eff[3,1] <- summary(lm(eff_df$vmPFC_Left~eff))$r.squared
+#CSp_CSm_R_adj_eff[3,1] <- summary(lm(eff_df$vmPFC_Left~eff))$adj.r.squared
 
-CSp_CSm_R_squared_eff[4,1] <- summary(lm(eff_df$vmPFC_Right~eff))$r.squared
-CSp_CSm_R_adj_eff[4,1] <- summary(lm(eff_df$vmPFC_Right~eff))$adj.r.squared
+#CSp_CSm_R_squared_eff[4,1] <- summary(lm(eff_df$vmPFC_Right~eff))$r.squared
+#CSp_CSm_R_adj_eff[4,1] <- summary(lm(eff_df$vmPFC_Right~eff))$adj.r.squared
 
-CSp_CSm_R_squared_eff[,2] <- namesEff
-CSp_CSm_R_adj_eff[,2] <- namesEff
+#CSp_CSm_R_squared_eff[,2] <- namesEff
+#CSp_CSm_R_adj_eff[,2] <- namesEff
 
 
 #
-pdf('~/REWOD/DERIVATIVES/BEHAV/PIT/CSp-CSm_eff_R_adj.pdf')
-grid.table(CSp_CSm_R_adj_eff)
-dev.off()
+#pdf('~/REWOD/DERIVATIVES/BEHAV/PIT/CSp-CSm_eff_R_adj.pdf')
+#grid.table(CSp_CSm_R_adj_eff)
+#dev.off()
 
 
-pdf('~/REWOD/DERIVATIVES/BEHAV/PIT/CSp-CSm_eff_R_squa.pdf')
-grid.table(CSp_CSm_R_squared_eff)
-dev.off()
+#pdf('~/REWOD/DERIVATIVES/BEHAV/PIT/CSp-CSm_eff_R_squa.pdf')
+#grid.table(CSp_CSm_R_squared_eff)
+#dev.off()
 
 ## SUMMARY ##
 # so basically

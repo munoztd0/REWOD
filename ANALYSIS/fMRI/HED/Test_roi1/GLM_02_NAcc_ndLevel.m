@@ -1,31 +1,4 @@
-function GLM_05_ndLevel() %NAcc
-
-% intended for REWOD HED
-% get onsets for main model
-% Durations =1 
-% Model on ONSETs (start, 3*odor + 2*questions)
-% 4 basic contrasts Reward-Control, Reward-Neutral, Odor-NoOdor, odor_presence
-% last modified on July 2019 by David Munoz
-
-%does t-test and full_factorial
-do_ttest = 1;
-remove = 1;
-removesub = {'sub-24'} ;
-removedsub = '24';
-
-%% define task variable
-%sessionX = 'second';
-task = 'hedonic';
-
-%% define path
-
-cd ~
-home = pwd;
-homedir = [home '/REWOD/'];
-
-
-mdldir   = fullfile (homedir, 'DERIVATIVES/ANALYSIS/', task);% mdl directory (timing and outputs of the analysis)
-function GLM_03_ndLevel()
+function GLM_03_ndLevel()  %NAcc
 
 % intended for REWOD HED
 % get onsets for model with 1st level modulators

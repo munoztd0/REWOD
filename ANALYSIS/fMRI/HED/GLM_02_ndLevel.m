@@ -1,4 +1,4 @@
-function GLM_05_ndLevel() %NAcc
+function GLM_02_ndLevel()
 
 % intended for REWOD HED
 % get onsets for main model
@@ -25,7 +25,7 @@ homedir = [home '/REWOD/'];
 
 
 mdldir   = fullfile (homedir, 'DERIVATIVES/ANALYSIS/', task);% mdl directory (timing and outputs of the analysis)
-name_ana = 'GLM-05'; % output folder for this analysis 
+name_ana = 'GLM-02'; % output folder for this analysis 
 groupdir = fullfile (mdldir,name_ana, 'group/');
 
 
@@ -44,18 +44,21 @@ spm_jobman('initcfg');
 %% define contrasts and contrasts names
 if do_ttest
     
-       % These contrast names become folders
+
+    % These contrast names become folders
     contrastNames = {'reward-control'%1
         'reward-neutral'%2
         'Odor-NoOdor'%3
-        'odor_presence'};%4
-   
+        'odor_presence'
+        'Reward-NoReward'};%4
+    
     
     conImages = {'con_0001'
         'con_0002'
         'con_0003'
-        'con_0004'};
-    
+        'con_0004'
+        'con_0005'};
+      
     
     %% prepare batch for each contrasts
     
@@ -78,7 +81,7 @@ if do_ttest
         matlabbatch{1}.spm.stats.factorial_design.dir = {contrastFolder}; % directory
         
         %  FORMAT [dirs] = spm_select('List',direc,'dir',filt)
-        conAll     = spm_select('List',groupdir,['^'  '.*' conImageX '.nii']); % select contrasts 
+        conAll     = spm_select('List',groupdir,['^'  '.*' conImageX '.nii']); % select contrasts ?WHat is LIST?
         for j =1:length(conAll)
             matlabbatch{1}.spm.stats.factorial_design.des.t1.scans{j,1} = [groupdir conAll(j,:) ',1'];
         end
@@ -98,7 +101,7 @@ if do_ttest
         matlabbatch{1}.spm.stats.factorial_design.multi_cov = struct('files', {}, 'iCFI', {}, 'iCC', {});
         matlabbatch{1}.spm.stats.factorial_design.masking.tm.tm_none = 1;
         matlabbatch{1}.spm.stats.factorial_design.masking.im = 1;
-        matlabbatch{1}.spm.stats.factorial_design.masking.em = {'/home/cisa/REWOD/DERIVATIVES/PREPROC/CANONICALS/reward_labels_pauli/nacc0.5.nii'};  
+        matlabbatch{1}.spm.stats.factorial_design.masking.em = {''};
         matlabbatch{1}.spm.stats.factorial_design.globalc.g_omit = 1;
         matlabbatch{1}.spm.stats.factorial_design.globalm.gmsca.gmsca_no = 1;
         matlabbatch{1}.spm.stats.factorial_design.globalm.glonorm = 1;

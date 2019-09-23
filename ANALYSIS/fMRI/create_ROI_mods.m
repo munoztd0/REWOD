@@ -141,8 +141,8 @@ cd (roi_eff)
 
 sphere3.CAUD_ANT_RIGHT = struct('centre', [9 20 5],'radius', 2); %
 
-sphere3.CAUD_VENT_LEFT = struct('centre', [-9 9 0],'radius', 2); % 
-sphere3.CAUD_VENT_RIGHT = struct('centre', [7 14 -7],'radius', 2); % in mmin FSL its NAcc
+sphere3.CAUD_VENTR_LEFT = struct('centre', [-9 9 0],'radius', 2); % 
+sphere3.CAUD_VENTR_RIGHT = struct('centre', [7 14 -7],'radius', 2); % in mmin FSL its NAcc
 
 sphere3.NACC_RIGHT = struct('centre', [7 14 -7],'radius', 2); % in mm % SAME
 
