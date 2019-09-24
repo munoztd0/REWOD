@@ -52,6 +52,7 @@ sphere1.midbrain = struct('centre', [-4 -30 -19],'radius', 2); % in mm
 
 fns = fieldnames(sphere1);
 
+%load marsbar
 for i = 1:length(fns)
     sphere1_roi = maroi_sphere(sphere1.(fns{i}));
     saveroi(sphere1_roi, [fns{i} '.mat']);
@@ -109,7 +110,7 @@ sphere2a.vmPFC_RIGHT = struct('centre', [38 31 -20],'radius', 2); % in mm
 sphere2a.IFG_RIGHT = struct('centre', [37 31 4],'radius', 2); % in mm 
 sphere2a.IFG_LEFT = struct('centre', [-39 20 11],'radius', 2); % in mm 
 
-sphere2a.SUBCAL_RIGHT = struct('centre', [12 25 -18],'radius', 2); % in mm 
+sphere2a.SUBCAL_RIGHT = struct('centre', [10 27 -19],'radius', 2); % in mm 
 
 sphere2a.PUT_LEFT = struct('centre', [-23 7 8],'radius', 2); % in mm 
 
@@ -145,11 +146,21 @@ roi_eff = fullfile(homedir, '/DERIVATIVES/ANALYSIS',task_name, 'ROI', threshold,
 cd (roi_eff)
 
 
-sphere3.CAUD_VENTR_LEFT = struct('centre', [-10 13 0],'radius', 2); % 
+sphere3.CAUD_VENTR_LEFT = struct('centre', [-11 14 1],'radius', 2); % 
 sphere3.CAUD_VENTR_RIGHT = struct('centre', [10 19 0],'radius', 2); % in mmin FSL its NAcc
 
 sphere3.vlPFC_LEFT = struct('centre', [-36 36 -9],'radius', 2); % in mm 
 sphere3.vlPFC_RIGHT = struct('centre', [38 40 -12],'radius', 2); % in mm 
+
+sphere3.BNST_LEFT = struct('centre', [-7 2 -1],'radius', 2); % in mm 
+sphere3.BNST_RIGHT = struct('centre', [5 3 1],'radius', 2); % in mm 
+
+sphere3.AMY_LEFT = struct('centre', [-24 0 -20],'radius', 2); % in mm 
+sphere3.AMY_RIGHT = struct('centre', [19 0 -20],'radius', 2); % in mm 
+sphere3.AMY_post_RIGHT = struct('centre', [-17 -3 -23],'radius', 2); % in mm 
+
+sphere3.PUT_LEFT = struct('centre', [-28 5 4],'radius', 2); % in mm 
+sphere3.pINS_RIGHT = struct('centre', [38 -5 9],'radius', 2); % in mm 
 
 
 fns = fieldnames(sphere3);

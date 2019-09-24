@@ -4,7 +4,7 @@ function exctract_betas_mods(glm, task)
 %clc
 dbstop if error
 
-glm= 'GLM-03';
+glm= 'GLM-02';
 task='PIT';
 
 %% which model?
@@ -16,9 +16,9 @@ threshold = '0.01';
 con_name = 'eff';
 
 % which contrast
-con_names = {'CSp_eff_CSm_eff'};
+con_names = {'CSp-CSm'};
 
-con_list = {'con_0005.nii,1'}; %
+con_list = {'con_0001.nii,1'}; %
 %R_C = CONTRAT 1   
 %R_N = CONTRAT 2   
 

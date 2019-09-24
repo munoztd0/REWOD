@@ -12,7 +12,7 @@ homedir = [home '/REWOD'];
 
 %% def var
 task = 'PIT'; %
-glm = 'GLM-03';
+glm = 'GLM-02';
 threshold = '0.01';
 con_name = 'eff';
 
@@ -22,7 +22,7 @@ in_dir        = fullfile (homedir, '/DERIVATIVES/ANALYSIS/', task, 'ROI', thresh
 out_dir   = fullfile(homedir, '/DERIVATIVES/ANALYSIS/', task, 'ROI');
 
 
-ID     = {'ID';'01';'02';'03';'04';'05';'06';'07';'09';'10';'11';'12';'13';'14';'15';'16';'17';'18';'20';'21';'22';'23';'24';'25';'26'};
+ID  = {'ID';'01';'02';'03';'04';'05';'06';'07';'09';'10';'11';'12';'13';'14';'15';'16';'17';'18';'20';'21';'22';'23';'24';'25';'26'};
 
 cd (in_dir)
 

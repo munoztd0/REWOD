@@ -11,10 +11,10 @@ home = pwd;
 homedir = [home '/REWOD'];
 
 %% def var
-task = 'hedonic'; %
+task = 'PIT'; %
 glm = 'GLM-04';
 threshold = '0.01';
-con_name = 'R_NoR_lik';
+con_name = 'CSp_CSm_eff';
 
 
 %% create database
@@ -43,6 +43,6 @@ cd (out_dir)
 T = cell2table(database(2:end,:),'VariableNames',database(1,:));
  
 % Write the table to a CSV file
-writetable(T, ['extracted_betas_' con_name '.txt'],'Delimiter','\t');
+writetable(T, ['extracted_betas_cov_' con_name '.txt'],'Delimiter','\t');
 
 clear all
