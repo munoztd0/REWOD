@@ -28,16 +28,21 @@ task_name = taskHED; %
 
 con_name1 = 'R_C';
 con_name2 = 'R_N';
-
+con_name3 = 'Od_NoOd';
+con_name5 = 'R_NoR';
 
 % which contrast
 
 con_names1 = {'reward-control'};
 con_names2 = {'reward-neutral'};
+con_names3 = {'Odor-NoOdor'};
+con_names5 = {'Reward-NoReward'};
 
 
 con_list1 = {'con_0001.nii,1'}; %
 con_list2 = {'con_0002.nii,1'}; %
+con_list3 = {'con_0003.nii,1'}; %
+con_list5 = {'con_0005.nii,1'}; %
 %R_C = CONTRAT 1   
 %R_N = CONTRAT 2   
 
@@ -46,7 +51,8 @@ dir_data   =  fullfile (homedir, '/DERIVATIVES/ANALYSIS', task_name, ana_name, '
 
 roi_R_C = fullfile(homedir, '/DERIVATIVES/ANALYSIS',task_name, 'ROI',  threshold, glm, con_name1);
 roi_R_N = fullfile(homedir, '/DERIVATIVES/ANALYSIS',task_name, 'ROI',  threshold, glm, con_name2);
-
+roi_O_N = fullfile(homedir, '/DERIVATIVES/ANALYSIS',task_name, 'ROI',  threshold, glm, con_name3);
+roi_R_NoR = fullfile(homedir, '/DERIVATIVES/ANALYSIS',task_name, 'ROI',  threshold, glm, con_name5);
 
 % %% DOING FOR R_C
 cd (roi_R_C)
@@ -88,6 +94,44 @@ sphere2.CAUD_VENT_RIGHT = struct('centre', [7 10 6],'radius', 2); % in mm %in FS
 
 sphere2.PUT_LEFT = struct('centre',[-23 -11 5] ,'radius', 2); % in mm
 sphere2.PUT_RIGHT = struct('centre', [20 0 7],'radius', 2); % in mm 
+
+fns = fieldnames(sphere2);
+
+for i = 1:length(fns)
+    sphere2_roi = maroi_sphere(sphere2.(fns{i}));
+    saveroi(sphere2_roi, [fns{i} '.mat']);
+    mars_rois2img([fns{i} '.mat'],  [fns{i} '.nii']);
+end
+
+
+%%%
+cd (roi_O_N)
+
+sphere2.AMY_piri_RIGHT = struct('centre', [28 1 -18],'radius', 2); % in mm
+
+sphere2.AMY_AAA_LEFT = struct('centre', [-19 -5 -13],'radius', 2); % in mm
+sphere2.AMY_AAA_RIGHT = struct('centre', [20 -4 -12],'radius', 2); % in mm
+
+
+fns = fieldnames(sphere2);
+
+for i = 1:length(fns)
+    sphere2_roi = maroi_sphere(sphere2.(fns{i}));
+    saveroi(sphere2_roi, [fns{i} '.mat']);
+    mars_rois2img([fns{i} '.mat'],  [fns{i} '.nii']);
+end
+
+
+%%%
+cd (roi_R_NoR)
+
+sphere2.SUBCAL_RIGHT = struct('centre', [7 10.5 -13],'radius', 2); % in mm
+sphere2.SUBCAL_LEFT = struct('centre', [-1.4 26.6 -16.3],'radius', 2); % in mm
+
+sphere2.AMY_LA_LEFT = struct('centre', [-27 -1 -21],'radius', 2); % in mm
+sphere2.AMY_CMN_LEFT = struct('centre', [-19 -5 -14],'radius', 2); % in mm
+
+sphere2.VS_LEFT = struct('centre', [-9 16 -7],'radius', 2); % in mm
 
 fns = fieldnames(sphere2);
 

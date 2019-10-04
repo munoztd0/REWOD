@@ -11,10 +11,10 @@ home = pwd;
 homedir = [home '/REWOD'];
 
 %% def var
-task = 'PIT'; %
+task = 'hedonic'; %
 glm = 'GLM-04';
 threshold = '0.01';
-con_name = 'CSp_CSm_eff';
+con_name = 'R_NoR_lik';
 
 
 %% create database

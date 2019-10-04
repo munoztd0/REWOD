@@ -5,7 +5,7 @@ function exctract_betas_mods(glm, task)
 dbstop if error
 
 glm= 'GLM-04';
-task='hedonic';
+task='PIT';
 
 %% which model?
 ana_name = glm;
@@ -13,12 +13,13 @@ ana_name = glm;
 % which task?
 task_name = task; %
 threshold = '0.01';
-con_name = 'R_NoR_lik';
+con_name = 'R_N_lik';
+glm_roi= 'GLM-04_HED';
 
 % which contrast
-con_names = {'reward_neutral'};
+con_names = {'CSp-CSm'};
 
-con_list = {'con_0002.nii'}; %
+con_list = {'con_0001.nii'}; %
 %R_C = CONTRAT 1   
 %R_N = CONTRAT 2   
 
@@ -28,8 +29,8 @@ cd ~
 home = pwd;
 homedir = [home '/REWOD'];
 
-dir_data   =  fullfile (homedir, '/DERIVATIVES/ANALYSIS', task_name, ana_name, 'group/');
-roi_dir = fullfile(homedir, '/DERIVATIVES/ANALYSIS',task_name, 'ROI', threshold, glm, con_name);
+dir_data   =  fullfile (homedir, '/DERIVATIVES/ANALYSIS', task_name, ana_name, 'group');
+roi_dir = fullfile(homedir, '/DERIVATIVES/ANALYSIS',task_name, 'ROI', threshold, glm_roi, con_name);
 
 % intialize spm 
 spm('defaults','fmri');

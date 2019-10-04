@@ -20,12 +20,23 @@ con1 = 'CSp-CSm'
 
 mod1 = 'eff'
 
+#for lik
+taskHED = 'hedonic'
+
+conHED = 'reward-neutral'
+
+modLIK = 'lik'
+
+modINT = 'int'
+
+
 
 
 # Set working directory ---------------------------------------------------
 
 
 analysis_path <- file.path('~/REWOD/DERIVATIVES/ANALYSIS', task) 
+analysis_pathHED <- file.path('~/REWOD/DERIVATIVES/ANALYSIS', taskHED) 
 setwd(analysis_path)
 
 # open dataset 
@@ -33,14 +44,19 @@ BETAS_CSp_CSm <- read.delim(file.path(analysis_path, 'ROI', paste('extracted_bet
 
 EFF <- read.delim(file.path(analysis_path, 'GLM-04', 'group_covariates', paste(con1,'_', mod1, '_rank.txt',sep="")), header = T, sep ='\t') # read in dataset
 
+LIK_R_N <- read.delim(file.path(analysis_pathHED, 'GLM-04', 'group_covariates', paste(conHED,'_', modLIK, '_meancent.txt',sep="")), header = T, sep ='\t') # read in dataset
+
+INT_R_N <- read.delim(file.path(analysis_pathHED, 'GLM-04', 'group_covariates', paste(conHED,'_', modINT, '_meancent.txt',sep="")), header = T, sep ='\t')  # read in dataset
+
 
 # merge
-eff_df = merge(BETAS_CSp_CSm, EFF, by.x = "ID", by.y = "subj", all.x = TRUE)
-
+CSp_CSm_df = merge(BETAS_CSp_CSm, EFF, by.x = "ID", by.y = "subj", all.x = TRUE)
+CSp_CSm_df = merge(CSp_CSm_df, LIK_R_N, by.x = "ID", by.y = "subj", all.x = TRUE)
+CSp_CSm_df = merge(CSp_CSm_df, INT_R_N, by.x = "ID", by.y = "subj", all.x = TRUE)
 
 
 # define factors
-eff_df$ID <- factor(eff_df$ID)
+CSp_CSm_df$ID <- factor(CSp_CSm_df$ID)
 
 
 
@@ -57,7 +73,7 @@ ggplotRegression <- function (fit) {
                        #"Intercept =",signif(fit$coef[[1]],5 ),
                        #" Slope =",signif(fit$coef[[2]], 5),
                        "  &  P =",signif(summary(fit)$coef[2,4], 5))) +
-    theme(plot.title = element_text(size = 10))
+    theme(plot.title = element_text(size = 10, hjust =1))
   
 }
 
@@ -67,22 +83,19 @@ ggplotRegression <- function (fit) {
 
 # For effort
 
-eff = eff_df$eff
-A  <- ggplotRegression(lm(eff_df[[2]]~eff)) + rremove("x.title")
-B  <- ggplotRegression(lm(eff_df[[3]]~eff)) + rremove("x.title")
-C  <- ggplotRegression(lm(eff_df[[4]]~eff)) + rremove("x.title")
-D  <- ggplotRegression(lm(eff_df[[5]]~eff)) + rremove("x.title")
-A1  <- ggplotRegression(lm(eff_df[[6]]~eff)) + rremove("x.title")
-B1  <- ggplotRegression(lm(eff_df[[7]]~eff)) + rremove("x.title")
-C1  <- ggplotRegression(lm(eff_df[[8]]~eff)) + rremove("x.title")
-D1  <- ggplotRegression(lm(eff_df[[9]]~eff)) + rremove("x.title")
-E  <- ggplotRegression(lm(eff_df[[10]]~eff)) + rremove("x.title")
-E1  <- ggplotRegression(lm(eff_df[[11]]~eff)) + rremove("x.title")
+eff = CSp_CSm_df$eff
+A1  <- ggplotRegression(lm(CSp_CSm_df[[2]]~eff)) + rremove("x.title")
+B1  <- ggplotRegression(lm(CSp_CSm_df[[3]]~eff)) + rremove("x.title")
+C1  <- ggplotRegression(lm(CSp_CSm_df[[4]]~eff)) + rremove("x.title")
+D1  <- ggplotRegression(lm(CSp_CSm_df[[5]]~eff)) + rremove("x.title")
+E1  <- ggplotRegression(lm(CSp_CSm_df[[6]]~eff)) + rremove("x.title")
+F1  <- ggplotRegression(lm(CSp_CSm_df[[8]]~eff)) + rremove("x.title")
 
-figure1 <- ggarrange(A,B,C,D,A1,B1,C1,D1, E, E1,
-                     labels = c("A: AMY_BM_L", "H: AMY_full_L","B: CAUD_ANT_R", "C: CAUD_VENTR_L", "D: CAUD_VENTR_R","E: NACC_L", "F: NACC_R", "G: NACC_cluster_R", "I: PUT_R", "J: NAcc_pauli"),
-                     ncol = 2, nrow = 5,
-                     vjust=3, hjust=-1) 
+
+figure1 <- ggarrange(A1,B1,C1,D1,E1,F1,
+                     labels = c("A: AMY_BM_L", "B: AMY_full_L","C: CAUD_ANT_R", "D: CAUD_VENTR_L", "E: CAUD_VENTR_R", "F: NACC_R"),
+                     ncol = 2, nrow = 3,
+                     vjust=3, hjust=0) 
 
 figure1 <- annotate_figure(figure1,
                            top = text_grob("Coeficient of determination: CSp - CSm for EFFORT", color = "black", face = "bold", size = 14),
@@ -92,19 +105,85 @@ pdf('~/REWOD/DERIVATIVES/BEHAV/PIT/CSp_CSm_eff_coeff.pdf')
 plot(figure1)
 dev.off()
 
+# For liking
+
+lik = CSp_CSm_df$lik
+A2  <- ggplotRegression(lm(CSp_CSm_df[[2]]~lik)) + rremove("x.title")
+B2  <- ggplotRegression(lm(CSp_CSm_df[[3]]~lik)) + rremove("x.title")
+C2  <- ggplotRegression(lm(CSp_CSm_df[[4]]~lik)) + rremove("x.title")
+D2  <- ggplotRegression(lm(CSp_CSm_df[[5]]~lik)) + rremove("x.title")
+E2  <- ggplotRegression(lm(CSp_CSm_df[[6]]~lik)) + rremove("x.title")
+F2  <- ggplotRegression(lm(CSp_CSm_df[[8]]~lik)) + rremove("x.title")
+
+
+figure2 <- ggarrange(A2,B2,C2,D2,E2,F2,
+                     labels = c("A: AMY_BM_L", "B: AMY_full_L","C: CAUD_ANT_R", "D: CAUD_VENTR_L", "E: CAUD_VENTR_R", "F: NACC_R"),
+                     ncol = 2, nrow = 3,
+                     vjust=3, hjust=0) 
+
+figure2 <- annotate_figure(figure2,
+                           top = text_grob("Coeficient of determination: CSp - CSm for LIKING", color = "black", face = "bold", size = 14),
+                           bottom = "Figure 2", fig.lab.face = "bold")
+
+pdf('~/REWOD/DERIVATIVES/BEHAV/PIT/CSp_CSm_lik_coeff.pdf')
+plot(figure2)
+dev.off()
+
+# For intensity
+
+int = CSp_CSm_df$int
+A3  <- ggplotRegression(lm(CSp_CSm_df[[2]]~int)) + rremove("x.title")
+B3  <- ggplotRegression(lm(CSp_CSm_df[[3]]~int)) + rremove("x.title")
+C3  <- ggplotRegression(lm(CSp_CSm_df[[4]]~int)) + rremove("x.title")
+D3  <- ggplotRegression(lm(CSp_CSm_df[[5]]~int)) + rremove("x.title")
+E3  <- ggplotRegression(lm(CSp_CSm_df[[6]]~int)) + rremove("x.title")
+F3  <- ggplotRegression(lm(CSp_CSm_df[[8]]~int)) + rremove("x.title")
+
+
+figure3 <- ggarrange(A3,B3,C3,D3,E3,F3,
+                     labels = c("A: AMY_BM_L", "B: AMY_full_L","C: CAUD_ANT_R", "D: CAUD_VENTR_L", "E: CAUD_VENTR_R", "F: NACC_R"),
+                     ncol = 2, nrow = 3,
+                     vjust=3, hjust=0) 
+
+figure3 <- annotate_figure(figure3,
+                           top = text_grob("Coeficient of determination: CSp - CSm for INTENISTY", color = "black", face = "bold", size = 14),
+                           bottom = "Figure 3", fig.lab.face = "bold")
+
+pdf('~/REWOD/DERIVATIVES/BEHAV/PIT/CSp_CSm_int_coeff.pdf')
+plot(figure3)
+dev.off()
+
+
+#just AMY_BM_L
+figure4 <- ggarrange(A1,A2,A3,
+                     labels = c("  A: Effort", 
+                                "  B: Liking", 
+                                "  C: Intensity"),
+                     ncol = 1, nrow = 3,
+                     vjust=1, hjust=0) 
+
+figure4 <- annotate_figure(figure4,
+                           top = text_grob("Coeficient of determination: CSp - CSm for AMY_BM", color = "black", face = "bold", size = 14),
+                           bottom = "Figure 4", fig.lab.face = "bold")
+
+pdf('~/REWOD/DERIVATIVES/BEHAV/PIT/CSp_CSm_BM_coeff.pdf')
+plot(figure4)
+dev.off()
+
+
 
 # CORRELATIONS ------------------------------------------------------------
 
 
-corr_CSp_CSm.rcorr = rcorr(as.matrix(eff_df))
-corr_CSp_CSm.coeff = corr_CSp_CSm.rcorr$r[2:11,12]
-corr_CSp_CSm.p = corr_CSp_CSm.rcorr$P[2:11,12]
+corr_CSp_CSm.rcorr = rcorr(as.matrix(CSp_CSm_df))
+corr_CSp_CSm.coeff = corr_CSp_CSm.rcorr$r[c(2:6,8),12:14]
+corr_CSp_CSm.p = corr_CSp_CSm.rcorr$P[c(2:6,8),12:14]
 
 col3 <- colorRampPalette(c("blue", "white", "red")) 
 
 # PLOT CORR
-pdf('~/REWOD/DERIVATIVES/BEHAV/PIT/CSp-CSm_corrplot.pdf')
-corrplot(as.matrix(corr_CSp_CSm.coeff), method = "circle", tl.col = "black", tl.srt = 45, col = col3(20))
+pdf('~/REWOD/DERIVATIVES/BEHAV/PIT/CSp_CSm_corrplot.pdf')
+corrplot(corr_CSp_CSm.coeff, method = "circle", tl.col = "black", tl.srt = 45, col = col3(20))
 dev.off()
 
 

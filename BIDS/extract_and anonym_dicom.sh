@@ -10,7 +10,7 @@ matlabSubmit="${home}/REWOD/CODE/BIDS/import_dicom/matlab_run.sh"
 for subj in 01 02 03 04 05 06 07 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26
   do
     #1)unzip files
-    7za e ${home}/REWOD/SOURCE/${subj}/dcm/*.7z -o${home}/REWOD/SOURCE/${subj}/dcm/
+    7za e ${home}/REWOD/SOURCEDATA/brain/${subj}/dcm/*.7z -o${home}/REWOD/SOURCE/${subj}/dcm/
 
     #2) run run_anonym
     #qsub -o ${home}/REWOD/ClusterOutput -j oe -l walltime=0:40:00,pmem=4GB -M david.munoz@etu.unige.ch -m e -l nodes=1  -q queue1 -N anonym_sub-${subj} -F "${subj} ${codeDir} ${matlab_script}" ${matlabSubmit}

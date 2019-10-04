@@ -77,7 +77,7 @@ sphere2.OFC2_RIGHT = struct('centre', [15 13 -14],'radius', 2); % in mm
 
 sphere2.CAUD_post_RIGHT = struct('centre', [-39 12 9],'radius', 2); % in mm 
 
-sphere2.PUT_ant_LEFT = struct('centre', [-23 8 8],'radius', 2); % in mm 
+sphere2.PUT_ant_LEFT = struct('centre', [-21.363 7.317924 -3.650782],'radius', 2); % in mm 
 
 
 sphere2.pINS_LEFT = struct('centre', [-36 -8 9],'radius', 2); % in mm 
@@ -102,21 +102,26 @@ roi_lik = fullfile(homedir, '/DERIVATIVES/ANALYSIS',task_name, 'ROI', threshold,
 
 cd (roi_lik)
 
-sphere2a.FRONTAL_RIGHT = struct('centre', [36 54 -14],'radius', 2); % in mm 
+sphere2a.vlPFC_RIGHT = struct('centre', [36 54 -14],'radius', 2); % in mm 
 
-sphere2a.vmPFC_LEFT = struct('centre', [-17 50 -18],'radius', 2); % in mm 
-sphere2a.vmPFC_RIGHT = struct('centre', [38 31 -20],'radius', 2); % in mm 
+sphere2a.vmPFC_LEFT = struct('centre', [-17 52 -18],'radius', 2); % in mm 
+sphere2a.vmPFC_LEFT = struct('centre', [-17 52 -14],'radius', 2); % in mm 
+
+
+sphere2a.OFC_RIGHT = struct('centre', [36 30 -20],'radius', 2); % in mm 
 
 sphere2a.IFG_RIGHT = struct('centre', [37 31 4],'radius', 2); % in mm 
 sphere2a.IFG_LEFT = struct('centre', [-39 20 11],'radius', 2); % in mm 
 
-sphere2a.SUBCAL_RIGHT = struct('centre', [10 27 -19],'radius', 2); % in mm 
+sphere2a.SUBCAL_RIGHT = struct('centre', [12 25 -18],'radius', 2); % in mm 
 
 sphere2a.PUT_LEFT = struct('centre', [-23 7 8],'radius', 2); % in mm 
 
+sphere2a.PUT_ant_LEFT = struct('centre', [-21.67912 6.412216 -2.141999],'radius', 2); % in mm 
+
 sphere2a.CAUD_LEFT = struct('centre', [-9 7 7],'radius', 2); % in mm 
 
-sphere2a.OPER_LEFT = struct('centre', [-40 -12 16],'radius', 2); % in mm 
+sphere2a.OPER_LEFT = struct('centre', [-40 -14 17],'radius', 2); % in mm 
 
 sphere2a.midbrain = struct('centre', [-9 -26 -16],'radius', 2); % in mm 
 
@@ -134,7 +139,7 @@ end
 % which task?
 task_name = taskPIT; %
 
-con_name1 = 'CSp_CSm';
+con_name1 = 'CSp_CSm_eff';
 
 
 % which contrast

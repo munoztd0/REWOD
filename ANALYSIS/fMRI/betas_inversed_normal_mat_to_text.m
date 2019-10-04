@@ -11,11 +11,11 @@ home = pwd;
 homedir = [home '/REWOD'];
 
 %% def var
-task = 'PIT'; %
-glm = 'GLM-02_HED';
+task = 'hedonic'; %
+glm = 'GLM-02';
 threshold = '0.01';
-con_name = 'R_N';
-con_name_rev = 'CSp_CSm';
+con_name = 'CSp_CSm';
+con_name_orig = 'R_N';
 
 
 
@@ -45,6 +45,6 @@ cd (out_dir)
 T = cell2table(database(2:end,:),'VariableNames',database(1,:));
  
 % Write the table to a CSV file
-writetable(T, ['extracted_betas_inversed' con_name_rev '.txt'],'Delimiter','\t');
+writetable(T, ['extracted_betas_' con_name_orig '_via_' con_name '.txt'],'Delimiter','\t');
 
 clear all

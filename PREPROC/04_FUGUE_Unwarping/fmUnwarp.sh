@@ -7,7 +7,7 @@ subjectID=$1
 taskID=$2
 
 
-echo "Preparing subject ${subjectID} session fo FMunwarp"
+echo "Preparing subject ${subjectID} session fo FMun "
 
 home=$(eval echo ~$user)
 
@@ -17,7 +17,7 @@ funcDir=${home}/REWOD/DERIVATIVES/PREPROC/sub-${subjectID}/ses-second/func/task-
 # Directory with run-specific files
 runDir=${home}/REWOD/DERIVATIVES/PREPROC/sub-${subjectID}/ses-second/fmap/
 
-# the dwell time for fugue unwarping (in sec) check on procedure
+# the dwell time for fugue unwarping (in sec) check on procedure (its echo-spacing time not dewll time!)
 dwellTime=0.00069
 
 

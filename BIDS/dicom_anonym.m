@@ -13,10 +13,10 @@ for i = 1:length(subj)
 
     % participant's specifics
     subjX = char(subj(i));
-    subjindir =fullfile(homedir,'SOURCE', subjX, 'dcm');
+    subjindir =fullfile(homedir,'SOURCEDATA', 'brain', subjX, 'dcm');
 
     cd (subjindir)
-    
+
     list1 = dir('MR*');
     list2 = dir('SC*');
     list3 = dir('SRe*');
@@ -24,12 +24,12 @@ for i = 1:length(subj)
     for ii = 1:length(list1)
         dicomanon([list1(ii).folder '/' list1(ii).name], [list1(ii).folder  '/' list1(ii).name '_an'])
     end
-    
+
     for ii = 1:length(list2)
         dicomanon([list2(ii).folder '/' list2(ii).name], [list2(ii).folder  '/' list2(ii).name '_an'])
     end
-    
-    for ii = 1:length(list3)    
+
+    for ii = 1:length(list3)
         dicomanon([list3(ii).folder '/' list3(ii).name], [list2(ii).folder  '/' list3(ii).name '_an'])
     end
 

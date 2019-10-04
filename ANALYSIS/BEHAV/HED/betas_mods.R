@@ -138,11 +138,11 @@ D2 <- ggplotRegression(lm(R_N_df[[13]]~lik)) + rremove("x.title")
 
 figure3 <- ggarrange(A,B,C,D,A1,B1,C1,D1,A2,B2,C2,D2, 
                      labels =  c("A: CAUD_VENTR_L", "B: CAUD_VENTR_R","C: GPe_L", "D: NACC_R", "E: OFC_L", "F: OFC_R", "G: PUT_R", "H: SUBCAL_L", "I: SUBCAL_R", "J: aINS_L", "K: aINS_R", "l: vSTR_R"),
-                     vjust=3, hjust=-1,
-                     ncol = 2, nrow = 8) 
+                     vjust=3, hjust=0,
+                     ncol = 2, nrow = 6) 
 
 figure3 <- annotate_figure(figure3,
-                top = text_grob("Coeficient of determination: REWARD-NEUTRAL for LIKING", color = "black", face = "bold", size = 14),
+                top = text_grob("Coeficient of determination: REWARD-NEUTRAL for LIKING mods", color = "black", face = "bold", size = 14),
                 bottom = "Figure 1", fig.lab.face = "bold")
 
 pdf('~/REWOD/DERIVATIVES/BEHAV/HED/lik_coeff.pdf')
