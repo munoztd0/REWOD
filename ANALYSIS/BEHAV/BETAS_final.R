@@ -4,7 +4,7 @@
 
 # -----------------------  PRELIMINARY STUFF ----------------------------------------
 # load libraries
-pacman::p_load(ggplot2, dplyr, plyr, tidyr, reshape, reshape2, Hmisc, corrplot, ggpubr, gridExtra, grid, mosaic, magick, pdftools, devtools, margins, patchwork)
+pacman::p_load(ggplot2, dplyr, plyr, tidyr, reshape, reshape2, Hmisc, corrplot, ggpubr, gridExtra, grid, mosaic, magick, psychometric, pdftools, devtools, margins, patchwork)
 
 if(!require(pacman)) {
   install.packages("pacman")
@@ -96,8 +96,8 @@ A1 <- ggplot(R_N_df, aes(lik, AMY_BLA_LEFT_betas)) + #A2
                      #"Intercept =",signif(fit$coef[[1]],5 ),
                      #" Slope =",signif(fit$coef[[2]], 5),
                      #"  &  P =",signif(summary(lm(R_N_df$AMY_BLA_LEFT_betas~R_N_df$lik))$coef[2,4], 3)))+
-  scale_x_continuous(name="Hedonic pleasure", limits=c(-2.02, 2.02)) +
-  scale_y_continuous(name="Beta Reward > neutral", limits=c(-0.6, 0.6)) +
+  scale_x_continuous(name="Hedonic experience", limits=c(-2.02, 2.02)) +
+  scale_y_continuous(expression(paste(beta, "  Reward > neutral")), limits=c(-0.6, 0.6)) +
   theme(plot.subtitle = element_text(size = 10, vjust = -90, hjust =1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
        panel.background = element_blank(), axis.line = element_line(colour = "black"), margin = NULL, aspect.ratio=1)
 
@@ -109,7 +109,7 @@ A2 <- ggplot(CSp_CSm_RN, aes(eff, AMY_BLA_LEFT_betas)) + #A2
                      #" Slope =",signif(fit$coef[[2]], 5),
                      #"  &  P =",signif(summary(lm(CSp_CSm_RN$AMY_BLA_LEFT_betas~CSp_CSm_RN$eff))$coef[2,4], 3)))+
   scale_x_continuous(name="Mobilized effort", limits=c(-2.02, 2.02)) +
-  scale_y_continuous(name="Beta CSp > CSm", limits=c(-0.6, 0.6)) +
+  scale_y_continuous(expression(paste(beta, "  CSp > CSm")), limits=c(-0.6, 0.6)) +
   theme(plot.subtitle = element_text(size = 10,  vjust = -90, hjust =1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"),  margin = NULL, aspect.ratio=1)
 
@@ -123,8 +123,8 @@ A3 <- ggplot(R_N_CSp, aes(lik, AMY_BLVP_LEFT_betas)) + #A2
                         #"Intercept =",signif(fit$coef[[1]],5 ),
                         #" Slope =",signif(fit$coef[[2]], 5),
                         #"  &  P =",signif(summary(lm(R_N_CSp$AMY_BLVP_LEFT_betas~R_N_CSp$lik))$coef[2,4], 3)))+
-  scale_x_continuous(name="Hedonic pleasure", limits=c(-2.02, 2.02)) +
-  scale_y_continuous(name="Beta Reward > neutral", limits=c(-0.6, 0.6)) +
+  scale_x_continuous(name="Hedonic experience", limits=c(-2.02, 2.02)) +
+  scale_y_continuous(name = expression(paste(beta, "  Reward > neutral")), limits=c(-0.6, 0.6)) +
   theme(plot.subtitle = element_text(size = 10, vjust = -90, hjust =1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"),  margin = NULL, aspect.ratio=1)
 
@@ -137,34 +137,31 @@ A4 <- ggplot(CSp_CSm_df, aes(eff, AMY_BLVP_LEFT_betas)) + #A2
                        #" Slope =",signif(fit$coef[[2]], 5),
                        #"  &  P =",signif(summary(lm(CSp_CSm_df$AMY_BLVP_LEFT_betas~CSp_CSm_df$eff))$coef[2,4], 3)))+
   scale_x_continuous(name="Mobilized effort", limits=c(-2.02, 2.02)) +
-  scale_y_continuous(name="Beta CSp > CSm", limits=c(-0.6, 0.6)) +
+  scale_y_continuous(expression(paste(beta, "  CSp > CSm")), limits=c(-0.6, 0.6)) +
   theme(plot.subtitle = element_text(size = 10,  vjust = -90, hjust =1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"),  margin = NULL, aspect.ratio=1)
 
 
-AMY_axia = image_read_pdf('~/REWOD/DERIVATIVES/BEHAV/FIGURES/AMY_figure_axia.pdf')
-#AMY_axia = image_draw(AMY_axia, mar =c(100, 0, 0, 100))
-AMY_coro = image_read_pdf('~/REWOD/DERIVATIVES/BEHAV/FIGURES/AMY_figure_coro.pdf')
+AMY = image_read_pdf('~/REWOD/DERIVATIVES/BEHAV/FIGURES/neat/AMY.pdf')
 
-A5 <-  rasterGrob(AMY_axia, interpolate=TRUE)
-A6 <-  rasterGrob(AMY_coro, interpolate=TRUE)
+
+A5 <-  rasterGrob(AMY, interpolate=TRUE)
+
 
 
 # arranging ---------------------------------------------------------------
 
 
-figure1 <- ggarrange(A1, A2,
-                     #labels = c("B: Coeficients of determination"),
-                     ncol = 2, nrow = 1) 
+ggarrange(A5,                                                 # First row with scatter plot
+          ggarrange(A1, A2, A3, A4, ncol = 4, labels = c("B", "D", "E", "F")), # Second row with box and dot plots
+          nrow = 2, 
+          labels = "A                                                                                    B",
+          hjust =0# Labels of the scatter plot
+) 
 
-figure2 <- ggarrange(A3, A4,
-                     #labels = c("B: Coeficients of determination"),
-                     ncol = 2, nrow = 1) 
-
-figure3 <- ggarrange(A5,A6, figure1, figure2,
-                      labels = c(" A"," B"," C", " D"),
-                      vjust=1.5, hjust = 0,
-                      ncol = 2, nrow = 2) 
+# pdf('~/REWOD/DERIVATIVES/BEHAV/FIGURES/neat/figure1_AMY.pdf')
+# plot(figure3)
+# dev.off()
 
 
 #figure4 <- annotate_figure(figure3,
@@ -175,5 +172,48 @@ figure3 <- ggarrange(A5,A6, figure1, figure2,
 # pdf('~/REWOD/DERIVATIVES/BEHAV/figure1_AMY.pdf')
 # plot(figure3)
 # dev.off()
+n = 24
+k = 2
+# Adj_R2_ = BLA _lik
+rsq = signif(summary(lm(R_N_df$AMY_BLA_LEFT_betas~R_N_df$lik))$r.squared, 3)
+p = signif(summary(lm(R_N_df$AMY_BLA_LEFT_betas~R_N_df$lik))$coef[2,4], 3)
+
+CI =CI.Rsq(rsq, n, k, level = 0.95)
+paste("r² = ", signif(rsq,3), ", p = ", signif(p,3), ", 95% CI [", signif(CI$LCL,3), ",", signif(CI$UCL,3), "]")
+
+
+# 1 -----------------------------------------------------------------------
+
+
+# Adj_R2_ = BLA _eff
+rsq =signif(summary(lm(CSp_CSm_RN$AMY_BLA_LEFT_betas~CSp_CSm_RN$eff))$r.squared, 3)
+# P = BLA _eff
+p = signif(summary(lm(CSp_CSm_RN$AMY_BLA_LEFT_betas~CSp_CSm_RN$eff))$coef[2,4], 3)
+
+CI =CI.Rsq(rsq, n, k, level = 0.95)
+paste("r² = ", signif(rsq,3), ", p = ", signif(p,3), ", 95% CI [", signif(CI$LCL,3), ",", signif(CI$UCL,3), "]")
+
+# 2 -----------------------------------------------------------------------
+
+
+# Adj_R2_ = BLVP LIk
+rsq =signif(summary(lm(R_N_CSp$AMY_BLVP_LEFT_betas~R_N_CSp$lik))$r.squared, 3)
+# P = BLVP LIk
+p = signif(summary(lm(R_N_CSp$AMY_BLVP_LEFT_betas~R_N_CSp$lik))$coef[2,4], 3)
+
+CI =CI.Rsq(rsq, n, k, level = 0.95)
+paste("r² = ", signif(rsq,3), ", p = ", signif(p,3), ", 95% CI [", signif(CI$LCL,3), ",", signif(CI$UCL,3), "]")
+
+# 3 -----------------------------------------------------------------------
+
+
+# Adj_R2_ = BLVP - eff
+rsq =signif(summary(lm(CSp_CSm_df$AMY_BLVP_LEFT_betas~CSp_CSm_df$eff))$r.squared, 3)
+# P = AMY_BLVP_ -eff
+p = signif(summary(lm(CSp_CSm_df$AMY_BLVP_LEFT_betas~CSp_CSm_df$eff))$coef[2,4], 3)
+
+CI =CI.Rsq(rsq, n, k, level = 0.95)
+paste("r² = ", signif(rsq,3), ", p = ", signif(p,3), ", 95% CI [", signif(CI$LCL,3), ",", signif(CI$UCL,3), "]")
+
 
 

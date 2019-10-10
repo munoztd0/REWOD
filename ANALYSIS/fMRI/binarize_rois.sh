@@ -1,8 +1,8 @@
 #!/bin/bash
 home=$(eval echo ~$user);
 
-codeDir="${home}/REWOD/DERIVATIVES/PREPROC/CANONICALS/"
-
+#codeDir="${home}/REWOD/DERIVATIVES/PREPROC/CANONICALS/"
+codeDir="${home}/REWOD/EXTERNALDATA/ROI/"
 echo ${codeDir}
 cd ${codeDir}
 
@@ -17,6 +17,12 @@ cd ${codeDir}
 #fslmaths CIT168_iAmyNuc_1mm_MNI.nii -thr 8.9 -uthr 9.1 -bin AMY_AAA.nii
 #fslmaths CIT168_iAmyNuc_1mm_MNI.nii -thr 9.9 -uthr 10.1 -bin AMY_other.nii
 
-fslmaths harvardoxford-subcortical_prob_Left_Accumbens.nii -bin Left_NAcc_harvard
+#fslmaths harvardoxford-subcortical_prob_Left_Accumbens.nii -bin Left_NAcc_harvard
 
-gunzip Left*
+fslmaths harvardoxford-cortical_prob_Frontal_Pole.nii -thr 50 -bin prob_frontal
+#fslmaths harvardoxford-cortical_prob_vmPFC.nii -thr 50 -bin prob_vmPFC
+#fslmaths pcore_shell_LEFT -thr 2 -bin pshell_LEFT
+#Fslmaths pcore_shell_RIGHT -thr 1 -uthr 1.9 -bin pcore_RIGHT
+#fslmaths pcore_shell_RIGHT -thr 2  -bin pshell_RIGHT
+
+gunzip prob*

@@ -1,17 +1,17 @@
 #!/bin/bash
 home=$(eval echo ~$user);
 
-task="hedonic"
-mod="Od_NoOd"
-GLM="GLM-02"
-threshold="0.01"
-codeDir="${home}/REWOD/DERIVATIVES/ANALYSIS/${task}/ROI/${threshold}/${GLM}/${mod}/"
-
+#codeDir="${home}/REWOD/DERIVATIVES/PREPROC/CANONICALS/"
+codeDir="${home}/REWOD/EXTERNALDATA/ROI/"
 echo ${codeDir}
 cd ${codeDir}
 
-fslmaths Pirif_Left.nii -add Pirif_Right.nii combined_piri.nii
+#fslmaths Pirif_Left.nii -add Pirif_Right.nii combined_piri.nii
+#fslmaths prob_frontal.nii -add prob_OFC.nii combined_OFC
 
+fslmaths combined_OFC.nii -mas ~/REWOD/DERIVATIVES/ANALYSIS/hedonic/GLM-04/group/covariate/Reward_NoReward_lik_meancent/removing-24/Reward-NoReward/mask.nii masked_OFC
+fslmaths caud0.5 -mas head.nii caud_head
+fslmaths put0.5 -mas head.nii put_head
 #fslmaths dlPFC_LEFT.nii -add dlPFC_RIGHT.nii combined_dlPFC.nii
 
 #fslmaths FRONTAL_LEFT.nii -add FRONTAL_RIGHT.nii combined_FRONTAL.nii
@@ -26,6 +26,6 @@ fslmaths Pirif_Left.nii -add Pirif_Right.nii combined_piri.nii
 
 #mkdir ROIs
 
-gunzip combined*
+gunzip*
 
 #mv *combined /ROIs

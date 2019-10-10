@@ -11,11 +11,11 @@ home = pwd;
 homedir = [home '/REWOD'];
 
 %% def var
-task = 'PIT'; %
+task = 'hedonic'; %
 glm = 'GLM-02';
 threshold = '0.01';
-con_name = 'eff';
-con_name_orig = 'CSp_CSm';
+con_name = 'Baliki';
+con_name_orig = 'R_NoR';
 
 
 

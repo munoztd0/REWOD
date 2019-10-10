@@ -5,7 +5,7 @@ function exctract_betas_mods(glm, task)
 dbstop if error
 
 glm= 'GLM-02';
-task='PIT';
+task='hedonic';
 
 %% which model?
 ana_name = glm;
@@ -13,12 +13,12 @@ ana_name = glm;
 % which task?
 task_name = task; %
 threshold = '0.01';
-con_name = 'eff';
+con_name = 'Baliki';
 
 % which contrast
-con_names = {'CSp-CSm'};
+con_names = {'Reward_NoReward'};
 
-con_list = {'con_0001.nii'}; %
+con_list = {'con_0005.nii'}; %
 %R_C = CONTRAT 1   
 %R_N = CONTRAT 2   
 

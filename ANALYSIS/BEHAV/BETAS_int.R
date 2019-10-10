@@ -4,7 +4,7 @@
 
 # -----------------------  PRELIMINARY STUFF ----------------------------------------
 # load libraries
-pacman::p_load(ggplot2, dplyr, plyr, tidyr, reshape, reshape2, Hmisc, corrplot, ggpubr, gridExtra, mosaic)
+pacman::p_load(ggplot2, dplyr, plyr, tidyr, reshape, reshape2, Hmisc, corrplot, ggpubr, gridExtra, mosaic, psychometric)
 
 if(!require(pacman)) {
   install.packages("pacman")
@@ -78,8 +78,8 @@ A1 <- ggplot(O_N_df, aes(int, AMY_AAA_betas)) + #A2
   #" Slope =",signif(fit$coef[[2]], 5),
   #"  &  P =",signif(summary(lm(O_N_df$AMY_BLA_LEFT_betas~O_N_df$lik))$coef[2,4], 3)))+
   scale_x_continuous(name="Perceived intensity", limits=c(-2.02, 3.02)) +
-  scale_y_continuous(name="Beta Odor > No Odor", limits=c(-0.5, 2)) +
-  theme(plot.subtitle = element_text(size = 10, vjust = -90, hjust =1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+  scale_y_continuous(expression(paste(beta, "  Reward + Neutral > Control")), limits=c(-0.5, 2)) +
+  theme(plot.subtitle = element_text(size = 8, vjust = -90, hjust =1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"), margin = NULL, aspect.ratio=1)
 
 A2 <- ggplot(O_N_df, aes(lik, AMY_AAA_betas)) + 
@@ -89,9 +89,9 @@ A2 <- ggplot(O_N_df, aes(lik, AMY_AAA_betas)) +
   #"likercept =",signif(fit$coef[[1]],5 ),
   #" Slope =",signif(fit$coef[[2]], 5),
   #"  &  P =",signif(summary(lm(O_N_df$AMY_BLA_LEFT_betas~O_N_df$lik))$coef[2,4], 3)))+
-  scale_x_continuous(name="Hedonic Pleasure", limits=c(-2.02, 3.02)) +
-  scale_y_continuous(name="Beta Odor > No Odor", limits=c(-0.5, 2)) +
-  theme(plot.subtitle = element_text(size = 10, vjust = -90, hjust =1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+  scale_x_continuous(name="Hedonic experience", limits=c(-2.02, 3.02)) +
+  scale_y_continuous(name=expression(paste(beta, "  Reward + Neutral > Control")), limits=c(-0.5, 2)) +
+  theme(plot.subtitle = element_text(size = 8, vjust = -90, hjust =1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"), margin = NULL, aspect.ratio=1)
 
 A3 <- ggplot(CSp_CSm_df, aes(eff, AMY_AAA_betas)) + 
@@ -102,8 +102,8 @@ A3 <- ggplot(CSp_CSm_df, aes(eff, AMY_AAA_betas)) +
   #" Slope =",signif(fit$coef[[2]], 5),
   #"  &  P =",signif(summary(lm(CSp_CSm_df$AMY_AAA_betas~CSp_CSm_df$eff))$coef[2,4], 3)))+
   scale_x_continuous(name="Mobilized effort", limits=c(-2.02, 3.02)) +
-  scale_y_continuous(name="Beta CSp > CSm", limits=c(-0.5, 2)) +
-  theme(plot.subtitle = element_text(size = 10,  vjust = -90, hjust =1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+  scale_y_continuous(name=expression(paste(beta, "  CSp > CSm")), limits=c(-0.5, 2)) +
+  theme(plot.subtitle = element_text(size = 8,  vjust = -90, hjust =1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"),  margin = NULL, aspect.ratio=1)
 
 
@@ -111,34 +111,59 @@ figure1 <- ggarrange(A1, A2, A3,
                      #labels = c("B: Coeficients of determination"),
                      ncol = 3, nrow = 1) 
 
-AMY_AAA = image_read_pdf('~/REWOD/DERIVATIVES/BEHAV/FIGURES/AMY_int_AAA.pdf')
+AMY_pirif = image_read_pdf('~/REWOD/DERIVATIVES/BEHAV/FIGURES/neat/AMY_pirif.pdf')
 
-A4 <-  rasterGrob(AMY_AAA, interpolate=TRUE)
-
-
-
-figure2 <- ggarrange(A4, figure1,
-                     labels = c("A","B"),
-                     vjust=1.5, hjust = -1,
-                     ncol = 1, nrow = 2) 
+A4 <-  rasterGrob(AMY_pirif, interpolate=TRUE)
 
 
+# 
+# figure2 <- ggarrange(A4, figure1,
+#                      labels = c("A","B"),
+#                      vjust=1.5, hjust = -1,
+#                      ncol = 1, nrow = 2) 
+
+ggarrange(A4,                                                 # First row with scatter plot
+          ggarrange(A1, A2,  ncol = 2, labels = c("B", "C", "D"), vjust=-1), # Second row with box and dot plots
+          nrow = 2, 
+          labels = "A",
+          hjust =0 # Labels of the scatter plot
+) 
+
+# signif ------------------------------------------------------------------
 
 
-# p-val -------------------------------------------------------------------
+n = 24
+k = 2
+
+# Adj_R2_ = pirif _ int
+rsq =signif(summary(lm(O_N_df$AMY_AAA_betas~O_N_df$int))$r.squared, 3)
+# P = pirif _ int
+p = signif(summary(lm(O_N_df$AMY_AAA_betas~O_N_df$int))$coef[2,4], 3)
+
+CI =CI.Rsq(rsq, n, k, level = 0.95)
+paste("r² = ", signif(rsq,3), ", p = ", signif(p,3), ", 95% CI [", signif(CI$LCL,3), ",", signif(CI$UCL,3), "]")
 
 
+# 1 -----------------------------------------------------------------------
 
-P_eff =signif(summary(lm(CSp_CSm_df$AMY_AAA_betas~CSp_CSm_df$eff))$coef[2,4], 3)
-P_lik =signif(summary(lm(O_N_df$AMY_AAA_betas~O_N_df$lik))$coef[2,4], 3)
-P_int =signif(summary(lm(O_N_df$AMY_AAA_betas~O_N_df$int))$coef[2,4], 3)
-P_eff 
-P_lik 
-P_int
 
-Radj_eff =signif(summary(lm(CSp_CSm_df$AMY_AAA_betas~CSp_CSm_df$eff))$adj.r.squared, 3)
-Radj_lik =signif(summary(lm(O_N_df$AMY_AAA_betas~O_N_df$lik))$adj.r.squared, 3)
-Radj_int =signif(summary(lm(O_N_df$AMY_AAA_betas~O_N_df$int))$adj.r.squared, 3)
-Radj_eff 
-Radj_lik 
-Radj_int
+# Adj_R2_ = pirif _ lik
+rsq =signif(summary(lm(O_N_df$AMY_AAA_betas~O_N_df$lik))$r.squared, 3)
+# P = pirif _ lik
+p = signif(summary(lm(O_N_df$AMY_AAA_betas~O_N_df$lik))$coef[2,4], 3)
+
+CI =CI.Rsq(rsq, n, k, level = 0.95)
+paste("r² = ", signif(rsq,3), ", p = ", signif(p,3), ", 95% CI [", signif(CI$LCL,3), ",", signif(CI$UCL,3), "]")
+
+
+# 1 -----------------------------------------------------------------------
+
+
+# Adj_R2_ = pirif _ eff
+rsq =signif(summary(lm(CSp_CSm_df$AMY_AAA_betas~CSp_CSm_df$eff))$r.squared, 3)
+# P = pirif _ eff
+p = signif(summary(lm(CSp_CSm_df$AMY_AAA_betas~CSp_CSm_df$eff))$coef[2,4], 3)
+
+CI =CI.Rsq(rsq, n, k, level = 0.95)
+paste("r² = ", signif(rsq,3), ", p = ", signif(p,3), ", 95% CI [", signif(CI$LCL,3), ",", signif(CI$UCL,3), "]")
+
