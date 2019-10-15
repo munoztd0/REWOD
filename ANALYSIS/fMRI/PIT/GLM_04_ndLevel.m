@@ -11,7 +11,7 @@ function GLM_04_ndLevel
 
 
 do_covariate = 1;
-remove = 1;
+remove = 0;
 removesub = {'sub-24'};
 removedsub = '24';
 
@@ -25,7 +25,7 @@ homedir = [home '/REWOD/'];
 
 %%
 mdldir   = fullfile(homedir, 'DERIVATIVES/ANALYSIS/PIT');% mdl directory (timing and outputs of the analysis)
-name_ana = 'GLM-04'; % output folder for this analysis
+name_ana = 'GLM-04b'; % output folder for this analysis
 groupdir = fullfile (mdldir,name_ana, 'group/');
 covdir   = fullfile (homedir, 'DERIVATIVES/ANALYSIS/PIT/GLM-04/group_covariates'); % director with the extracted second level covariates
 

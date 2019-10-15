@@ -6,6 +6,7 @@ home=$(eval echo ~$user)
   #do
 docker run -it -v ${home}/REWOD/SOURCEDATA/brain/ jmtyszka/bidskit -d ${home}/REWOD
 
+#biskit will anonymize the dataset
 
 #If you're running bidskit from the shell you can either run bidskit without arguments from within the dataset root
 

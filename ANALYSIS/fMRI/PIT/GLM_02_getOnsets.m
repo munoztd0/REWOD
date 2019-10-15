@@ -18,7 +18,7 @@ homedir = [home '/REWOD/'];
 mdldir        = fullfile (homedir, '/DERIVATIVES/ANALYSIS');
 sourcefiles   = fullfile(homedir, '/DERIVATIVES/PREPROC');
 
-ana_name      = 'GLM-02';
+ana_name      = 'GLM-02b';
 %session       = {'second'};
 task          = {'PIT'};
 subj          = {'01';'02';'03';'04';'05';'06';'07';'09';'10';'11';'12';'13';'14';'15';'16';'17';'18';'20';'21';'22';'23';'24';'25';'26'};

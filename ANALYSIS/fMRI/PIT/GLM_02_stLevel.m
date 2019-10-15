@@ -1,4 +1,4 @@
-function GLM_02_stLevel(subID)
+function GLM_02b_stLevel(subID)
 
 % intended for REWOD PIT
 % get onsets for main model
@@ -7,6 +7,7 @@ function GLM_02_stLevel(subID)
 % No modulators
 % 4 contrasts (CSp-CSm, CSp-Base,  CSp-CSm&Base,  CSm-Base)
 % last modified on JULY 2019 by David Munoz
+% with grips as regressor
 
 %% What to do
 firstLevel    = 1;
@@ -25,7 +26,7 @@ homedir = [home '/REWOD/'];
 
 mdldir   = fullfile(homedir, '/DERIVATIVES/ANALYSIS/', task);% mdl directory (timing and outputs of the analysis)
 funcdir  = fullfile(homedir, '/DERIVATIVES/PREPROC');% directory with  post processed functional scans
-name_ana = 'GLM-02'; % output folder for this analysis
+name_ana = 'GLM-02b'; % output folder for this analysis
 groupdir = fullfile (mdldir,name_ana, 'group/');
 
 addpath('/usr/local/external_toolboxes/spm12/');
@@ -38,8 +39,10 @@ spm('Defaults','fMRI');
 spm_jobman('initcfg');
 
 %% define experiment setting parameters
-subj       =  subID; %{'01';'02';'03';'04';'05';'06';'07';'09';'10';'11';'12';'13';'14';'15';'16';'17';'18';'20';'21';'22';'23';'24';'25';'26';}; %subID;
+subj       = {'18';'20';'21';'22';'23';'24';'25';'26';}; %subID;
 param.task = {'PIT'};
+
+% '01';'02';'03';'04';'05';'06';'07';'09';'10';'11';'12';'13';'14';'15';'16';'17';
 
 %% define experimental design parameters
 param.Cnam     = cell (length(param.task), 1);
@@ -269,17 +272,21 @@ end
             
             %multiple regressors for mvts parameters ( no movement regressor after FIX denoising)
         
-            %rnam = {'X','Y','Z','x','y','z'};
-            
-            %movement
-                        %targetfile         = dir (fullfile(smoothfolder, ['rp_*' taskX '*.txt']));
+        
+           %rnam = {'X','Y','Z','x','y','z'};
+           rnam = {'effort'};
+           physio        = fullfile('~/REWOD',['sub-' subjX], 'ses-second', 'physio');
+        
+           cd (physio)
+        
+           effort = dlmread('regressor_effort.txt');
+           
+           SPM.Sess(ses).C.C = effort;
+           SPM.Sess(ses).C.name = rnam;
 
-                        %fn = spm_select('List',smoothfolder,targetfile.name);% path
-                        %[r1,r2,r3,r4,r5,r6] = textread([smoothfolder '/' fn(1,:)],'%f%f%f%f%f%f'); % path
-                        %SPM.Sess(ses).C.C = [r1 r2 r3 r4 r5 r6];
-                        %SPM.Sess(ses).C.name = rnam;
         end
         
+        cd([subjoutdir '/output/'])
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % basis functions and timing parameters

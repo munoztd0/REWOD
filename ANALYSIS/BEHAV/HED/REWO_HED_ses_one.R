@@ -3,46 +3,35 @@
 
 
 # -----------------------  PRELIMINARY STUFF ----------------------------------------
-# load libraries
-#if(!require(pacman)) {
-#install.packages("pacman")
-#library(pacman)
-#}
-#pacman::p_load(car, lme4, lmerTest, pbkrtest, ggplot2, dplyr, plyr, tidyr, multcomp, mvoutlier, HH, doBy, psych, pastecs, reshape, reshape2, 
-#jtools, effects, compute.es, DescTools, MBESS, afex, ez, metafor, influence.ME)
-
-#require(lattice)
 
 rm(list = ls())
 
 # load library:
 
-library(lme4)
-library(lmerTest)
-library(ggplot2)
-library(dplyr)
-library(plyr)
-library(influence.ME)
-library(plotrix)
-library(Rmisc)
-#library(doBy)
-#library(afex)
-#library(sjstats)
-#library(gamlss)
-#library(mvoutlier)
-#library(HH)
-#library(multcomp)
-#library(pbkrtest)
+# library(lme4)
+# library(lmerTest)
+# library(ggplot2)
+# library(dplyr)
+# library(plyr)
+# library(influence.ME)
+# library(plotrix)
+# library(Rmisc)
+pacman::p_load(ggplot2, dplyr, plyr, tidyr, reshape, reshape2, Hmisc, corrplot, ggpubr, gridExtra)
 
+if(!require(pacman)) {
+  install.packages("pacman")
+  library(pacman)
+}
 
 #SETUP
 task = 'HED'
+
 # Set working directory
 analysis_path <- file.path('~/REWOD/DERIVATIVES/BEHAV', task) 
 setwd(analysis_path)
 
 # open dataset (session two only)
-REWOD_HED <- read.delim(file.path(analysis_path,'REWOD_HEDONIC_ses_second.txt'), header = T, sep ='') # read in dataset
+REWOD_HED <- read.delim(file.path(analysis_path,'REWOD_HEDONIC_ses_first.txt'), header = T, sep ='') # read in dataset
 
 # define factors
 #REWOD_HED$id               <- factor(REWOD_HED$id)
@@ -190,20 +179,20 @@ ggplot(df1, aes(x = trialxcondition, y = perceived_liking, color=Condition)) +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, size=20,  face="bold"), axis.title = element_text(size=14), axis.text=element_text(size=14), legend.position = c(0.9, 0.9), legend.title=element_blank()) +
   labs(
-  title = "Time Trajectory: Pleasantness  ",
-  x = "Trial",
-  y = "Liking Ratings"
+    title = "Time Trajectory: Pleasantness  ",
+    x = "Trial",
+    y = "Liking Ratings"
   )
- 
+
 ggplot(df, aes(x = trialxcondition, y = n_grips, color=Condition)) +
   geom_line(aes(linetype = Condition), alpha = .7, size = 1) +
   geom_point() +
   geom_errorbar(aes(ymax = n_grips + 0.5*se, ymin = n_grips - 0.5*se), width=0.1, alpha=0.7, size=0.4)+
-
-
-# ANALYSIS
-
-REWOD_HED$id               <- factor(REWOD_HED$id)
+  
+  
+  # ANALYSIS
+  
+  REWOD_HED$id               <- factor(REWOD_HED$id)
 REWOD_HED$condition       <- factor(REWOD_HED$condition)
 
 #removing empty condition
@@ -330,7 +319,7 @@ anova(main.liking)
 summary(aov(perceived_liking ~ cvalue + Error(id / (cvalue)), data = REWOD_HED.woemp))
 
 # model comparison
-main.liking.0 = lmer(perceived_liking ~ (1|id) + (1|trial), data = REWOD_HED.woemp, REML = FALSE)
+main.liking.0 = lmer(perceived_liking ~ (1+cvalue|id) + (1|trialxcondition), data = REWOD_HED.woemp, REML = FALSE)
 anova(main.liking.0, main.liking, test = 'Chisq')
 #sentence => main.liking is signifincatly better than the null model
 

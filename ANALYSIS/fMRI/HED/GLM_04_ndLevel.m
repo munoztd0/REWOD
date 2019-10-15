@@ -10,7 +10,7 @@ function GLM_04_ndLevel()
 
 %does t-test and full_factorial
 do_covariate = 1;
-remove = 1;
+remove = 0;
 removesub = {'sub-24'} ;
 removedsub = '24';
 

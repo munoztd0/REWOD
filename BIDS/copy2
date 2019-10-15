@@ -15,16 +15,15 @@ for subj in 01 02 03 04 05 06 07 09 10 11 12 13 14 15 16 17 18 20 21 22 23 24 25
   #mv ${home}/REWOD/sub-${subj}/ses-first/beh/sub-${subj}_ses-first_task-pavlearning_run-01_events.tsv ${home}/REWOD/sub-${subj}/ses-first/beh/sub-${subj}_ses-first_task-pavconditioning_run-01_events.tsv
   #atom ${home}/REWOD/sub-${subj}/ses-second/fmap/sub-${subj}_ses-second_run-01_phasediff.json
 
-  cp -r  ${home}/SAVED/BEHAVIOR/DATA/RAW/BEHAVIORAL/INSTRUMENTAL/${subj}/one/i* ${home}/REWOD/SOURCEDATA/${subj}/ses-first_task-instrulearning/
-  cp -r ${home}/SAVED/BEHAVIOR/DATA/RAW/BEHAVIORAL/CONDITIONING/${subj}/one/c* ${home}/REWOD/SOURCEDATA/${subj}/ses-first_task-pavconditioning/
+  ##cp -r ${home}/SAVED/BEHAVIOR/DATA/RAW/BEHAVIORAL/CONDITIONING/${subj}/one/c* ${home}/REWOD/SOURCEDATA/${subj}/ses-first_task-pavconditioning/
   #cp -r ${home}/SAVED/BEHAVIOR/DATA/RAW/BEHAVIORAL/HEDONIC/${subj}/one/h* ${home}/REWOD/SOURCEDATA/${subj}/ses-first_task-hedonic/
   #cp -r ${home}/SAVED/BEHAVIOR/DATA/RAW/BEHAVIORAL/HEDONIC/${subj}/two/h* ${home}/REWOD/SOURCEDATA/${subj}/ses-second_task-hedonic/
   #cp -r ${home}/SAVED/BEHAVIOR/DATA/RAW/BEHAVIORAL/PIT/${subj}/two/P* ${home}/REWOD/SOURCEDATA/${subj}/ses-second_task-PIT/
   #cp -r ${home}/SAVED/BEHAVIOR/DATA/RAW/BEHAVIORAL ${subj}/* ${home}/REWOD/sub-${subj}/
 
 
-
-  #mkdir ${home}/REWOD/DERIVATIVES/PREPROC/sub-${subj}/ses-first
+  mkdir ${home}/REWOD/SOURCEDATA/behav/${subj}
+  mv ${home}/REWOD/SOURCEDATA/brain/${subj}/ses* ${home}/REWOD/SOURCEDATA/behav/${subj}/
   #mv ${home}/REWOD/DERIVATIVES/PREPROC/sub-${subj}/ses-first/behav ${home}/REWOD/DERIVATIVES/PREPROC/sub-${subj}/ses-first/beh
   #mv ${home}/REWOD/DERIVATIVES/PREPROC/sub-${subj}/ses-first/beh/behav  ${home}/REWOD/sub-${subj}/ses-first/beh
   #mv ${home}/SAVED/RAW/${subj}/second/sub-${subj}_ses-second_run-01_fmap_magnitude.json ${home}/REWOD/sub-${subj}/ses-second/fmap/sub-${subj}_ses-second_run-01_magnitude.json

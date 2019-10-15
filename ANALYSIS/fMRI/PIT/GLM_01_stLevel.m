@@ -1,14 +1,14 @@
-function GLM_01_stLevel(subID)
+function GLM_01b_stLevel(subID)
 
 % intended for REWOD PIT
 % get onsets for control model
-% Durations =0 (stick function)
+% Durations =0 (stick function) + effort regressor
 % Simplified model on ONSETs 3*CS with modulator and grips as control
 % No modulators
 % 1 contrasts (Grips)
 % last modified on JULY 2019  by David MUNOZ
 
-
+dbstop if error
 
 %% What to do
 firstLevel    = 1;
@@ -27,7 +27,7 @@ homedir = [home '/REWOD/'];
 
 mdldir   = fullfile(homedir, '/DERIVATIVES/ANALYSIS/', task);% mdl directory (timing and outputs of the analysis)
 funcdir  = fullfile(homedir, '/DERIVATIVES/PREPROC');% directory with  post processed functional scans
-name_ana = 'GLM-01'; % output folder for this analysis
+name_ana = 'GLM-01b'; % output folder for this analysis
 groupdir = fullfile (mdldir,name_ana, 'group/');
 
 addpath('/usr/local/external_toolboxes/spm12/');
@@ -41,7 +41,7 @@ spm('Defaults','fMRI');
 spm_jobman('initcfg');
 
 %% define experiment setting parameters
-subj       = subID; %{'01';'02';'03';'04';'05';'06';'07';'09';'10';'11';'12';'13';'14';'15';'16';'17';'18';'20';'21';'22';'23';'24';'25';'26';}; %subID;
+subj       = {'06';'07';'09';'10';'11';'12';'13';'14';'15';'16';'17';'18';'20';'21';'22';'23';'24';'25';'26';}; %subID;
 param.task = {'PIT'};
 
 %% define experimental design parameters
@@ -57,19 +57,19 @@ for i = 1:length(param.task)
         'PE',...%2
         'CSplus',...%3
         'CSminus',...%4
-        'Baseline',...%5
-        'gripsREM',...%6
-        'gripsPE',...%7
-        'gripsPIT'};%8
+        'Baseline'}; %,...%5
+        %'gripsREM',...%6
+        %'gripsPE',...%7
+        %'gripsPIT'};%8
     
     param.onset{i} = {'ONS.onsets.CS.REM',...%1
         'ONS.onsets.CS.PE',...%2
         'ONS.onsets.CS.CSp',...%3
         'ONS.onsets.CS.CSm',...%4
-        'ONS.onsets.CS.Baseline',...%5
-        'ONS.onsets.grips.REM',...%6
-        'ONS.onsets.grips.PE',...%7
-        'ONS.onsets.grips.PIT'};%8
+        'ONS.onsets.CS.Baseline'}; %,...%5
+        %'ONS.onsets.grips.REM',...%6
+        %'ONS.onsets.grips.PE',...%7
+        %'ONS.onsets.grips.PIT'};%8
 
     
     
@@ -78,10 +78,10 @@ for i = 1:length(param.task)
         'ONS.durations.CS.PE',...
         'ONS.durations.CS.CSp',...
         'ONS.durations.CS.CSm',...
-        'ONS.durations.CS.Baseline',...
-        'ONS.durations.grips.REM',...
-        'ONS.durations.grips.PE',...
-        'ONS.durations.grips.PIT'};
+        'ONS.durations.CS.Baseline'}; %,...
+        %'ONS.durations.grips.REM',...
+        %'ONS.durations.grips.PE',...
+        %'ONS.durations.grips.PIT'};
     
     % parametric modulation of your events or blocks (ex: linear time, or emotional value, or pupillary size, ...)
     % If you have a parametric modulation
@@ -89,29 +89,29 @@ for i = 1:length(param.task)
         'none',...%2
         'none',...%3
         'none',...%4
-        'none',...%5
-        'none',...%6
-        'none',...%7
-        'none'};%8
+        'none'}; %,...%5
+        %'none',...%6
+        %'none',...%7
+        %'none'};%8
     
     param.modul{i} = {'none',...%1
         'none',...%2
         'none',...%3
         'none',... %4
-        'none',... %5
-        'none',... %6
-        'none',... %7
-        'none'}; %8
+        'none'}; %,... %5
+        %'none',... %6
+        %'none',... %7
+        %'none'}; %8
     
     % value of the modulators, If you have a parametric modulation
     param.time{i} = {'0',... %1
         '0',... %2
         '0',... %3
         '0',... %4
-        '0',... %5
-        '0',... %6
-        '0',... %7
-        '0'};%8
+        '0'}; %,... %5
+        %'0',... %6
+        %'0',... %7
+        %'0'};%8
     
     
 end
@@ -289,7 +289,16 @@ end
            %multiple regressors for mvts parameters ( BUT no movement regressor after FIX denoising)
         
            %rnam = {'X','Y','Z','x','y','z'};
-            
+           rnam = {'effort'};
+           physio        = fullfile('~/REWOD',['sub-' subjX], 'ses-second', 'physio');
+        
+           cd (physio)
+        
+           effort = dlmread('regressor_effort.txt');
+           
+           SPM.Sess(ses).C.C = effort;
+           SPM.Sess(ses).C.name = rnam;
+
            %movement
                         %targetfile         = dir (fullfile(smoothfolder, ['rp_*' taskX '*.txt']));
 
@@ -299,7 +308,7 @@ end
                         %SPM.Sess(ses).C.name = rnam;
         end
         
-        
+        cd([subjoutdir '/output/'])
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % basis functions and timing parameters
         

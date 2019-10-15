@@ -1,9 +1,10 @@
-function GLM_04_stLevel(subID)
+function GLM_02_stLevel(subID)
 
 % intended for REWOD PIT
-% get onsets for model with 2st level covariates
+% get onsets for main model
 % Durations =1 (except grips)
 % Model on ONSETs 3*CS with modulator
+% No modulators
 % 4 contrasts (CSp-CSm, CSp-Base,  CSp-CSm&Base,  CSm-Base)
 % last modified on JULY 2019 by David Munoz
 % with grips as regressor
@@ -23,11 +24,10 @@ home = pwd;
 homedir = [home '/REWOD/'];
 
 
-mdldir   = fullfile(homedir, 'DERIVATIVES/ANALYSIS/PIT');% mdl directory (timing and outputs of the analysis)
-funcdir  = fullfile(homedir, 'DERIVATIVES/PREPROC');% directory with  post processed functional scans
-name_ana = 'GLM-04'; % output folder for this analysis
+mdldir   = fullfile(homedir, '/DERIVATIVES/ANALYSIS/', task);% mdl directory (timing and outputs of the analysis)
+funcdir  = fullfile(homedir, '/DERIVATIVES/PREPROC');% directory with  post processed functional scans
+name_ana = 'GLM-02'; % output folder for this analysis
 groupdir = fullfile (mdldir,name_ana, 'group/');
-
 
 addpath('/usr/local/external_toolboxes/spm12/');
 %addpath /usr/local/MATLAB/R2018a/spm12 ;
@@ -39,7 +39,7 @@ spm('Defaults','fMRI');
 spm_jobman('initcfg');
 
 %% define experiment setting parameters
-subj       =  subID; %{'01'; '02';'03';'04';'05';'06';'07';'09';'10';'11';'12';'13';'14';'15';'16';'17';'18';'20';'21';'22';'23';'24';'25';'26';}; %subID; 
+subj       =  subID; %{'01';'02';'03';'04';'05';'06';'07';'09';'10';'11';'12';'13';'14';'15';'16';'17';'18';'20';'21';'22';'23';'24';'25';'26';}; %subID;
 param.task = {'PIT'};
 
 %% define experimental design parameters
@@ -57,7 +57,7 @@ for i = 1:length(param.task)
         'CSplus',...%3
         'CSminus',...%4
         'Baseline'};%5
-    
+   
     param.onset{i} = {'ONS.onsets.CS.REM',...%1
         'ONS.onsets.CS.PE',...%2
         'ONS.onsets.CS.CSp',...%3
@@ -73,7 +73,7 @@ for i = 1:length(param.task)
         'ONS.durations.CS.CSm',...
         'ONS.durations.CS.Baseline'};
     
-    
+   
     % parametric modulation of your events or blocks (ex: linear time, or emotional value, or pupillary size, ...)
     % If you have a parametric modulation
     param.modulName{i} = {'none',...%1
@@ -94,7 +94,8 @@ for i = 1:length(param.task)
         '0',... %3
         '0',... %4
         '0'};%5
-   
+    
+    
 end
 
 %% apply design for first level analysis for each participant
@@ -103,8 +104,8 @@ for i = 1:length(subj)
     
     % participant's specifics
     subjX = char(subj(i));
-    subjoutdir =fullfile(mdldir,name_ana, [ 'sub-' subjX]); % subj{i,1}
-    subjfuncdir=fullfile(funcdir, [ 'sub-' subjX], 'ses-second', 'func');
+    subjoutdir =fullfile(mdldir,name_ana, [ 'sub-' subjX]); 
+    subjfuncdir=fullfile(funcdir, [ 'sub-' subjX], 'ses-second'); 
     fprintf('participant number: %s \n', subj{i});
     cd (subjoutdir)
     
@@ -126,7 +127,7 @@ for i = 1:length(subj)
     end
     
     %%%%%%%%%%%%%%%%%%%%% COPY CONSTRASTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    if copycontrasts == 1
+   if copycontrasts == 1
         
         mkdir (groupdir); % make the group directory where contrasts will be copied
         cd (fullfile(subjoutdir,'output'))
@@ -165,21 +166,23 @@ end
         ses = 1:ntask;
 
         taskX = char(param.task(ses));
-        targetscan         = dir (fullfile(subjfuncdir, [im_style '*' taskX '*' param.im_format]));
-        tmp{ses}           = spm_select('List',subjfuncdir,targetscan.name);
+        smoothfolder       = [subjfuncdir '/func'];
+        targetscan         = dir (fullfile(smoothfolder, [im_style '*' taskX '*' param.im_format]));
+        tmp{ses}           = spm_select('List',smoothfolder,targetscan.name);
 
         % get the number of EPI for each session
-        cd (subjfuncdir);
-        V         = dir(fullfile(subjfuncdir, targetscan.name));
+        cd (smoothfolder);
+        V         = dir(fullfile(smoothfolder, targetscan.name));
         [p,n,e]   = spm_fileparts(V(1).name);
         Vn        = spm_vol(fullfile(p,[n e]));
         nscans    = [nscans numel(Vn)];
 
         for j = 1:nscans(ses)
-            scanID    = [scanID; {[subjfuncdir,'/', V.name, ',', num2str(j)]}];
+            scanID    = [scanID; {[smoothfolder,'/', V.name, ',', num2str(j)]}];
         end
 
-       
+        %end
+        
         SPM.xY.P    = char(scanID);
         SPM.nscan   = nscans;
         
@@ -206,15 +209,15 @@ end
             for cc=1:nconds
                 
                 if ~ std(eval(param.onset{ses}{cc}))== 0 % only if the onsets are not all 0
-               
+                    
                     c = c+1; % update counter
                     
                     SPM.Sess(ses).U(c).name      = {param.Cnam{ses}{cc}};
                     SPM.Sess(ses).U(c).ons       = eval(param.onset{ses}{cc});
                     SPM.Sess(ses).U(c).dur       = eval(param.duration{ses}{cc});
                     
-                    SPM.Sess(ses).U(c).orth = 0; %no ortho !!
                     SPM.Sess(ses).U(c).P(1).name = 'none';
+                    SPM.Sess(ses).U(c).orth = 0; %no ortho!!
                     
                     if isfield (param, 'modul') % this parameters are specified only if modulators are defined in the design
                         
@@ -229,18 +232,11 @@ end
                                     
                                     nc = nc+1;
                                     mod_name = char(mod_names(nmod));
-                                    if  ~ round(std(eval([param.modul{ses}{cc} '.' mod_name])),10)== 0
-                                      
                                     
-                                        SPM.Sess(ses).U(c).P(nc).name  = mod_name;
-                                        SPM.Sess(ses).U(c).P(nc).P     = eval([param.modul{ses}{cc} '.' mod_name]);
-                                        SPM.Sess(ses).U(c).P(nc).h     = 1;
-                                    else
-
-                                       SPM.Sess(ses).U(c).P(1).name  = [];
-                                       SPM.Sess(ses).U(c).P(1).P     = [];
-                                       SPM.Sess(ses).U(c).P(1).h     = []; 
-                                    end
+                                    SPM.Sess(ses).U(c).P(nc).name  = mod_name;
+                                    SPM.Sess(ses).U(c).P(nc).P     = eval([param.modul{ses}{cc} '.' mod_name]);
+                                    SPM.Sess(ses).U(c).P(nc).h     = 1;
+                                    
 
                                 end
                                 
@@ -272,20 +268,18 @@ end
             SPM.Sess(ses).C.C = [];
             SPM.Sess(ses).C.name = {};
             
-           %rnam = {'X','Y','Z','x','y','z'};
-           rnam = {'effort'};
-           physio        = fullfile('~/REWOD',['sub-' subjX], 'ses-second', 'physio');
+            %multiple regressors for mvts parameters ( no movement regressor after FIX denoising)
         
-           cd (physio)
-        
-           effort = dlmread('regressor_effort.txt');
-           
-           SPM.Sess(ses).C.C = effort;
-           SPM.Sess(ses).C.name = rnam;
+            %rnam = {'X','Y','Z','x','y','z'};
+            
+            %movement
+                        %targetfile         = dir (fullfile(smoothfolder, ['rp_*' taskX '*.txt']));
 
+                        %fn = spm_select('List',smoothfolder,targetfile.name);% path
+                        %[r1,r2,r3,r4,r5,r6] = textread([smoothfolder '/' fn(1,:)],'%f%f%f%f%f%f'); % path
+                        %SPM.Sess(ses).C.C = [r1 r2 r3 r4 r5 r6];
+                        %SPM.Sess(ses).C.name = rnam;
         end
-        
-        cd([subjoutdir '/output/'])
         
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -338,7 +332,7 @@ end
         
         % intrinsic autocorrelations: OPTIONS: 'none'|'AR(1) + w'
         %--------------------------------------------------------------------------
-        SPM.xVi.form       = 'AR(1)';
+        SPM.xVi.form       = 'AR(1)'; 
         
         % specify SPM working dir for this sub
         %==========================================================================
@@ -378,7 +372,7 @@ end
         for j = 1:ncondition
             
             %taskN = SPM.xX.name{j} (4);
-            task  = 'task-PIT.'; 
+            task  = ['task-PIT.']; %taskN in the middle
             conditionName{j} = strcat(task,SPM.xX.name{j} (7:end-6)); %this cuts off the useless parts of the names
             
         end
@@ -401,9 +395,8 @@ end
         weightNeg  = ismember(conditionName, {'task-PIT.Baseline'}) * -1;
         Ct(2,:)    = weightPos+weightNeg;
         
-        
         % con3
-        Ctnames{3} = 'CSp-CSm&Baseline'; 
+        Ctnames{3} = 'CSp-CSm&Baseline';
         weightPos  = ismember(conditionName, {'task-PIT.CSplus'}) * 2;
         weightNeg  = ismember(conditionName, {'task-PIT.CSminus', 'task-PIT.Baseline'}) * -1;
         Ct(3,:)    = weightPos+weightNeg;
@@ -415,7 +408,7 @@ end
         weightNeg  = ismember(conditionName, {'task-PIT.Baseline'}) * -1;
         Ct(4,:)    = weightPos+weightNeg;
         
-
+  
         
         % define F constrasts
         %------------------------------------------------------------------
@@ -449,7 +442,6 @@ end
         spm_jobman('run',jobs)
         
         disp ('contrasts created!')
-        
         
     end
 

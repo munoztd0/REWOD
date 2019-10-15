@@ -46,8 +46,8 @@ for i = 1:length(subj)
     disp (['****** PARTICIPANT: ' subjX ' *******']);
    
     %load behavioral file
-    behavior_dir = fullfile(homedir, 'SOURCEDATA', subjO, [sessionX '_task-' task]);
-            cd (behavior_dir{1})
+    behavior_dir = fullfile(homedir, 'SOURCEDATA', 'behav', subjX, [sessionX '_task-' task]);
+            cd (behavior_dir)
             load (['hedonic_S' num2str(subjX) ])
   
     
