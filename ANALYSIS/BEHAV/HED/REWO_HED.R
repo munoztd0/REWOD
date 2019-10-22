@@ -26,7 +26,7 @@ REWOD_HED <- read.delim(file.path(analysis_path,'REWOD_HEDONIC_ses_second.txt'),
 REWOD_HED$session          <- factor(REWOD_HED$session)
 REWOD_HED$condition        <- factor(REWOD_HED$condition)
 
-REWOD_HED$Condition[REWOD_HED$condition== 'chocolate']     <- 'Chocolate'
+REWOD_HED$Condition[REWOD_HED$condition== 'chocolate']     <- 'Reward'
 REWOD_HED$Condition[REWOD_HED$condition== 'empty']     <- 'Control'
 REWOD_HED$Condition[REWOD_HED$condition== 'neutral']     <- 'Neutral'
 
@@ -107,48 +107,63 @@ ggplotRegression(lm(perceived_intensity ~ trialxcondition*condition, data = bct)
 
 
 dfLIK <- summarySE(REWOD_HED, measurevar="perceived_liking", groupvars=c("trialxcondition", "Condition"))
+dfLIK$Condition = as.factor(dfLIK$Condition)
+dfLIK$Condition = factor(dfLIK$Condition,levels(dfLIK$Condition)[c(3,2,1)])
 
 ggplot(dfLIK, aes(x = trialxcondition, y = perceived_liking, color=Condition)) +
-  geom_line(alpha = .7, size = 1) +
-  geom_point() +
-  geom_errorbar(aes(ymax = perceived_liking + 0.5*se, ymin = perceived_liking - 0.5*se), width=0.1, alpha=0.7, size=0.4)+
-  scale_colour_manual(values = c("Chocolate"="blue", "Neutral"="red", "Control"="black")) +
-  scale_x_continuous(breaks=c(seq.int(-1,18, by = 2),18), limits = c(0,18)) + 
-  scale_y_continuous(breaks = c(seq.int(40,75, by = 5)), limits = c(40,76)) +
+  geom_line(alpha = .7, size = 1, position =position_dodge(width = 0.5)) +
+  geom_point(position =position_dodge(width = 0.5)) +
+  geom_errorbar(aes(ymax = perceived_liking +se, ymin = perceived_liking -se), width=0.5, alpha=0.7, size=0.4, position = position_dodge(width = 0.5))+
+  scale_colour_manual(values = c("Reward"="blue", "Neutral"="red", "Control"="black")) +
+  scale_y_continuous(expand = c(0, 0),  limits = c(40,80),  breaks=c(seq.int(40,80, by = 5))) +  #breaks = c(4.0, seq.int(5,16, by = 2.5)),
+  scale_x_continuous(expand = c(0, 0), limits = c(0,19), breaks=c(0, seq.int(1,18, by = 2),19))+ 
   theme_classic() +
-  theme(axis.title = element_text(size=12), 
-         legend.position = c(0.9, 0.9), legend.title=element_blank()) +
+    theme(plot.margin = unit(c(1, 1, 1, 1), units = "cm"), axis.title.x = element_text(size=16),
+          axis.title.y = element_text(size=16), legend.position = c(0.9, 0.9), legend.title=element_blank()) +
   labs(x = "Trials",y = "Pleasantness Ratings")
+
+  # theme(text = element_text(size=rel(4)), plot.margin = unit(c(1, 1,0, 1), units = "cm"), 
+  #       axis.title.x = element_text(size=16), axis.title.y = element_text(size=16)) +
+
+
+
 
 
 # summarySE provides the standard deviation, standard error of the mean, and a (default 95%) confidence interval
-dfLIK2 <- summarySE(REWOD_HED, measurevar="perceived_liking", groupvars=c("Condition"))
+dfLIK2 <- summarySE(bsLIK, measurevar="perceived_liking", groupvars=c("Condition"))
 dfLIK2$Condition <- as.factor(dfLIK2$Condition)
 bsLIK$Condition <- as.factor(bsLIK$Condition)
 
-dfLIK2$Condition = factor(dfLIK2$Condition,levels(dfLIK2$Condition)[c(1,3,2)])
-bsLIK$Condition = factor(bsLIK$Condition,levels(bsLIK$Condition)[c(1,3,2)])  
+dfLIK2$Condition = factor(dfLIK2$Condition,levels(dfLIK2$Condition)[c(3,2,1)])
+bsLIK$Condition = factor(bsLIK$Condition,levels(bsLIK$Condition)[c(3,2,1)])  
 
-ggplot(bsLIK, aes(x = Condition, y = perceived_liking)) +
-  geom_jitter(width = 0.05, color="dark grey") +
-  geom_bar(data=dfLIK2, stat="identity", fill="black", alpha=0.6, width=0.35, position = position_dodge(width = 0.01)) +
+ggplot(bsLIK, aes(x = Condition, y = perceived_liking, fill = Condition)) +
+  geom_jitter(width = 0.05, color="black",alpha=0.5, size = 0.5) +
+  geom_bar(data=dfLIK2, stat="identity", alpha=0.6, width=0.35, position = position_dodge(width = 0.01)) +
+  scale_fill_manual("legend", values = c("Reward"="blue", "Neutral"="red", "Control"="black")) +
   geom_line(aes(x=Condition, y=perceived_liking, group=id), col="grey", alpha=0.4) +
   geom_errorbar(data=dfLIK2, aes(x = Condition, ymax = perceived_liking + se, ymin = perceived_liking - se), width=0.1, colour="black", alpha=1, size=0.4)+
-  #scale_x_continuous(breaks=c(seq.int(-1,18, by = 2),18), limits = c(0,18)) + 
-  scale_y_continuous(breaks = c(seq.int(0,100, by = 20)), limits = c(0,100)) +
+  scale_y_continuous(expand = c(0, 0), breaks = c(seq.int(0,100, by = 20)), limits = c(0,100)) +
   theme_classic() +
-  theme(axis.title = element_text(size=12), 
-        legend.position = c(0.9, 0.9), legend.title=element_blank()) +
+  theme(plot.margin = unit(c(1, 1, 1, 1), units = "cm"),  axis.title.x = element_text(size=16), axis.text.x = element_text(size=12),
+        axis.title.y = element_text(size=16), legend.position = "none", axis.ticks.x = element_blank(), axis.line.x = element_line(color = "white")) +
   labs(
     x = "Odor Stimulus",
     y = "Plesantness Ratings"
   )
- 
 
-# ggplot(df, aes(x = trialxcondition, y = n_grips, color=Condition)) +
-#   geom_line(aes(linetype = Condition), alpha = .7, size = 1) +
+# 
+# ggplot(dfPIT, aes(x = trialxcondition, y = n_grips, color=Condition)) +
+#   geom_line(alpha = .7, size = 1) +
 #   geom_point() +
 #   geom_errorbar(aes(ymax = n_grips + 0.5*se, ymin = n_grips - 0.5*se), width=0.1, alpha=0.7, size=0.4)+
+#   scale_colour_manual(values = c("CS+"="blue", "CS-"="red", "Baseline"="black")) +
+#   scale_y_continuous(expand = c(0, 0),  limits = c(4.0,16)) +  #breaks = c(4.0, seq.int(5,16, by = 2.5)),
+#   scale_x_continuous(expand = c(0, 0), limits = c(0,16), breaks=c(0, seq.int(1,15, by = 2),16))+ 
+#   theme_classic() +
+#   theme(plot.margin = unit(c(1, 1, 1, 1), units = "cm"), axis.title.x = element_text(size=16), 
+#         axis.title.y = element_text(size=16), legend.position = c(0.9, 0.9), legend.title=element_blank()) +
+#   labs(x = "Trials",y = "Number of Squeezes")
 
 
 # ANALYSIS
@@ -173,7 +188,15 @@ qqnorm(residuals(my.model))
 #alt.est.trial <- influence(model=my.model, group="trialxcondition")
 
 
-#how I would do --
+
+# #just anova BC HLM dont work really
+HED.aov <- aov_car(perceived_liking ~ condition + Error(id/condition), data = REWOD_HED, anova_table = list(es = "pes"), fun_aggregate = mean)
+HED.aov
+HED.aov_sum <- summary(HED.aov)
+HED.aov_sum
+
+
+#else
 mymodel = lmer(perceived_liking ~ condition + (1|id) + (1|trialxcondition), data = REWOD_HED)
 
 lsmeans(mymodel, pairwise ~ condition)
@@ -213,16 +236,18 @@ REWOD_HED$cvalue       <- factor(REWOD_HED$cvalue)
 
 
 # lmer analyis ~ cvalue 
-main.liking = lmer(perceived_liking ~ cvalue + (1|id) + (1|trialxcondition), data = REWOD_HED, REML = FALSE)
+main.liking = lmer(perceived_liking ~ cvalue + trialxcondition + (1|id), data = REWOD_HED, REML = FALSE)
 summary(main.liking)
 #sphericity ok\
+
+plot(main.liking) #weird?
 
 # quick check with classical anova (! this is not reliable)
 #summary(aov(perceived_liking ~ cvalue, data = REWOD_HED))
 
- 
+
 # model comparison
-main.liking.0 = lmer(perceived_liking ~ (1|id) + (1|trialxcondition), data = REWOD_HED, REML = FALSE)
+main.liking.0 = lmer(perceived_liking ~ (1|id) + (1|), data = REWOD_HED, REML = FALSE)
 test = anova(main.liking.0, main.liking, test = 'Chisq')
 test
 #sentence => main.liking is signifincatly better than the null model

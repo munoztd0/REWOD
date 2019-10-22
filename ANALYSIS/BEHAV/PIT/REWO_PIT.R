@@ -97,67 +97,60 @@ PIT.bs = ddply(REWOD_PIT, .(id, Condition), summarise, n_grips = mean(n_grips, n
 dfPIT <- summarySE(REWOD_PIT, measurevar="n_grips", groupvars=c("trialxcondition", "Condition"))
 
 
+dfPIT$Condition = factor(dfPIT$Condition,levels(dfPIT$Condition)[c(3,2,1)])
 
 ggplot(dfPIT, aes(x = trialxcondition, y = n_grips, color=Condition)) +
-  geom_line(alpha = .7, size = 1) +
-  geom_point() +
-  geom_errorbar(aes(ymax = n_grips + 0.5*se, ymin = n_grips - 0.5*se), width=0.1, alpha=0.7, size=0.4)+
+  geom_point(position = position_dodge(width = 0.5)) +
+  geom_line(alpha = .7, size = 1, position = position_dodge(width = 0.5)) +
+  geom_errorbar(aes(ymax = n_grips + se, ymin = n_grips - se), width=0.5, alpha=0.7, size=0.4,position = position_dodge(width = 0.5))+
   scale_colour_manual(values = c("CS+"="blue", "CS-"="red", "Baseline"="black")) +
-  scale_y_continuous(breaks = c(4.0, seq.int(5,16, by = 2.5)), limits = c(4.0,16)) +
-  scale_x_continuous(breaks=c(seq.int(-1,15, by = 2))) + 
+  scale_y_continuous(expand = c(0, 0),  limits = c(4.0,16)) +  #breaks = c(4.0, seq.int(5,16, by = 2.5)),
+  scale_x_continuous(expand = c(0, 0), limits = c(0,16), breaks=c(0, seq.int(1,15, by = 2),16))+ 
   theme_classic() +
-  theme(axis.title = element_text(size=12), 
-        legend.position = c(0.9, 0.9), legend.title=element_blank()) +
+  theme(plot.margin = unit(c(1, 1, 1, 1), units = "cm"), axis.title.x = element_text(size=16), 
+        axis.title.y = element_text(size=16), legend.position = c(0.9, 0.9), legend.title=element_blank()) +
   labs(x = "Trials",y = "Number of Squeezes")
+
+
 
 
 #Bar plot (360 trial x condition)
 
 # summarySE provides the standard deviation, standard error of the mean, and a (default 95%) confidence interval
-dfPIT2 <- summarySE(REWOD_PIT, measurevar="n_grips", groupvars=c("condition"))
+dfPIT2 <- summarySE(PIT.bs, measurevar="n_grips", groupvars=c("Condition"))
 Condition <- c("Baseline", "CS-", "CS+")
 dfPIT2 <- data.frame(dfPIT2, Condition)
 dfPIT2$Condition = factor(dfPIT2$Condition,levels(dfPIT2$Condition)[c(3,2,1)])
 PIT.bs$Condition = factor(PIT.bs$Condition,levels(PIT.bs$Condition)[c(3,2,1)])  
 
-ggplot(PIT.bs, aes(x = Condition, y = n_grips)) +
-    geom_jitter(width = 0.05, color="dark grey") +
-    geom_bar(data=dfPIT2, stat="identity", fill="black", alpha=0.6, width=0.35, position = position_dodge(width = 0.01)) +
-    geom_line(aes(x=Condition, y=n_grips, group=id), col="grey", alpha=0.4) +
-    geom_errorbar(data=dfPIT2, aes(x = Condition, ymax = n_grips + se, ymin = n_grips - se), width=0.1, colour="black", alpha=1, size=0.6)+
-    #scale_x_discrete(limits=c("Baseline","CS-","CS+"))+
-    scale_y_continuous(breaks=c(0,5, 10, 15, 20,25))+
-    theme_classic() +
-    theme(axis.title = element_text(size=12), 
-        legend.position = c(0.9, 0.9), legend.title=element_blank()) +
-    labs(
-      x = "Pavlovian Stimulus",
-      y = "Number of Squeezes"
-    )
-  
-  
-  # ggplot(PIT.bs, aes(x = Condition, y = n_grips)) +
-  #   geom_jitter(width = 0.05, color="black") +
-  #   geom_bar(data=dfPIT2, stat="identity", fill="black", alpha=0.6, width=0.35, position = position_dodge(width = 0.01)) +
-  #   geom_line(aes(x=Condition, y=n_grips, group=id), col="grey", alpha=0.4) +
-  #   geom_errorbar(data=dfPIT2, aes(x = Condition, ymax = n_grips + se, ymin = n_grips - se), width=0.1, colour="black", alpha=1, size=0.4)+
-  #   geom_segment(aes(x = 1.5, y = 13.5, xend = 3, yend = 13.5), size =0.4)+
-  #   geom_segment(aes(x = 1, y = 10, xend = 2, yend = 10), size =0.4)+
-  #   geom_segment(aes(x = 1.5, y = 10, xend = 1.5, yend = 13.5), size =0.4)+  
-  #   geom_segment(aes(x = 1, y = 9.5, xend = 1, yend = 10), size =0.4)+  
-  #   geom_segment(aes(x = 2, y = 9.5, xend = 2, yend = 10), size =0.4)+ 
-  #   geom_segment(aes(x = 3, y = 13, xend = 3, yend = 13.5), size =0.4)+
-  #   annotate("text", x = 2.25, y = 14, label = "***") +
-  #   scale_x_discrete(limits=c("Baseline","CS-","CS+"))+
-  #   scale_y_continuous(breaks=c(0,5, 10, 15, 20,25))+
-  #   theme_classic() +
-  #   theme(plot.title = element_text(hjust = 0.5, size=20,  face="bold"), axis.title.y = element_text(size=14), axis.text=element_text(size=14), legend.position = c(0.9, 0.85)) +
-  #   labs(
-  #     x = NULL,
-  #     y = "Number of Squeezes"
-  #   )
+  # 
+  # scale_y_continuous(breaks=c(0,5, 10, 15, 20,25))+
+  # theme_classic() +
+  # theme(axis.title = element_text(size=12), 
+  #       legend.position = c(0.9, 0.9), legend.title=element_blank()) +
+  # labs(
+  #   x = "Pavlovian Stimulus",
+  #   y = "Number of Squeezes"
+  # )
 
-  
+# 
+# ggplot(bsLIK, aes(x = Condition, y = perceived_liking, fill = Condition)) +
+#   geom_jitter(width = 0.05, color="black",alpha=0.5, size = 0.5) +
+#   geom_bar(data=dfLIK2, stat="identity", alpha=0.6, width=0.35, position = position_dodge(width = 0.01)) +
+#   scale_fill_manual("legend", values = c("Reward"="blue", "Neutral"="red", "Control"="black")) +
+#   geom_line(aes(x=Condition, y=perceived_liking, group=id), col="grey", alpha=0.4) +
+#   geom_errorbar(data=dfLIK2, aes(x = Condition, ymax = perceived_liking + se, ymin = perceived_liking - se), width=0.1, colour="black", alpha=1, size=0.4)+
+#   scale_y_continuous(expand = c(0, 0), breaks = c(seq.int(0,100, by = 20)), limits = c(0,100)) +
+#   theme_classic() +
+#   theme(plot.margin = unit(c(1, 1, 1, 1), units = "cm"),  axis.title.x = element_text(size=16), axis.text.x = element_text(size=12),
+#         axis.title.y = element_text(size=16), legend.position = "none", axis.ticks.x = element_blank(), axis.line.x = element_line(color = "white")) +
+#   labs(
+#     x = "Odor Stimulus",
+#     y = "Plesantness Ratings"
+#   )
+
+
+
 # ANALYSIS
 
 
@@ -178,7 +171,33 @@ alt.est.id <- influence(model=my.model, group="id")
 plot(dfbetas(alt.est.id), PIT.bs$id)
 
 
-#how I would do --
+#just anova BC HLM dont work really
+# PIT.aov <- aov_car(n_grips ~ Condition + Error(id/Condition), data = REWOD_PIT, anova_table = list(es = "pes"), fun_aggregate = mean)
+# PIT.aov
+# PIT.aov_sum <- summary(PIT.aov)
+# PIT.aov_sum
+
+
+#----EFFECT SIZE
+
+# Confidence interval
+# PIT.CSCategory_lims      <- conf.limits.ncf(F.value = PIT.aov_sum$univariate.tests[2,5], conf.level = .90, df.1 <- PIT.aov_sum$univariate.tests[2,2], df.2 <- PIT.aov_sum$univariate.tests[2,4])
+# PIT.CSCategory_lower.lim <- PIT.CSCategory_lims$Lower.Limit/(PIT.CSCategory_lims$Lower.Limit + df.1 + df.2 + 1)
+# PIT.CSCategory_upper.lim <- PIT.CSCategory_lims$Upper.Limit/(PIT.CSCategory_lims$Upper.Limit + df.1 + df.2 + 1)
+# 
+# PIT.effectsizes <- matrix(c(PIT.aov$anova_table$pes[1], ifelse(is.na(PIT.CSCategory_lower.lim) == F, PIT.CSCategory_lower.lim, 0), ifelse(is.na(PIT.CSCategory_upper.lim) == F, PIT.CSCategory_upper.lim, .00059834237206)), #value computed with SPSS
+#                           ncol = 3, byrow = T)
+# 
+# colnames(PIT.effectsizes) <- c("Partial eta squared", "90% CI lower limit", "90% CI upper limit")
+# rownames(PIT.effectsizes) <- c("CSCategory")
+# PIT.effectsizes
+
+
+
+lsmeans(PIT.aov, pairwise ~ Condition) #?
+
+
+#else
 mymodel = lmer(n_grips ~ Condition + (1|id), data = REWOD_PIT, REML = FALSE) 
 
 lsmeans(mymodel, pairwise ~ Condition)
@@ -211,7 +230,9 @@ main.n_grips = lmer(n_grips ~ cvalue + (1+cvalue|id) , data = REWOD_PIT, REML = 
 #main.n_grips = lmer(n_grips ~ cvalue + (1+cvalue|id) + (1|trial), data = REWOD_PIT, REML = FALSE) #1+cvalue\id or 1\id
 #anova(main.n_grips)
 summary(main.n_grips)
-  
+
+plot(main.n_grips) #weird?
+
 # quick check with classical anova (! this is not reliable)
 #summary(aov(n_grips ~ cvalue + Error(id / (cvalue)), data = REWOD_PIT))
 
@@ -256,5 +277,4 @@ delta_BIC
 # #Δ BIC = 4.074
 # delta_BIC = test$BIC[1] -test$BIC[2] 
 # delta_BIC
-
 
