@@ -173,6 +173,14 @@ qqnorm(residuals(my.model))
 #alt.est.trial <- influence(model=my.model, group="trialxcondition")
 
 
+#just anova BC HLM dont work really
+HED.aov <- aov_car(perceived_liking ~ condition + Error(id/condition), data = REWOD_HED, anova_table = list(es = "pes"))
+HED.aov
+HED.aov_sum <- summary(HED.aov)
+HED.aov_sum
+
+
+
 #how I would do --
 mymodel = lmer(perceived_liking ~ condition + (1|id) + (1|trialxcondition), data = REWOD_HED)
 

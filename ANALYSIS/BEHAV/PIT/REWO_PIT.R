@@ -178,9 +178,34 @@ alt.est.id <- influence(model=my.model, group="id")
 plot(dfbetas(alt.est.id), PIT.bs$id)
 
 
-#how I would do --
-mymodel = lmer(n_grips ~ Condition + (1|id), data = REWOD_PIT, REML = FALSE) 
 
+#just anova BC HLM dont work really
+PIT.aov <- aov_car(n_grips ~ Condition + Error(id/Condition), data = REWOD_PIT, anova_table = list(es = "pes"))
+PIT.aov
+PIT.aov_sum <- summary(PIT.aov)
+PIT.aov_sum
+
+
+#----EFFECT SIZE
+
+# Confidence interval
+PIT.CSCategory_lims      <- conf.limits.ncf(F.value = PIT.aov_sum$univariate.tests[2,5], conf.level = .90, df.1 <- PIT.aov_sum$univariate.tests[2,2], df.2 <- PIT.aov_sum$univariate.tests[2,4])
+PIT.CSCategory_lower.lim <- PIT.CSCategory_lims$Lower.Limit/(PIT.CSCategory_lims$Lower.Limit + df.1 + df.2 + 1)
+PIT.CSCategory_upper.lim <- PIT.CSCategory_lims$Upper.Limit/(PIT.CSCategory_lims$Upper.Limit + df.1 + df.2 + 1)
+
+PIT.effectsizes <- matrix(c(PIT.aov$anova_table$pes[1], ifelse(is.na(PIT.CSCategory_lower.lim) == F, PIT.CSCategory_lower.lim, 0), ifelse(is.na(PIT.CSCategory_upper.lim) == F, PIT.CSCategory_upper.lim, .00059834237206)), #value computed with SPSS
+                           ncol = 3, byrow = T)
+
+colnames(PIT.effectsizes) <- c("Partial eta squared", "90% CI lower limit", "90% CI upper limit")
+rownames(PIT.effectsizes) <- c("CSCategory")
+PIT.effectsizes
+
+
+
+lsmeans(PIT.aov, pairwise ~ Condition) #?
+
+#else
+mymodel = lmer(n_grips ~ Condition + (1|id), data = REWOD_PIT, REML = FALSE) 
 lsmeans(mymodel, pairwise ~ Condition)
 
 # manual planned contrasts
@@ -196,12 +221,12 @@ lsmeans(mymodel2, pairwise ~ cont)
 
 #summary(aov(n_grips ~ cont + Error(id / (cont)), data = REWOD_PIT))
 
-
+ 
 
 # otherwise ---------------------------------------------------------------
 # manual planned contrasts
-REWOD_PIT$cvalue[REWOD_PIT$condition== 'CSplus']     <- 2
-REWOD_PIT$cvalue[REWOD_PIT$condition== 'CSminus']     <- -1
+REWOD_PIT$cvalue[REWOD_PIT$condition== 'CSplus']       <- 2
+REWOD_PIT$cvalue[REWOD_PIT$condition== 'CSminus']      <- -1
 REWOD_PIT$cvalue[REWOD_PIT$condition== 'Baseline']     <- -1
 REWOD_PIT$cvalue       <- factor(REWOD_PIT$cvalue)
 
