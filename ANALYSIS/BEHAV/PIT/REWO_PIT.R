@@ -35,7 +35,7 @@ REWOD_RIM$id               <- factor(REWOD_RIM$id)
 REWOD_RIM$trial            <- factor(REWOD_RIM$trial)
 REWOD_RIM$task              <- factor(REWOD_RIM$task)
 REWOD_RIM$session          <- factor(REWOD_RIM$session)
-REWOD_RIM$reward        <- factor(REWOD_RIM$reward)
+REWOD_RIM$reward          <- factor(REWOD_RIM$reward)
 
 REWOD_PE$id               <- factor(REWOD_PE$id)
 REWOD_PE$trial            <- factor(REWOD_PE$trial)
@@ -114,7 +114,6 @@ ggplot(dfPIT, aes(x = trialxcondition, y = n_grips, color=Condition)) +
 
 
 
-#Bar plot (360 trial x condition)
 
 # summarySE provides the standard deviation, standard error of the mean, and a (default 95%) confidence interval
 dfPIT2 <- summarySE(PIT.bs, measurevar="n_grips", groupvars=c("Condition"))
@@ -171,110 +170,63 @@ alt.est.id <- influence(model=my.model, group="id")
 plot(dfbetas(alt.est.id), PIT.bs$id)
 
 
-#just anova BC HLM dont work really
-# PIT.aov <- aov_car(n_grips ~ Condition + Error(id/Condition), data = REWOD_PIT, anova_table = list(es = "pes"), fun_aggregate = mean)
-# PIT.aov
-# PIT.aov_sum <- summary(PIT.aov)
-# PIT.aov_sum
 
 
-#----EFFECT SIZE
+# Grips ------------------------------------------------------------------
+REWOD_PIT$condition = factor(REWOD_PIT$condition,levels(REWOD_PIT$condition)[c(3,2,1)])  
 
-# Confidence interval
-# PIT.CSCategory_lims      <- conf.limits.ncf(F.value = PIT.aov_sum$univariate.tests[2,5], conf.level = .90, df.1 <- PIT.aov_sum$univariate.tests[2,2], df.2 <- PIT.aov_sum$univariate.tests[2,4])
-# PIT.CSCategory_lower.lim <- PIT.CSCategory_lims$Lower.Limit/(PIT.CSCategory_lims$Lower.Limit + df.1 + df.2 + 1)
-# PIT.CSCategory_upper.lim <- PIT.CSCategory_lims$Upper.Limit/(PIT.CSCategory_lims$Upper.Limit + df.1 + df.2 + 1)
-# 
-# PIT.effectsizes <- matrix(c(PIT.aov$anova_table$pes[1], ifelse(is.na(PIT.CSCategory_lower.lim) == F, PIT.CSCategory_lower.lim, 0), ifelse(is.na(PIT.CSCategory_upper.lim) == F, PIT.CSCategory_upper.lim, .00059834237206)), #value computed with SPSS
-#                           ncol = 3, byrow = T)
-# 
-# colnames(PIT.effectsizes) <- c("Partial eta squared", "90% CI lower limit", "90% CI upper limit")
-# rownames(PIT.effectsizes) <- c("CSCategory")
-# PIT.effectsizes
+main.model = lmer(n_grips ~ condition + trialxcondition + (1|id), data = REWOD_PIT, REML = FALSE) 
+summary(main.model)
+
+null.model = lmer(n_grips ~  trialxcondition + (1|id), data = REWOD_PIT, REML = FALSE) 
+
+test = anova(main.model, null.model, test = 'Chisq')
+test
 
 
+#sentence => main.liking is 'signifincatly' better than the null model wihtout condition a fixe effect
+# condition affected handgrip presses (χ2 (1)= 177.60, p<2.20×10ˆ-16), in average having 4.63 ± 0.38 (SEE) more squeezes compared to CS- condition and,
+# 4.54 ± 0.38 (SEE) compared to the baseline.
 
-lsmeans(PIT.aov, pairwise ~ Condition) #?
+#Δ BIC
+delta_BIC = test$BIC[1] -test$BIC[2] 
+delta_BIC
 
+lsmeans(mymodel, pairwise ~ condition)
 
-#else
-mymodel = lmer(n_grips ~ Condition + (1|id), data = REWOD_PIT, REML = FALSE) 
-
-lsmeans(mymodel, pairwise ~ Condition)
 
 # manual planned contrasts
-REWOD_PIT$cont[REWOD_PIT$condition== 'CSplus']     <- 'CSplus'
-REWOD_PIT$cont[REWOD_PIT$condition== 'CSminus']     <- 'CSminus&Baseline'
-REWOD_PIT$cont[REWOD_PIT$condition== 'Baseline']     <- 'CSminus&Baseline'
-REWOD_PIT$cont       <- factor(REWOD_PIT$cont)
-
-#
-mymodel2 = lmer(n_grips ~ cont + (1+cont|id), data = REWOD_PIT, REML = FALSE) 
-
-lsmeans(mymodel2, pairwise ~ cont)
-
-#summary(aov(n_grips ~ cont + Error(id / (cont)), data = REWOD_PIT))
-
-
-
-# otherwise ---------------------------------------------------------------
-# manual planned contrasts
-REWOD_PIT$cvalue[REWOD_PIT$condition== 'CSplus']     <- 2
+REWOD_PIT$cvalue[REWOD_PIT$condition== 'CSplus']       <- 2
 REWOD_PIT$cvalue[REWOD_PIT$condition== 'CSminus']     <- -1
 REWOD_PIT$cvalue[REWOD_PIT$condition== 'Baseline']     <- -1
 REWOD_PIT$cvalue       <- factor(REWOD_PIT$cvalue)
 
 
-# lmer analyis ~ condition 
-main.n_grips = lmer(n_grips ~ cvalue + (1+cvalue|id) , data = REWOD_PIT, REML = FALSE) 
-#main.n_grips = lmer(n_grips ~ cvalue + (1+cvalue|id) + (1|trial), data = REWOD_PIT, REML = FALSE) #1+cvalue\id or 1\id
-#anova(main.n_grips)
-summary(main.n_grips)
+main.cont = lmer(n_grips ~ cvalue + trialxcondition + (1|id), data = REWOD_PIT, REML = FALSE) 
+summary(main.cont)
 
-plot(main.n_grips) #weird?
+null.cont = lmer(n_grips ~  trialxcondition + (1|id), data = REWOD_PIT, REML = FALSE) 
 
-# quick check with classical anova (! this is not reliable)
-#summary(aov(n_grips ~ cvalue + Error(id / (cvalue)), data = REWOD_PIT))
 
-# model comparison
-main.n_grips.0 = lmer(n_grips ~ (1+cvalue|id), data = REWOD_PIT, REML = FALSE)
-test = anova(main.n_grips.0, main.n_grips, test = 'Chisq')
-test
-#sentence => main.n_grips is signifincatly better than the null model
-# condition CS+ affected mobilized effort (χ2 (1)= 11.058, p=8.83 × 10^-4), rising it by about 4.50  ± 1.20 (standard errors).
+test2 = anova(main.cont, null.cont, test = 'Chisq')
+test2
 
-# OR lsmeans(main.n_grips, pairwise ~ cvalue)
-
-#Δ BIC = 4.074
+#Δ BIC
 delta_BIC = test$BIC[1] -test$BIC[2] 
 delta_BIC
 
 
-##############  Base cs minus ########## ??
 
-# #contrasts
-# REWOD_PIT$cvalue1[REWOD_PIT$condition== 'CSplus']     <- 0
-# REWOD_PIT$cvalue1[REWOD_PIT$condition== 'CSminus']     <- -1
-# REWOD_PIT$cvalue1[REWOD_PIT$condition== 'Baseline']     <- 1
-# REWOD_PIT$cvalue1       <- factor(REWOD_PIT$cvalue1)
-# 
-# # lmer analyis ~ condition 
-# main.n_grips = lmer(n_grips ~ cvalue1 + (1+cvalue1|id) , data = REWOD_PIT, REML = FALSE) 
-# #main.n_grips = lmer(n_grips ~ cvalue1 + (1+cvalue1|id) + (1|trial), data = REWOD_PIT, REML = FALSE) #1+cvalue1\id or 1\id
-# #anova(main.n_grips)
-# summary(main.n_grips)
-# 
-# # quick check with classical anova (! this is not reliable)
-# #summary(aov(n_grips ~ cvalue1 + Error(id / (cvalue1)), data = REWOD_PIT))
-# 
-# # model comparison
-# main.n_grips.0 = lmer(n_grips ~ (1+cvalue1|id), data = REWOD_PIT, REML = FALSE)
-# test = anova(main.n_grips.0, main.n_grips, test = 'Chisq')
-# test
-# #sentence => main.n_grips is signifincatly better than the null model
-# # condition CS+ affected mobilized effort (χ2 (1)= 11.058, p=8.83 × 10^-4), rising it by about 4.50  ± 1.20 (standard errors).
-# 
-# #Δ BIC = 4.074
-# delta_BIC = test$BIC[1] -test$BIC[2] 
-# delta_BIC
+# CSminus VS Baseline
+REWOD_PIT$cvalue1[REWOD_PIT$condition== 'CSplus']     <- 0
+REWOD_PIT$cvalue1[REWOD_PIT$condition== 'CSminus']     <- 1
+REWOD_PIT$cvalue1[REWOD_PIT$condition== 'Baseline']     <- -1
+REWOD_PIT$cvalue1      <- factor(REWOD_PIT$cvalue1)
+
+
+main.cont1 = lmer(n_grips ~ cvalue1 + trialxcondition + (1|id), data = REWOD_PIT, REML = FALSE) 
+summary(main.cont1)
+
+null.cont1 = lmer(n_grips ~  trialxcondition + (1|id), data = REWOD_PIT, REML = FALSE) 
+
 

@@ -189,212 +189,111 @@ qqnorm(residuals(my.model))
 
 
 
-# #just anova BC HLM dont work really
-HED.aov <- aov_car(perceived_liking ~ condition + Error(id/condition), data = REWOD_HED, anova_table = list(es = "pes"), fun_aggregate = mean)
-HED.aov
-HED.aov_sum <- summary(HED.aov)
-HED.aov_sum
+
+# LIKING ------------------------------------------------------------------
 
 
-#else
-mymodel = lmer(perceived_liking ~ condition + (1|id) + (1|trialxcondition), data = REWOD_HED)
+main.model.lik = lmer(perceived_liking ~ condition + trialxcondition + (1|id), data = REWOD_HED, REML=FALSE)
+summary(main.model.lik)
 
-lsmeans(mymodel, pairwise ~ condition)
+null.model.lik = lmer(perceived_liking ~ trialxcondition + (1|id), data = REWOD_HED, REML=FALSE)
 
-
-
-## planned contrast
-REWOD_HED$cont[REWOD_HED$condition== 'chocolate']     <- 'Reward'
-REWOD_HED$cont[REWOD_HED$condition== 'empty']     <- 'No_Reward'
-REWOD_HED$cont[REWOD_HED$condition== 'neutral']     <- 'No_Reward'
-REWOD_HED$cont       <- factor(REWOD_HED$cont)
-
-##
-
-mymodel2 = lmer(perceived_liking ~ cont + (1|id) + (1|trialxcondition), data = REWOD_HED)
-
-lsmeans(mymodel2, pairwise ~ cont)
-
-
-
-# otherwise ---------------------------------------------------------------
-
-##contrasts
-
-REWOD_HED$cvalue[REWOD_HED$condition== 'chocolate']     <- 2
-REWOD_HED$cvalue[REWOD_HED$condition== 'empty']     <- -1
-REWOD_HED$cvalue[REWOD_HED$condition== 'neutral']     <- -1
-REWOD_HED$cvalue       <- factor(REWOD_HED$cvalue)
-
-
-#gamlss (for me this is the best way to check that the lmer do not depend on the distributions)
-###summary(gamlss(ANT_DW_ins ~ Ccongr + re(random=~1+Ccongr|ID) + re(random=~1|trial), family = BEINF, data = na.omit(PIC.naomit)))
-
-
-
-# 1. Liking: do participants prefer to the reward (chocolate) cond --------
-
-
-# lmer analyis ~ cvalue 
-main.liking = lmer(perceived_liking ~ cvalue + trialxcondition + (1|id), data = REWOD_HED, REML = FALSE)
-summary(main.liking)
-#sphericity ok\
-
-plot(main.liking) #weird?
-
-# quick check with classical anova (! this is not reliable)
-#summary(aov(perceived_liking ~ cvalue, data = REWOD_HED))
-
-
-# model comparison
-main.liking.0 = lmer(perceived_liking ~ (1|id) + (1|), data = REWOD_HED, REML = FALSE)
-test = anova(main.liking.0, main.liking, test = 'Chisq')
+test = anova(main.model.lik, null.model.lik, test = 'Chisq')
 test
-#sentence => main.liking is signifincatly better than the null model
-# condition chocolate affected liking rating (χ2 (1)= 855.08, p<2.20×10-16), rising it by about 17.27  ± 0.49 (standard errors).
+#sentence => main.liking is 'signifincatly' better than the null model wihtout condition a fixe effect
+# condition affected liking rating (χ2 (1)= 868.41, p<2.20×10ˆ-16), rising reward ratings by 17.63 points ± 0.57 (SEE) compared to neutral condition and,
+# 17.63 ± 0.56 (SEE) compared to the control condition.
 
 #Δ BIC = 847.92
 delta_BIC = test$BIC[1] -test$BIC[2] 
 delta_BIC
 
+lsmeans(main.model.lik, pairwise ~ condition)
 
-# 2. Intensity: do participants find the reward (chocolate) more intense --------
+# planned contrast
+REWOD_HED$cvalue[REWOD_HED$condition== 'chocolate']     <- 2
+REWOD_HED$cvalue[REWOD_HED$condition== 'empty']     <- -1
+REWOD_HED$cvalue[REWOD_HED$condition== 'neutral']     <- -1
+REWOD_HED$cvalue       <- factor(REWOD_HED$cvalue)
 
+#
+main.cont.lik = lmer(perceived_liking ~ cvalue + trialxcondition + (1|id), data = REWOD_HED, REML=FALSE)
+summary(main.cont.lik)
 
-# lmer analyis ~ condition 
-main.intensity = lmer(perceived_intensity ~ cvalue + (1|id) + (1|trialxcondition), data = REWOD_HED, REML = FALSE)
-summary(main.intensity)
+null.cont.lik = lmer(perceived_liking ~ trialxcondition + (1|id), data = REWOD_HED, REML=FALSE)
 
-# quick check with classical anova (! this is not reliable)
-#summary(aov(perceived_intensity ~ cvalue, data = REWOD_HED))
-
-# model comparison
-main.intensity.0 = lmer(perceived_intensity ~ (1|id) + (1|trialxcondition), data = REWOD_HED, REML = FALSE)
-test2 = anova(main.intensity.0, main.intensity, test = 'Chisq')
+test2 = anova(main.cont.lik, null.cont.lik, test = 'Chisq')
 test2
-# condition chocolate affected intensity (χ2 (1)=340.74, p<2.20×10-16), rising it by about 20.41 ± 1.03 (standard errors).
-
-#Δ BIC = 333.5726
-delta_BIC = test2$BIC[1] -test2$BIC[2] # From BICs to Bayes factor
+#sentence => main.liking is 'signifincatly' better than the null model wihtout condition a fixe effect
+# condition affected liking rating (χ2 (1)= 866.73, p<2.20×10ˆ-16), rising reward ratings by 17.27 points ± 0.49 (SEE) compared to the other two conditions
+#Δ BIC = 847.92
+delta_BIC = test2$BIC[1] -test2$BIC[2] 
 delta_BIC
 
 
 
+#  contrast NEUTRAL - EMPTY "we play against ourselves by oding this contrast and being conservator"
+REWOD_HED$cvalue1[REWOD_HED$condition== 'chocolate']     <- 0
+REWOD_HED$cvalue1[REWOD_HED$condition== 'empty']     <- 1
+REWOD_HED$cvalue1[REWOD_HED$condition== 'neutral']     <- -1
+REWOD_HED$cvalue1       <- factor(REWOD_HED$cvalue1)
+
+#
+main.cont.lik1 = lmer(perceived_liking ~ cvalue1 + trialxcondition + (1|id), data = REWOD_HED, REML=FALSE)
+summary(main.cont.lik1)
+#still not sign p = 0.19458 
 
 
 
+# INTENSITY ---------------------------------------------------------------
 
 
+main.model.int = lmer(perceived_intensity ~ condition + trialxcondition + (1|id), data = REWOD_HED, REML=FALSE)
+summary(main.model.int)
 
+null.model.int = lmer(perceived_intensity ~ trialxcondition + (1|id), data = REWOD_HED, REML=FALSE)
+
+testint = anova(main.model.int, null.model.int, test = 'Chisq')
+test
+#sentence => main.intensity is 'signifincatly' better than the null model wihtout condition a fixe effect
+# condition affected intensity rating (χ2 (1)= 868.41, p<2.20×10ˆ-16), rising reward ratings by 17.63 points ± 0.57 (SEE) compared to neutral condition and,
+# 17.63 ± 0.56 (SEE) compared to the control condition.
+
+#Δ BIC = XX
+delta_BIC = test$BIC[1] -test$BIC[2] 
+delta_BIC
+
+lsmeans(main.model.int, pairwise ~ condition)
+
+# planned contrast
+REWOD_HED$cvalue[REWOD_HED$condition== 'chocolate']     <- 2
+REWOD_HED$cvalue[REWOD_HED$condition== 'empty']     <- -1
+REWOD_HED$cvalue[REWOD_HED$condition== 'neutral']     <- -1
+REWOD_HED$cvalue       <- factor(REWOD_HED$cvalue)
+
+#
+main.cont.int = lmer(perceived_intensity ~ cvalue + trialxcondition + (1|id), data = REWOD_HED, REML=FALSE)
+summary(main.cont.int)
+
+null.cont.int = lmer(perceived_intensity ~ trialxcondition + (1|id), data = REWOD_HED, REML=FALSE)
+
+testint2 = anova(main.cont.int, null.cont.int, test = 'Chisq')
+testint2
+#sentence => main.intensity is 'signifincatly' better than the null model without condition as fixed effect
+# condition affected intensity rating (χ2 (1)= XX p<2.20×10ˆ-16), rising reward intensity ratings by XX points ± X.X (SEE) compared to the other two conditions
+#Δ BIC = XX
+delta_BIC = test2$BIC[1] -test2$BIC[2] 
+delta_BIC
 
 
 # 
-# # lmer analyis condition and trialxcondition 
-# main.intensity.1 = lmer(perceived_intensity ~ cvalue + trialxcondition + (1+cvalue|id) + (1|trialxcondition), data = REWOD_HED, REML = FALSE)
-# anova(main.intensity.1)
+# #  contrast NEUTRAL - EMPTY "we play against ourselves by oding this contrast and being conservator"
+# REWOD_HED$cvalue1[REWOD_HED$condition== 'chocolate']     <- 0
+# REWOD_HED$cvalue1[REWOD_HED$condition== 'empty']     <- 1
+# REWOD_HED$cvalue1[REWOD_HED$condition== 'neutral']     <- -1
+# REWOD_HED$cvalue1       <- factor(REWOD_HED$cvalue1)
 # 
-# # quick check with classical anova (! this is not reliable)
-# summary(aov(perceived_intensity ~ cvalue + trialxcondition + Error(id / (cvalue)), data = REWOD_HED))
-# 
-# # model comparison
-# anova(main.intensity, main.intensity.1, test = 'Chisq')
-# #sentence => main.liking1 is signifincatly better than main.liking (adding trialxcondition makes the model predict better)
-# 
-# # lmer analyis (+interaction) # should I have used the condition*trialxcondition variable instead?
-# main.intensity.2 = lmer(perceived_intensity ~ cvalue*trialxcondition + (1+cvalue|id) + (1|trialxcondition), data = REWOD_HED, REML = FALSE)#  # second 1+ would need to be cvalue*trialxcondition or not?
-# anova(main.intensity.1)
-# 
-# # quick check with classical anova (! this is not reliable)
-# summary(aov(perceived_intensity ~ cvalue*trialxcondition + Error(id / (cvalue)), data = REWOD_HED))
-# 
-# # model comparison
-# anova(main.intensity.1, main.intensity.2, test = 'Chisq')
-# #sentence => HOWEVER here main.liking2 is NOT signifincatly better than main.liking1 (adding interaction DOESNT help the model predict better)
-
-
-
-## 3. Specific test without empty  
-
-
-#contrasts
-REWOD_HED.woemp$cvalue[REWOD_HED.woemp$condition == 'chocolate']     <- 1
-REWOD_HED.woemp$cvalue[REWOD_HED.woemp$condition == 'neutral']     <- -1
-REWOD_HED.woemp$cvalue       <- factor(REWOD_HED.woemp$cvalue)
-
-
-## 3.1. Liking: do participants prefer to the reward (chocolate) condition? 
-
-# lmer analyis ~ condition 
-main.liking = lmer(perceived_liking ~ cvalue + (1+cvalue|id) + (1|trialxcondition), data = REWOD_HED.woemp, REML = FALSE)
-anova(main.liking)
-
-# quick check with classical anova (! this is not reliable)
-summary(aov(perceived_liking ~ cvalue + Error(id / (cvalue)), data = REWOD_HED.woemp))
-
-# model comparison
-main.liking.0 = lmer(perceived_liking ~ (1|id) + (1|trial), data = REWOD_HED.woemp, REML = FALSE)
-anova(main.liking.0, main.liking, test = 'Chisq')
-#sentence => main.liking is signifincatly better than the null model
-
-# lmer analyis condition and trialxcondition 
-main.liking.1 = lmer(perceived_liking ~ cvalue + trialxcondition + (1+cvalue|id) + (1|trialxcondition), data = REWOD_HED.woemp, REML = FALSE)
-anova(main.liking.1)
-
-# quick check with classical anova (! this is not reliable)
-summary(aov(perceived_liking ~ cvalue + trialxcondition + Error(id / (cvalue)), data = REWOD_HED.woemp))
-
-# model comparison
-anova(main.liking, main.liking.1, test = 'Chisq')
-#sentence => main.liking1 is signifincatly better than main.liking (adding trialxcondition makes the model predict better)
-
-# lmer analyis (+interaction) # should I have used the condition*trialxcondition variable instead?
-main.liking.2 = lmer(perceived_liking ~ cvalue*trialxcondition + (1+cvalue|id) + (1|trialxcondition), data = REWOD_HED.woemp, REML = FALSE)#  # second 1+ would need to be condition*trialxcondition or not?
-anova(main.liking.1)
-
-# quick check with classical anova (! this is not reliable)
-summary(aov(perceived_liking ~ cvalue*trialxcondition + Error(id / (cvalue)), data = REWOD_HED.woemp))
-
-# model comparison
-anova(main.liking.1, main.liking.2, test = 'Chisq')
-#sentence => main.liking2 is signifincatly better than main.liking1 (adding interaction helps the model predict better)
-
-
-## 3.2. Intensity: do participants find the reward (chocolate) condition more intense? 
-
-
-# lmer analyis ~ condition 
-main.intensity = lmer(perceived_intensity ~ cvalue + (1+cvalue|id) + (1|trialxcondition), data = REWOD_HED.woemp, REML = FALSE)
-anova(main.intensity)
-
-# quick check with classical anova (! this is not reliable)
-summary(aov(perceived_intensity ~ cvalue + Error(id / (cvalue)), data = REWOD_HED.woemp))
-
-# model comparison
-main.intensity.0 = lmer(perceived_intensity ~ (1+cvalue|id) + (1|trialxcondition), data = REWOD_HED.woemp, REML = FALSE)
-anova(main.intensity.0, main.intensity, test = 'Chisq')
-#sentence => main.liking1 is signifincatly better than the null model
-
-# lmer analyis condition and trialxcondition 
-main.intensity.1 = lmer(perceived_intensity ~ cvalue + trialxcondition + (1+cvalue|id) + (1|trialxcondition), data = REWOD_HED.woemp, REML = FALSE)
-anova(main.intensity.1)
-
-# quick check with classical anova (! this is not reliable)
-summary(aov(perceived_intensity ~ cvalue + trialxcondition + Error(id / (cvalue)), data = REWOD_HED.woemp))
-
-# model comparison
-anova(main.intensity, main.intensity.1, test = 'Chisq')
-#sentence => main.liking1 is signifincatly better than main.liking (adding trialxcondition makes the model predict better)
-
-# lmer analyis (+interaction) # should I have used the condition*trialxcondition variable instead?
-main.intensity.2 = lmer(perceived_intensity ~ cvalue*trialxcondition + (1+cvalue|id) + (1|trialxcondition), data = REWOD_HED.woemp, REML = FALSE)#  # second 1+ would need to be condition*trialxcondition or not?
-anova(main.intensity.1)
-
-# quick check with classical anova (! this is not reliable)
-summary(aov(perceived_intensity ~ cvalue*trialxcondition + Error(id / (cvalue)), data = REWOD_HED.woemp))
-
-# model comparison
-anova(main.intensity.1, main.intensity.2, test = 'Chisq')
-#sentence => HOWEVER here main.liking2 is NOT signifincatly better than main.liking1 (adding interaction DOESNT help the model predict better)
-
-
+# #
+# main.cont1 = lmer(perceived_intensity ~ cvalue1 + trialxcondition + (1|id), data = REWOD_HED, REML=FALSE)
+# summary(main.cont1)
 
