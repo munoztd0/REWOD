@@ -6,7 +6,7 @@
 
 
 # load libraries
-pacman::p_load(MBESS, afex, car, ggplot2, dplyr, plyr, tidyr, reshape, Hmisc, Rmisc,  ggpubr, gridExtra, plotrix, lsmeans, BayesFactor)
+pacman::p_load(apaTables, MBESS, afex, car, ggplot2, dplyr, plyr, tidyr, reshape, Hmisc, Rmisc,  ggpubr, gridExtra, plotrix, lsmeans, BayesFactor)
 
 if(!require(pacman)) {
   install.packages("pacman")
@@ -30,7 +30,7 @@ REWOD_INST$rewarded_response        <- factor(REWOD_INST$rewarded_response)
 ## remove sub 8 (we dont have scans)
 REWOD_INST <- subset (REWOD_INST,!id == '8') 
 
-REWOD_INST <- filter(REWOD_INST, rewarded_response == 2)
+#REWOD_INST <- filter(REWOD_INST, rewarded_response == 2)
 
 
 # 
@@ -74,32 +74,45 @@ ggplot(dfTRIAL, aes(x = trial, y = n_grips)) +
   
 #ANALYSIS
 
+# ANOVA trials ------------------------------------------------------------
+
+
 ##1. number of grips: are participants gripping more over time?
 REWOD_INST$trial            <- factor(REWOD_INST$trial)
 
 
-#using afex
-inst.aov <- aov_car(n_grips ~ trial + Error(id/trial), data = REWOD_INST, anova_table = list(es = "pes"))
-inst.aov
-inst.aov_sum <- summary(inst.aov)
-inst.aov_sum
-
-#----EFFECT SIZE
-  
-# Confidence interval
-
-inst.trial_lims      <- conf.limits.ncf(F.value = inst.aov_sum$univariate.tests[2,5], conf.level = .90, df.1 <- inst.aov_sum$univariate.tests[2,2], df.2 <- inst.aov_sum$univariate.tests[2,4])
-inst.trial_lower.lim <- inst.trial_lims$Lower.Limit/(inst.trial_lims$Lower.Limit + df.1 + df.2 + 1)
-inst.trial_upper.lim <- inst.trial_lims$Upper.Limit/(inst.trial_lims$Upper.Limit + df.1 + df.2 + 1)
-
-inst.effectsizes <- matrix(c(inst.aov$anova_table$pes[1], ifelse(is.na(inst.trial_lower.lim) == F, inst.trial_lower.lim, 0), ifelse(is.na(inst.trial_upper.lim) == F, inst.trial_upper.lim, .00059834237206)), #value computed with SPSS
-                           ncol = 3, byrow = T)
-colnames(inst.effectsizes) <- c("Partial eta squared", "90% CI lower limit", "90% CI upper limit")
-rownames(inst.effectsizes) <- c("trial")
-inst.effectsizes
+anova_model = ezANOVA(data = REWOD_INST,
+                      dv = n_grips,
+                      wid = id,
+                      within = trial,
+                      detailed = TRUE,
+                      type = 3)
 
 
-#contrasts (should I include the first trial even its biased)
+
+# effect sizes ------------------------------------------------------------
+
+dfm = anova_model$ANOVA$DFn[2]
+dfe = anova_model$ANOVA$DFd[2]
+msm = anova_model$ANOVA$SSn[2] / anova_model$ANOVA$DFn[2]
+mse = anova_model$ANOVA$SSd[2] / anova_model$ANOVA$DFd[2]
+mss = anova_model$ANOVA$SSd[1] / anova_model$ANOVA$DFd[1]
+ssm = anova_model$ANOVA$SSn[2]
+sse = anova_model$ANOVA$SSd[2]
+sss = anova_model$ANOVA$SSd[1]
+a = .1
+
+f = msm/mse
+
+partial_omega = (f-1)/(f + (dfe +1)/dfm)
+limits <- ci.R2(R2 = partial_omega, df.1 = dfm, df.2 = dfe, conf.level = (1-a))
+partial_omega
+limits$Lower.Conf.Limit.R2
+limits$Upper.Conf.Limit.R2
+
+
+
+#contrasts (should I include the first trial even its biased?)
 
 REWOD_INST$time <- rep(0, (length(REWOD_INST$trial)))
 

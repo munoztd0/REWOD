@@ -45,7 +45,7 @@ bct = ddply(REWOD_HED, .(condition, trialxcondition), summarise,  perceived_liki
 bs = ddply(REWOD_HED, .(id, trialxcondition), summarise, perceived_liking = mean(perceived_liking, na.rm = TRUE), perceived_intensity = mean(perceived_intensity, na.rm = TRUE))
 bsLIK = ddply(REWOD_HED, .(id, Condition), summarise, perceived_liking = mean(perceived_liking, na.rm = TRUE), perceived_intensity = mean(perceived_intensity, na.rm = TRUE))
 
-
+# be consistent so do the same for fMRI
 
 # functions ---------------------------------------------------------------
 
@@ -128,7 +128,6 @@ ggplot(dfLIK, aes(x = trialxcondition, y = perceived_liking, color=Condition)) +
 
 
 
-
 # summarySE provides the standard deviation, standard error of the mean, and a (default 95%) confidence interval
 dfLIK2 <- summarySE(bsLIK, measurevar="perceived_liking", groupvars=c("Condition"))
 dfLIK2$Condition <- as.factor(dfLIK2$Condition)
@@ -176,7 +175,7 @@ REWOD_HED$trialxcondition           <- factor(REWOD_HED$trialxcondition)
 REWOD_HED.woemp <- filter(REWOD_HED, condition != "empty")
 
 #Assumptions:
-my.model= lmer(perceived_liking ~ condition + (1|id) + (1|trialxcondition),  data = REWOD_HED) #1+cvalue\id or 1\id
+my.model = lmer(perceived_liking ~ condition + trialxcondition + (1|id), data = REWOD_HED)
 
 #1)Linearity 
 plot(my.model)
@@ -184,8 +183,8 @@ plot(my.model)
 #3)Homoscedasticity AND #4)Normality of residuals
 qqnorm(residuals(my.model))
 #5) Absence of influential data points (less visible but need to check)
-#alt.est.id <- influence(model=my.model, group="id")
-#alt.est.trial <- influence(model=my.model, group="trialxcondition")
+alt.est.id <- influence(model=my.model, group="id")
+#plot(alt.est.id)
 
 
 
@@ -193,13 +192,14 @@ qqnorm(residuals(my.model))
 # LIKING ------------------------------------------------------------------
 
 
-main.model.lik = lmer(perceived_liking ~ condition + trialxcondition + (1|id), data = REWOD_HED, REML=FALSE)
+main.model.lik = lmer(perceived_liking ~ condition + trialxcondition + perceived_intensity + (1+condition|id), data = REWOD_HED, REML=FALSE)
 summary(main.model.lik)
 
-null.model.lik = lmer(perceived_liking ~ trialxcondition + (1|id), data = REWOD_HED, REML=FALSE)
+null.model.lik = lmer(perceived_liking ~ condition + trialxcondition  + (1+condition|id), data = REWOD_HED, REML=FALSE)
 
 test = anova(main.model.lik, null.model.lik, test = 'Chisq')
 test
+
 #sentence => main.liking is 'signifincatly' better than the null model wihtout condition a fixe effect
 # condition affected liking rating (χ2 (1)= 868.41, p<2.20×10ˆ-16), rising reward ratings by 17.63 points ± 0.57 (SEE) compared to neutral condition and,
 # 17.63 ± 0.56 (SEE) compared to the control condition.
@@ -208,13 +208,29 @@ test
 delta_BIC = test$BIC[1] -test$BIC[2] 
 delta_BIC
 
-lsmeans(main.model.lik, pairwise ~ condition)
+
+#
+ems = emmeans(main.model.lik, list(pairwise ~ condition), adjust = "tukey")
+confint(emmeans(main.model.lik,"condition"), level = .95, type = "response", adjust = "tukey")
+plot(ems)
+ems
+
+#compute ptukey because ems rounds everything !!
+pR_N = 1 - ptukey(11.692 * sqrt(2), 3, 25.04)
+pR_C = 1 - ptukey(12.652 * sqrt(2), 3, 25.04)
+
+# Neutral VS Control (so we do that to be less bias and more conservator)
+# playing against ourselvees
+cont = emmeans(main.model.lik, ~ condition)
+contr_mat <- coef(pairs(cont))[c("c.3")]
+emmeans(main.model.lik, ~ condition, contr = contr_mat, adjust = "none")$contrasts
+
 
 # planned contrast
 REWOD_HED$cvalue[REWOD_HED$condition== 'chocolate']     <- 2
 REWOD_HED$cvalue[REWOD_HED$condition== 'empty']     <- -1
 REWOD_HED$cvalue[REWOD_HED$condition== 'neutral']     <- -1
-REWOD_HED$cvalue       <- factor(REWOD_HED$cvalue)
+
 
 #
 main.cont.lik = lmer(perceived_liking ~ cvalue + trialxcondition + (1|id), data = REWOD_HED, REML=FALSE)
@@ -232,26 +248,14 @@ delta_BIC
 
 
 
-#  contrast NEUTRAL - EMPTY "we play against ourselves by oding this contrast and being conservator"
-REWOD_HED$cvalue1[REWOD_HED$condition== 'chocolate']     <- 0
-REWOD_HED$cvalue1[REWOD_HED$condition== 'empty']     <- 1
-REWOD_HED$cvalue1[REWOD_HED$condition== 'neutral']     <- -1
-REWOD_HED$cvalue1       <- factor(REWOD_HED$cvalue1)
-
-#
-main.cont.lik1 = lmer(perceived_liking ~ cvalue1 + trialxcondition + (1|id), data = REWOD_HED, REML=FALSE)
-summary(main.cont.lik1)
-#still not sign p = 0.19458 
-
-
 
 # INTENSITY ---------------------------------------------------------------
 
 
-main.model.int = lmer(perceived_intensity ~ condition + trialxcondition + (1|id), data = REWOD_HED, REML=FALSE)
+main.model.int = lmer(perceived_intensity ~ condition + trialxcondition + (1+condition|id), data = REWOD_HED, REML=FALSE)
 summary(main.model.int)
 
-null.model.int = lmer(perceived_intensity ~ trialxcondition + (1|id), data = REWOD_HED, REML=FALSE)
+null.model.int = lmer(perceived_intensity ~ trialxcondition + (1+condition|id), data = REWOD_HED, REML=FALSE)
 
 testint = anova(main.model.int, null.model.int, test = 'Chisq')
 test
@@ -263,13 +267,34 @@ test
 delta_BIC = test$BIC[1] -test$BIC[2] 
 delta_BIC
 
-lsmeans(main.model.int, pairwise ~ condition)
+ems = emmeans(main.model.int, list(pairwise ~ condition), adjust = "tukey")
+confint(emmeans(main.model.int,"condition"), level = .95, type = "response", adjust = "tukey")
+plot(ems)
+ems
+
+
+
+#compute ptukey because ems rounds everything !!
+pR_C = 1 - ptukey(9.657 * sqrt(2), 3, 25.06)
+pR_C 
+
+# Neutral VS Control (so we do that to be less bias and more conservator)
+# playing against ourselvees
+cont = emmeans(main.model.lik, ~ condition)
+contr_mat <- coef(pairs(cont))[c("c.3")]
+emmeans(main.model.lik, ~ condition, contr = contr_mat, adjust = "none")$contrasts
+
 
 # planned contrast
 REWOD_HED$cvalue[REWOD_HED$condition== 'chocolate']     <- 2
 REWOD_HED$cvalue[REWOD_HED$condition== 'empty']     <- -1
 REWOD_HED$cvalue[REWOD_HED$condition== 'neutral']     <- -1
-REWOD_HED$cvalue       <- factor(REWOD_HED$cvalue)
+
+
+# planned contrast
+REWOD_HED$cvalue[REWOD_HED$condition== 'chocolate']     <- 2
+REWOD_HED$cvalue[REWOD_HED$condition== 'empty']     <- -1
+REWOD_HED$cvalue[REWOD_HED$condition== 'neutral']     <- -1
 
 #
 main.cont.int = lmer(perceived_intensity ~ cvalue + trialxcondition + (1|id), data = REWOD_HED, REML=FALSE)

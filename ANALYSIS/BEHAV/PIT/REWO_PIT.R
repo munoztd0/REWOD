@@ -122,36 +122,24 @@ dfPIT2 <- data.frame(dfPIT2, Condition)
 dfPIT2$Condition = factor(dfPIT2$Condition,levels(dfPIT2$Condition)[c(3,2,1)])
 PIT.bs$Condition = factor(PIT.bs$Condition,levels(PIT.bs$Condition)[c(3,2,1)])  
 
-  # 
-  # scale_y_continuous(breaks=c(0,5, 10, 15, 20,25))+
-  # theme_classic() +
-  # theme(axis.title = element_text(size=12), 
-  #       legend.position = c(0.9, 0.9), legend.title=element_blank()) +
-  # labs(
-  #   x = "Pavlovian Stimulus",
-  #   y = "Number of Squeezes"
-  # )
-
-# 
-# ggplot(bsLIK, aes(x = Condition, y = perceived_liking, fill = Condition)) +
-#   geom_jitter(width = 0.05, color="black",alpha=0.5, size = 0.5) +
-#   geom_bar(data=dfLIK2, stat="identity", alpha=0.6, width=0.35, position = position_dodge(width = 0.01)) +
-#   scale_fill_manual("legend", values = c("Reward"="blue", "Neutral"="red", "Control"="black")) +
-#   geom_line(aes(x=Condition, y=perceived_liking, group=id), col="grey", alpha=0.4) +
-#   geom_errorbar(data=dfLIK2, aes(x = Condition, ymax = perceived_liking + se, ymin = perceived_liking - se), width=0.1, colour="black", alpha=1, size=0.4)+
-#   scale_y_continuous(expand = c(0, 0), breaks = c(seq.int(0,100, by = 20)), limits = c(0,100)) +
-#   theme_classic() +
-#   theme(plot.margin = unit(c(1, 1, 1, 1), units = "cm"),  axis.title.x = element_text(size=16), axis.text.x = element_text(size=12),
-#         axis.title.y = element_text(size=16), legend.position = "none", axis.ticks.x = element_blank(), axis.line.x = element_line(color = "white")) +
-#   labs(
-#     x = "Odor Stimulus",
-#     y = "Plesantness Ratings"
-#   )
-
-
+ggplot(PIT.bs, aes(x = Condition, y = n_grips, fill = Condition)) +
+  geom_jitter(width = 0.05, color="black",alpha=0.5, size = 0.5) +
+  geom_bar(data=dfPIT2, stat="identity", alpha=0.6, width=0.35, position = position_dodge(width = 0.01)) +
+  scale_fill_manual("legend", values = c("CS+"="blue", "CS-"="red", "Baseline"="black")) +
+  geom_line(aes(x=Condition, y=n_grips, group=id), col="grey", alpha=0.4) +
+  geom_errorbar(data=dfPIT2, aes(x = Condition, ymax = n_grips + se, ymin = n_grips - se), width=0.1, colour="black", alpha=1, size=0.4)+
+  scale_y_continuous(expand = c(0, 0), breaks = c(seq.int(0,30, by = 5)), limits = c(0,30)) +
+  theme_classic() +
+  theme(plot.margin = unit(c(1, 1, 1, 1), units = "cm"),  axis.title.x = element_text(size=16), axis.text.x = element_text(size=12),
+        axis.title.y = element_text(size=16), legend.position = "none", axis.ticks.x = element_blank(), axis.line.x = element_line(color = "white")) +
+  labs(
+    x = "Pavlovian Stimulus",
+    y = "Number of Squeezes"
+  )
 
 # ANALYSIS
 
+# ANALYSIS -----------------------------------------------------------------
 
 ## 1. number of grips: are participants gripping more on the CSplus condition? 
 
@@ -171,14 +159,16 @@ plot(dfbetas(alt.est.id), PIT.bs$id)
 
 
 
-
 # Grips ------------------------------------------------------------------
 REWOD_PIT$condition = factor(REWOD_PIT$condition,levels(REWOD_PIT$condition)[c(3,2,1)])  
 
-main.model = lmer(n_grips ~ condition + trialxcondition + (1|id), data = REWOD_PIT, REML = FALSE) 
+main.model = lmer(n_grips ~ condition + trialxcondition + (1+condition |id), data = REWOD_PIT, REML = FALSE) 
 summary(main.model)
 
-null.model = lmer(n_grips ~  trialxcondition + (1|id), data = REWOD_PIT, REML = FALSE) 
+
+
+# Ben saif boundary (singular) fit: see ?isSingular was ok if the variance checks out
+null.model = lmer(n_grips ~  trialxcondition + (1+condition |id), data = REWOD_PIT, REML = FALSE) 
 
 test = anova(main.model, null.model, test = 'Chisq')
 test
@@ -189,21 +179,31 @@ test
 # 4.54 ± 0.38 (SEE) compared to the baseline.
 
 #Δ BIC
-delta_BIC = test$BIC[1] -test$BIC[2] 
+delta_BIC = test$BIC[2] - test$BIC[1]
 delta_BIC
 
-lsmeans(mymodel, pairwise ~ condition)
+# #difflsmeans
+# pairw = difflsmeans(main.model, test.effs="condition")
+# plot(parw)
+# pairw
+
+#emmeans
+ems = emmeans(main.model, list(pairwise ~ condition), adjust = "tukey")
+confint(emmeans(main.model,"condition"), level = .95, type = "response", adjust = "tukey")
+plot(ems)
+ems
+
 
 
 # manual planned contrasts
 REWOD_PIT$cvalue[REWOD_PIT$condition== 'CSplus']       <- 2
-REWOD_PIT$cvalue[REWOD_PIT$condition== 'CSminus']     <- -1
+REWOD_PIT$cvalue[REWOD_PIT$condition== 'CSminus']      <- -1
 REWOD_PIT$cvalue[REWOD_PIT$condition== 'Baseline']     <- -1
-REWOD_PIT$cvalue       <- factor(REWOD_PIT$cvalue)
-
+REWOD_PIT$cvalue1      <- factor(REWOD_PIT$cvalue1)
 
 main.cont = lmer(n_grips ~ cvalue + trialxcondition + (1|id), data = REWOD_PIT, REML = FALSE) 
 summary(main.cont)
+ems = emmeans(main.cont, list(pairwise ~ cvalue), adjust = "tukey")
 
 null.cont = lmer(n_grips ~  trialxcondition + (1|id), data = REWOD_PIT, REML = FALSE) 
 
@@ -217,16 +217,12 @@ delta_BIC
 
 
 
-# CSminus VS Baseline
-REWOD_PIT$cvalue1[REWOD_PIT$condition== 'CSplus']     <- 0
-REWOD_PIT$cvalue1[REWOD_PIT$condition== 'CSminus']     <- 1
-REWOD_PIT$cvalue1[REWOD_PIT$condition== 'Baseline']     <- -1
-REWOD_PIT$cvalue1      <- factor(REWOD_PIT$cvalue1)
+# CSminus VS Baseline (so we do that to be less bias and more conservator)
+# playing against ourselvees
+cont = emmeans(main.model, ~ condition)
+contr_mat <- coef(pairs(cont))[c("c.3")]
+emmeans(main.model, ~ condition, contr = contr_mat, adjust = "none")$contrasts
 
 
-main.cont1 = lmer(n_grips ~ cvalue1 + trialxcondition + (1|id), data = REWOD_PIT, REML = FALSE) 
-summary(main.cont1)
-
-null.cont1 = lmer(n_grips ~  trialxcondition + (1|id), data = REWOD_PIT, REML = FALSE) 
 
 

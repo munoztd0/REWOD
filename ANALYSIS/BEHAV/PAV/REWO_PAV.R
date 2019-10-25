@@ -4,7 +4,7 @@
 
 #-----------------------  PRELIMINARY STUFF ----------------------------------------
 #load libraries
-pacman::p_load(MBESS, afex, car, ggplot2, dplyr, plyr, tidyr, reshape, Hmisc, Rmisc,  ggpubr, gridExtra, plotrix, lsmeans, BayesFactor)
+pacman::p_load(apaTables, MBESS, afex, car, ggplot2, dplyr, plyr, tidyr, reshape, Hmisc, Rmisc,  ggpubr, gridExtra, plotrix, lsmeans, BayesFactor)
 
 if(!require(pacman)) {
   install.packages("pacman")
@@ -54,6 +54,9 @@ dropped = full-clean
 #PLOTS 
 
 
+##acc
+mean(REWOD_PAV$accuracy, na.rm = TRUE)
+
 # create one with baslein for liking
 baseline = filter(REWOD_PAV, condition == 'Baseline')
 ratings = rbind(REWOD_PAV.clean, baseline)
@@ -87,6 +90,11 @@ RT_minus= RT_CS  %>% filter(condition == 'CSminus')
 densityplot(RT_minus$RT)
 
 
+
+
+# RTs ---------------------------------------------------------------------
+
+
 #do paired t-test (unilateral?)
 cond.ttest = t.test(RT_minus$RT, RT_plus$RT,  paired = TRUE, alternative = "greater")
 cond.ttest
@@ -118,42 +126,85 @@ densityplot(LIK_base$liking_ratings)
 
 
 
+# ANOVA RATINGS -------------------------------------------------------------------
+
+
+anova_model = ezANOVA(data = ratings,
+                      dv = liking_ratings,
+                      wid = id,
+                      within = condition,
+                      detailed = TRUE,
+                      type = 3)
+
+
+# effect sizes ------------------------------------------------------------
+
+dfm = anova_model$ANOVA$DFn[2]
+dfe = anova_model$ANOVA$DFd[2]
+msm = anova_model$ANOVA$SSn[2] / anova_model$ANOVA$DFn[2]
+mse = anova_model$ANOVA$SSd[2] / anova_model$ANOVA$DFd[2]
+mss = anova_model$ANOVA$SSd[1] / anova_model$ANOVA$DFd[1]
+ssm = anova_model$ANOVA$SSn[2]
+sse = anova_model$ANOVA$SSd[2]
+sss = anova_model$ANOVA$SSd[1]
+a = .1
+
+f = msm/mse
+
+partial_omega = (f-1)/(f + (dfe +1)/dfm)
+limits <- ci.R2(R2 = partial_omega, df.1 = dfm, df.2 = dfe, conf.level = (1-a))
+partial_omega
+limits$Lower.Conf.Limit.R2
+limits$Upper.Conf.Limit.R2
+
 #using afex
 cond.aov <- aov_car(liking_ratings ~ condition + Error(id/condition), data = ratings, anova_table = list(es = "pes"))
-cond.aov
-cond.aov_sum <- summary(cond.aov)
-cond.aov_sum
+
+#contrast pairvise corrected to get pvalues
+ems = emmeans(cond.aov, list(pairwise ~ condition), adjust = "tukey")
+ems
 
 
-#----EFFECT SIZE
+# PAIRED CONTRASTS TO GET EFFECT SIZES--------------------------------------------------------
 
-# Confidence interval
+# CS+ vs CSminus ----------------------------to get effect sizes------------------------------
 
-cond.CSCategory_lims      <- conf.limits.ncf(F.value = cond.aov_sum$univariate.tests[2,5], conf.level = .90, df.1 <- cond.aov_sum$univariate.tests[2,2], df.2 <- cond.aov_sum$univariate.tests[2,4])
-cond.CSCategory_lower.lim <- cond.CSCategory_lims$Lower.Limit/(cond.CSCategory_lims$Lower.Limit + df.1 + df.2 + 1)
-cond.CSCategory_upper.lim <- cond.CSCategory_lims$Upper.Limit/(cond.CSCategory_lims$Upper.Limit + df.1 + df.2 + 1)
-
-cond.effectsizes <- matrix(c(cond.aov$anova_table$pes[1], ifelse(is.na(cond.CSCategory_lower.lim) == F, cond.CSCategory_lower.lim, 0), ifelse(is.na(cond.CSCategory_upper.lim) == F, cond.CSCategory_upper.lim, .00059834237206)), #value computed with SPSS
-                           ncol = 3, byrow = T)
-colnames(cond.effectsizes) <- c("Partial eta squared", "90% CI lower limit", "90% CI upper limit")
-rownames(cond.effectsizes) <- c("CSCategory")
-cond.effectsizes
-
-#planned contrast
-#do paired t-test (unilateral)
-
-#CS+ vs CSminus
 lik.ttest = t.test(LIK_plus$liking_ratings, LIK_minus$liking_ratings,  paired = TRUE, alternative = "greater")
-lik.ttest
 
 #----EFFECT SIZE see yoann's script
 cohen_d_ci(LIK_plus$liking_ratings, LIK_minus$liking_ratings, paired  = TRUE)
 
-#CSminus VS Baseline
-t.test(LIK_minus$liking_ratings, LIK_base$liking_ratings,  paired = TRUE)
+# BAYES FACTOR
+lik.N             <- length(LIK_plus$liking_ratings)
+lik.tvalue        <- lik.ttest$statistic
+lik.BF            <- ttest.tstat(t = lik.tvalue, n1 = cond.N, nullInterval = c(0, Inf), rscale = 0.5, simple = T)
+lik.BF
+
+
+# CS+ vs Baseline ---------------------------------to get effect sizes------------------------
+
+lik.ttest1 = t.test(LIK_plus$liking_ratings, LIK_base$liking_ratings,  paired = TRUE, alternative = "greater")
+lik.ttest1
+
+#----EFFECT SIZE see yoann's script
+cohen_d_ci(LIK_plus$liking_ratings, LIK_base$liking_ratings, paired  = TRUE)
 
 # BAYES FACTOR
-lik.N             <- 
+lik.N             <- length(LIK_plus$liking_ratings)
+lik.tvalue        <- lik.ttest1$statistic
+lik.BF            <- ttest.tstat(t = lik.tvalue, n1 = cond.N, nullInterval = c(0, Inf), rscale = 0.5, simple = T)
+lik.BF
+
+# CS- vs Baseline ---------------------------------to get effect sizes------------------------
+
+lik.ttest = t.test(LIK_minus$liking_ratings, LIK_base$liking_ratings,  paired = TRUE, alternative = "greater")
+lik.ttest
+
+#----EFFECT SIZE see yoann's script
+cohen_d_ci(LIK_minus$liking_ratings, LIK_base$liking_ratings, paired  = TRUE)
+
+# BAYES FACTOR
+lik.N             <- length(LIK_minus$liking_ratings)
 lik.tvalue        <- lik.ttest$statistic
 lik.BF            <- ttest.tstat(t = lik.tvalue, n1 = cond.N, nullInterval = c(0, Inf), rscale = 0.5, simple = T)
 lik.BF
