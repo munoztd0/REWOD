@@ -2,7 +2,7 @@ These are the the codes used for preprocessing and analyzing behavioral and func
 
 Flow chart od the pipelin -> (https://github.com/munoztd0/REWOD/blob/master/preproc.png)
 ![preproc](preproc.png)
-
+![preproc](../preproc.png)
 Folders are organised in steps of processing:
 
 
