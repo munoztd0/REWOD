@@ -4,7 +4,7 @@ Flow chart od the pipeline:
 
 ![preproc](https://user-images.githubusercontent.com/43644805/67976191-ee0f3e80-fc15-11e9-9c16-1a1b5c84d281.png)
 
-Folders are organised in steps of processing:
+Folders are organised in BIDS format (see in each folder for further info)
 
 
 Please note that not these scripts have been modified for reproducibility purpose (e.g. code flexibility) and are then not exactly the same used by us. The scripts should work as it is but some of them might need to be adapted.
