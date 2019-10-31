@@ -1,7 +1,7 @@
 These are the the codes used for preprocessing and analyzing behavioral and functional MRI data used for the following two studies:
 
 Flow chart od the pipelin -> (https://github.com/munoztd0/REWOD/blob/master/preproc.png)
-![Screenshot](preproc.png)
+![preproc](preproc.png)
 
 Folders are organised in steps of processing:
 
