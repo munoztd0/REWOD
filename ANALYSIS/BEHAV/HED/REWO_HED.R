@@ -77,38 +77,45 @@ data_summary <- function(data, varname, groupnames){
 # plots -------------------------------------------------------------------
 
 
-# plot liking by time by condition with regression lign
-ggplotRegression(lm(perceived_liking ~ trialxcondition*condition, data = bct)) + 
-  facet_wrap(~condition)
-
-
-
-#plot intensity to see the trajectory of learning (by condition) 
-ggplot(bct, aes(x = trialxcondition, y = perceived_intensity, color = condition)) +
-  geom_point() +
-  geom_line(aes(group = condition), alpha = .3, size = 1) +
-  scale_colour_manual("", 
-                      values = c("chocolate"="green", "empty"="red", "neutral"="blue")) +
-  theme_classic() +
-  labs(
-    title = "intensity By Time By condition",
-    x = "trialxcondition",
-    y = "perceived_intensity"
-  )
-
-# plot liking by time by condition with regression lign
-ggplotRegression(lm(perceived_intensity ~ trialxcondition*condition, data = bct)) + 
-  facet_wrap(~condition)
-
+# # plot liking by time by condition with regression lign
+# ggplotRegression(lm(perceived_liking ~ trialxcondition*condition, data = bct)) + 
+#   facet_wrap(~condition)
+# 
+# 
+# 
+# #plot intensity to see the trajectory of learning (by condition) 
+# ggplot(bct, aes(x = trialxcondition, y = perceived_intensity, color = condition)) +
+#   geom_point() +
+#   geom_line(aes(group = condition), alpha = .3, size = 1) +
+#   scale_colour_manual("", 
+#                       values = c("chocolate"="green", "empty"="red", "neutral"="blue")) +
+#   theme_classic() +
+#   labs(
+#     title = "intensity By Time By condition",
+#     x = "trialxcondition",
+#     y = "perceived_intensity"
+#   )
+# 
+# # plot liking by time by condition with regression lign
+# ggplotRegression(lm(perceived_intensity ~ trialxcondition*condition, data = bct)) + 
+#   facet_wrap(~condition)
+# 
 
 
 
 # get mean an SEM
 
+df <- summarySE(REWOD_HED, measurevar="perceived_liking", groupvars=c("id", "trialxcondition", "Condition"))
 
-dfLIK <- summarySE(REWOD_HED, measurevar="perceived_liking", groupvars=c("trialxcondition", "Condition"))
+dfLIK <- summarySEwithin(df,
+                         measurevar = "perceived_liking",
+                         withinvars = c("Condition", "trialxcondition"), 
+                         idvar = "id")
+
 dfLIK$Condition = as.factor(dfLIK$Condition)
 dfLIK$Condition = factor(dfLIK$Condition,levels(dfLIK$Condition)[c(3,2,1)])
+dfLIK$trialxcondition =as.numeric(dfLIK$trialxcondition)
+
 
 ggplot(dfLIK, aes(x = trialxcondition, y = perceived_liking, color=Condition)) +
   geom_line(alpha = .7, size = 1, position =position_dodge(width = 0.5)) +
@@ -128,8 +135,15 @@ ggplot(dfLIK, aes(x = trialxcondition, y = perceived_liking, color=Condition)) +
 
 
 
-# summarySE provides the standard deviation, standard error of the mean, and a (default 95%) confidence interval
-dfLIK2 <- summarySE(bsLIK, measurevar="perceived_liking", groupvars=c("Condition"))
+#ratings
+df <- summarySE(REWOD_PIT, measurevar="perceived_liking", groupvars=c("id", "Condition"))
+
+dfLIK2 <- summarySEwithin(df,
+                          measurevar = "perceived_liking",
+                          withinvars = c("Condition"), 
+                          idvar = "id")
+
+
 dfLIK2$Condition <- as.factor(dfLIK2$Condition)
 bsLIK$Condition <- as.factor(bsLIK$Condition)
 
@@ -137,7 +151,7 @@ dfLIK2$Condition = factor(dfLIK2$Condition,levels(dfLIK2$Condition)[c(3,2,1)])
 bsLIK$Condition = factor(bsLIK$Condition,levels(bsLIK$Condition)[c(3,2,1)])  
 
 ggplot(bsLIK, aes(x = Condition, y = perceived_liking, fill = Condition)) +
-  geom_jitter(width = 0.05, color="black",alpha=0.5, size = 0.5) +
+  geom_jitter(width = 0.02, color="black",alpha=0.5, size = 0.5) +
   geom_bar(data=dfLIK2, stat="identity", alpha=0.6, width=0.35, position = position_dodge(width = 0.01)) +
   scale_fill_manual("legend", values = c("Reward"="blue", "Neutral"="red", "Control"="black")) +
   geom_line(aes(x=Condition, y=perceived_liking, group=id), col="grey", alpha=0.4) +

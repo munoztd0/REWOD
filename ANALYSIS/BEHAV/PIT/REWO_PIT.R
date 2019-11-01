@@ -3,7 +3,7 @@
 
 # -----------------------  PRELIMINARY STUFF ----------------------------------------
 # load libraries
-pacman::p_load(influence.ME,lmerTest, lme4, MBESS, afex, car, ggplot2, dplyr, plyr, tidyr, reshape, Hmisc, Rmisc,  ggpubr, gridExtra, plotrix, lsmeans, BayesFactor)
+pacman::p_load(influence.ME,lmerTest, lme4, ez, MBESS, afex, car, ggplot2, dplyr, plyr, tidyr, reshape, Hmisc, Rmisc,  ggpubr, gridExtra, plotrix, lsmeans, BayesFactor)
 
 if(!require(pacman)) {
   install.packages("pacman")
@@ -55,6 +55,7 @@ REWOD_PIT$Condition[REWOD_PIT$condition== 'CSminus']     <- 'CS-'
 REWOD_PIT$Condition[REWOD_PIT$condition== 'Baseline']     <- 'Baseline'
 
 REWOD_PIT$Condition <- as.factor(REWOD_PIT$Condition)
+REWOD_PIT$trialxcondition <- as.factor(REWOD_PIT$trialxccondition)
 # # FUNCTIONS -------------------------------------------------------------
 
 
@@ -68,6 +69,10 @@ ggplotRegression <- function (fit) {
                        " Slope =",signif(fit$coef[[2]], 5),
                        " P =",signif(summary(fit)$coef[2,4], 5)))
 }
+
+
+
+# cleaning ----------------------------------------------------------------
 
 
 ## plot overall effect
@@ -94,10 +99,18 @@ PIT.bs = ddply(REWOD_PIT, .(id, Condition), summarise, n_grips = mean(n_grips, n
 
 
 ##plot n_grips to see the trajectory of learning (overall average by trials) by conditions
-dfPIT <- summarySE(REWOD_PIT, measurevar="n_grips", groupvars=c("trialxcondition", "Condition"))
+
+df <- summarySE(REWOD_PIT, measurevar="n_grips", groupvars=c("id", "trialxcondition", "Condition"))
+
+dfPIT <- summarySEwithin(df,
+                           measurevar = "n_grips",
+                           withinvars = c("Condition", "trialxcondition"), 
+                           idvar = "id")
 
 
 dfPIT$Condition = factor(dfPIT$Condition,levels(dfPIT$Condition)[c(3,2,1)])
+dfPIT$trialxcondition =as.numeric(dfPIT$trialxcondition)
+
 
 ggplot(dfPIT, aes(x = trialxcondition, y = n_grips, color=Condition)) +
   geom_point(position = position_dodge(width = 0.5)) +
@@ -105,7 +118,7 @@ ggplot(dfPIT, aes(x = trialxcondition, y = n_grips, color=Condition)) +
   geom_errorbar(aes(ymax = n_grips + se, ymin = n_grips - se), width=0.5, alpha=0.7, size=0.4,position = position_dodge(width = 0.5))+
   scale_colour_manual(values = c("CS+"="blue", "CS-"="red", "Baseline"="black")) +
   scale_y_continuous(expand = c(0, 0),  limits = c(4.0,16)) +  #breaks = c(4.0, seq.int(5,16, by = 2.5)),
-  scale_x_continuous(expand = c(0, 0), limits = c(0,16), breaks=c(0, seq.int(1,15, by = 2),16))+ 
+  scale_x_continuous(expand = c(0, 0), limits = c(-10 ,16), breaks=c(-10,seq.int(-9,15, by = 2),16))+ 
   theme_classic() +
   theme(plot.margin = unit(c(1, 1, 1, 1), units = "cm"), axis.title.x = element_text(size=16), 
         axis.title.y = element_text(size=16), legend.position = c(0.9, 0.9), legend.title=element_blank()) +
@@ -113,22 +126,80 @@ ggplot(dfPIT, aes(x = trialxcondition, y = n_grips, color=Condition)) +
 
 
 
+#  REminder
+df <- summarySE(REWOD_RIM, measurevar="n_grips", groupvars=c("id", "trial"))
+
+dfRIM <- summarySEwithin(df,
+                         measurevar = "n_grips",
+                         withinvars = c("trial"), 
+                         idvar = "id")
+
+
+dfRIM$Task_Name <- paste0("Reminder")
+dfRIM$trial =as.numeric(dfRIM$trial)
+##plot n_grips to see the trajectory of learning (overall average by trials)
+
+ggplot(dfRIM, aes(x = trial, y = n_grips, color=Task_Name)) +
+  geom_point(position = position_dodge(width = 0.5)) +
+  geom_line(alpha = .7, size = 1, position = position_dodge(width = 0.5), linetype = "dashed") +
+  geom_errorbar(aes(ymax = n_grips + se, ymin = n_grips - se), width=0.5, alpha=0.7, size=0.4,position = position_dodge(width = 0.5))+
+  scale_colour_manual(values = c("Reminder"="grey")) +
+  scale_y_continuous(expand = c(0, 0),  limits = c(4.0,16)) +  #breaks = c(4.0, seq.int(5,16, by = 2.5)),
+  scale_x_continuous(expand = c(0, 0), limits = c(0 ,26), breaks=c(seq.int(0,26, by = 2)))+ 
+  theme_classic() +
+  theme(plot.margin = unit(c(1, 1, 1, 1), units = "cm"), axis.title.x = element_text(size=16), 
+        axis.title.y = element_text(size=16), legend.position = c(0.9, 0.9), legend.title=element_blank()) +
+  labs(x = "Trials",y = "Number of Squeezes")
+
+
+#  PE
+df <- summarySE(REWOD_PE, measurevar="n_grips", groupvars=c("id", "trial"))
+
+dfPE <- summarySEwithin(df,
+                         measurevar = "n_grips",
+                         withinvars = c("trial"), 
+                         idvar = "id")
+
+dfPE$Task_Name <- paste0("Partial Extinction")
+
+dfPE$trial =as.numeric(dfPE$trial)
+##plot n_grips to see the trajectory of learning (overall average by trials)
+
+ggplot(dfPE, aes(x = trial, y = n_grips, color=Task_Name)) +
+  geom_point(position = position_dodge(width = 0.5)) +
+  geom_line(alpha = .7, size = 1, position = position_dodge(width = 0.5), linetype = "dotted") +
+  geom_errorbar(aes(ymax = n_grips + se, ymin = n_grips - se), width=0.5, alpha=0.7, size=0.4,position = position_dodge(width = 0.5))+
+  scale_colour_manual(values = c("Partial Extinction"="grey")) +
+  scale_y_continuous(expand = c(0, 0),  limits = c(4.0,16)) +  #breaks = c(4.0, seq.int(5,16, by = 2.5)),
+  scale_x_continuous(expand = c(0, 0), limits = c(-3 ,26), breaks=c(0,seq.int(-9,15, by = 2),26))+ 
+  theme_classic() +
+  theme(plot.margin = unit(c(1, 1, 1, 1), units = "cm"), axis.title.x = element_text(size=16), 
+        axis.title.y = element_text(size=16), legend.position = c(0.9, 0.9), legend.title=element_blank()) +
+  labs(x = "Trials",y = "Number of Squeezes")
+
 
 
 # summarySE provides the standard deviation, standard error of the mean, and a (default 95%) confidence interval
-dfPIT2 <- summarySE(PIT.bs, measurevar="n_grips", groupvars=c("Condition"))
-Condition <- c("Baseline", "CS-", "CS+")
-dfPIT2 <- data.frame(dfPIT2, Condition)
+
+df <- summarySE(REWOD_PIT, measurevar="n_grips", groupvars=c("id", "Condition"))
+
+dfPIT2 <- summarySEwithin(df,
+                         measurevar = "n_grips",
+                         withinvars = c("Condition"), 
+                         idvar = "id")
+
+
+
 dfPIT2$Condition = factor(dfPIT2$Condition,levels(dfPIT2$Condition)[c(3,2,1)])
 PIT.bs$Condition = factor(PIT.bs$Condition,levels(PIT.bs$Condition)[c(3,2,1)])  
 
 ggplot(PIT.bs, aes(x = Condition, y = n_grips, fill = Condition)) +
-  geom_jitter(width = 0.05, color="black",alpha=0.5, size = 0.5) +
-  geom_bar(data=dfPIT2, stat="identity", alpha=0.6, width=0.35, position = position_dodge(width = 0.01)) +
+  geom_jitter(width = 0.02, color="black",alpha=0.5, size = 0.5) +
+  geom_bar(data=dfPIT2, stat="identity", alpha=0.6, width=0.35) +
   scale_fill_manual("legend", values = c("CS+"="blue", "CS-"="red", "Baseline"="black")) +
   geom_line(aes(x=Condition, y=n_grips, group=id), col="grey", alpha=0.4) +
-  geom_errorbar(data=dfPIT2, aes(x = Condition, ymax = n_grips + se, ymin = n_grips - se), width=0.1, colour="black", alpha=1, size=0.4)+
-  scale_y_continuous(expand = c(0, 0), breaks = c(seq.int(0,30, by = 5)), limits = c(0,30)) +
+  geom_errorbar(data=dfPIT2, aes(x = Condition, ymax = n_grips + se, ymin = n_grips - se), width=0.07, colour="black", alpha=1, size=0.4)+
+  scale_y_continuous(expand = c(0, 0), breaks = c(-1, seq.int(0,30, by = 5)), limits = c(-1,30)) +
   theme_classic() +
   theme(plot.margin = unit(c(1, 1, 1, 1), units = "cm"),  axis.title.x = element_text(size=16), axis.text.x = element_text(size=12),
         axis.title.y = element_text(size=16), legend.position = "none", axis.ticks.x = element_blank(), axis.line.x = element_line(color = "white")) +
@@ -159,7 +230,7 @@ plot(dfbetas(alt.est.id), PIT.bs$id)
 
 
 
-# Grips ------------------------------------------------------------------
+# PIT Grips ------------------------------------------------------------------
 REWOD_PIT$condition = factor(REWOD_PIT$condition,levels(REWOD_PIT$condition)[c(3,2,1)])  
 
 main.model = lmer(n_grips ~ condition + trialxcondition + (1+condition |id), data = REWOD_PIT, REML = FALSE) 
@@ -222,6 +293,130 @@ delta_BIC
 cont = emmeans(main.model, ~ condition)
 contr_mat <- coef(pairs(cont))[c("c.3")]
 emmeans(main.model, ~ condition, contr = contr_mat, adjust = "none")$contrasts
+
+
+
+
+
+
+# REMINDER ----------------------------------------------------------------
+
+
+# ANOVA trials ------------------------------------------------------------
+
+##1. number of grips: are participants gripping more over time?
+REWOD_RIM$trial            <- factor(REWOD_RIM$trial)
+
+
+anova_model = ezANOVA(data = REWOD_RIM,
+                      dv = n_grips,
+                      wid = id,
+                      within = trial,
+                      detailed = TRUE,
+                      type = 3)
+
+#using afex
+rem.aov <- aov_car(n_grips ~ trial + Error(id/trial), data = REWOD_RIM, anova_table = list(es = "pes"))
+
+#contrast pairvise corrected to get pvalues
+ems = emmeans(rem.aov, list(pairwise ~ trial), adjust = "tukey")
+ems
+
+# effect sizes ------------------------------------------------------------
+
+dfm = anova_model$ANOVA$DFn[2]
+dfe = anova_model$ANOVA$DFd[2]
+msm = anova_model$ANOVA$SSn[2] / anova_model$ANOVA$DFn[2]
+mse = anova_model$ANOVA$SSd[2] / anova_model$ANOVA$DFd[2]
+mss = anova_model$ANOVA$SSd[1] / anova_model$ANOVA$DFd[1]
+ssm = anova_model$ANOVA$SSn[2]
+sse = anova_model$ANOVA$SSd[2]
+sss = anova_model$ANOVA$SSd[1]
+a = .1
+
+f = msm/mse
+
+partial_omega = (f-1)/(f + (dfe +1)/dfm)
+limits <- ci.R2(R2 = partial_omega, df.1 = dfm, df.2 = dfe, conf.level = (1-a))
+partial_omega
+limits$Lower.Conf.Limit.R2
+limits$Upper.Conf.Limit.R2
+
+
+
+# Partial extinction ------------------------------------------------------
+
+# 
+
+REWOD_PE$trial            <- factor(REWOD_PE$trial)
+
+dfTRIAL <- data_summary(REWOD_PE, varname="n_grips", groupnames=c("trial"))
+
+o = length(dfTRIAL$sd)
+for(x in 1:o){
+  dfTRIAL$sem[x] <- dfTRIAL$sd[x]/sqrt(length(dfTRIAL$sd))
+}
+
+
+
+##plot n_grips to see the trajectory of learning (overall average by trials)
+
+ggplot(dfTRIAL, aes(x = trial, y = n_grips)) +
+  geom_point() + geom_line(group=1) +
+  geom_errorbar(aes(ymin=n_grips-sem, ymax=n_grips+sem), color='grey', width=.2,
+                position=position_dodge(0.05), linetype = "dashed") +
+  theme_classic() +
+  #scale_y_continuous(expand = c(0, 0), limits = c(10,16)) + #, breaks = c(9.50, seq.int(10,15, by = 1)), ) +
+  #scale_x_continuous(expand = c(0, 0), limits = c(0,25), breaks=c(0, seq.int(1,25, by = 3))) + #,breaks=c(seq.int(1,24, by = 2), 24), limits = c(0,24)) + 
+  labs(x = "Trial
+       ",
+       y = "Number of Squeezes",title= "   
+       ") +
+  theme(text = element_text(size=rel(4)), plot.margin = unit(c(1, 1,0, 1), units = "cm"), axis.title.x = element_text(size=16), axis.title.y = element_text(size=16))
+
+
+#ANALYSIS
+
+# ANOVA trials ------------------------------------------------------------
+
+##1. number of grips: are participants gripping more over time?
+REWOD_PE$trial            <- factor(REWOD_PE$trial)
+
+
+anova_model = ezANOVA(data = REWOD_PE,
+                      dv = n_grips,
+                      wid = id,
+                      within = trial,
+                      detailed = TRUE,
+                      type = 3)
+
+#using afex
+pe.aov <- aov_car(n_grips ~ trial + Error(id/trial), data = REWOD_PE, anova_table = list(es = "pes"))
+
+#contrast pairvise corrected to get pvalues
+ems = emmeans(pe.aov, list(pairwise ~ trial), adjust = "tukey")
+ems
+
+# effect sizes ------------------------------------------------------------
+
+dfm = anova_model$ANOVA$DFn[2]
+dfe = anova_model$ANOVA$DFd[2]
+msm = anova_model$ANOVA$SSn[2] / anova_model$ANOVA$DFn[2]
+mse = anova_model$ANOVA$SSd[2] / anova_model$ANOVA$DFd[2]
+mss = anova_model$ANOVA$SSd[1] / anova_model$ANOVA$DFd[1]
+ssm = anova_model$ANOVA$SSn[2]
+sse = anova_model$ANOVA$SSd[2]
+sss = anova_model$ANOVA$SSd[1]
+a = .1
+
+f = msm/mse
+
+partial_omega = (f-1)/(f + (dfe +1)/dfm)
+limits <- ci.R2(R2 = partial_omega, df.1 = dfm, df.2 = dfe, conf.level = (1-a))
+partial_omega
+limits$Lower.Conf.Limit.R2
+limits$Upper.Conf.Limit.R2
+
 
 
 

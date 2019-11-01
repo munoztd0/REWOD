@@ -7,7 +7,6 @@ if(!require(pacman)) {
 
 
 participants <- read.delim("~/REWOD/participants.tsv")
-participants<- filter(participants, participant_id != "sub-24")
 mean(participants$age)
 sd(participants$age)
 count(participants$sex)

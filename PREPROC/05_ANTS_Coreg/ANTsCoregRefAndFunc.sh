@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # AUTHOR : Wolfgang Pauli
-# LAST MODIFIED BY : DAVID MUNOZ TORD on APRIL 2019
+# LAST MODIFIED BY : DAVID MUNOZ TORD on NOVEMBER 2019
 
 # set this to the directory containing antsRegistration
 #ANTSPATH=/usr/local/ants/bin/
-ANTSPATH=${home}/REWOD/CODE/PREPROC/05_ANTS_Coreg/
+
 
 # ITK thread count
 ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=1
@@ -19,11 +19,10 @@ fi
 
 subjID=$1
 taskID=$2
-echo subj: $subjID
-echo task: $taskID
 
 home=$(eval echo ~$user)
 
+ANTSPATH=${home}/REWOD/CODE/PREPROC/05_ANTS_Coreg/
 
 # path to afine transform tool
 #c3d_affine_tool=/usr/local/c3d-1.1.0-Linux-gcc64/bin/c3d_affine_tool
@@ -45,24 +44,26 @@ standardAnatDir=${home}/REWOD/DERIVATIVES/PREPROC/CANONICALS/
 
 
 #############
-# Define target space (fixed) T1/T2 & masks file names
-fixed_T1=${standardAnatDir}CIT168_T1w_MNI.nii.gz
+# Define target space (fixed) T1 & masks file names
+#fixed_T1=${standardAnatDir}CIT168_T1w_MNI.nii.gz
 fixed_T1_lowres=${standardAnatDir}CIT168_T1w_MNI_lowres.nii.gz
-fixed_mask=${standardAnatDir}CIT168_T1w_MNI_mask.nii.gz
+#fixed_mask=${standardAnatDir}CIT168_T1w_MNI_mask.nii.gz
 fixed_mask_lowres=${standardAnatDir}CIT168_T1w_MNI_mask_lowres.nii.gz
 
-# Define subject images (moving) T1/T2 & masks file names
-
-moving_T1=${subAnatDir}sub-${subjID}_ses-second_run-01_T1w_reoriented_brain
+# Define subject images (moving) T1/SBref & masks file names
+#moving_T1=${subAnatDir}sub-${subjID}_ses-second_runf-01_sbref_reoriented_brain_restore_unwarped
+#moving_mask=${subAnatDir}sub-${subjID}_ses-second_run-01_sbref_reoriented_brain_restore_unwarped_mask
+moving_T1=${subAnatDir}sub-${subjID}_ses-second_run-01_T1w_reoriented_brain.nii.gz
 moving_mask=${subAnatDir}sub-${subjID}_ses-second_run-01_T1w_reoriented_brain_mask.nii.gz
 
 # Prefix for output transform files
-outPrefix=${moving_T1}
+Prefix=${moving_T1}
 
-echo "out prefix: ${outPrefix}"
+echo "prefix: ${Prefix}"
 
-# construct the mask
+# construct the masks
 fslmaths $fixed_T1_lowres -thr .1 -bin $fixed_mask_lowres
+fslmaths $moving_T1 -thr .1 -bin $moving_mask
 
 ###############
 # co-register the functional scan
@@ -102,7 +103,7 @@ echo "Applying warp to functional sample scan"
 
 ${ANTSPATH}WarpImageMultiTransform 3 ${icaDir}_sample.nii.gz ${icaDir}_sample_ANTsFuncT1.nii.gz \
         -R ${fixed_T1_lowres} \
-        ${outPrefix}_xfm1Warp.nii.gz ${outPrefix}_xfm0GenericAffine.mat \
+        ${Prefix}_xfm1Warp.nii.gz ${Prefix}_xfm0GenericAffine.mat \
         ${icaDir}_itk_transform_Func_To_T1.txt
 echo "done sample ANTs at $(date +"%T")"
 
@@ -116,14 +117,14 @@ echo "Apply series of transformations all the way from func to lowres atlas" ##(
 
 #${warpTool}WarpTimeSeriesImageMultiTransform 4 ${icaDir}_firstTenTest.nii.gz ${icaDir}_unwarped_Coreg_test.nii.gz \
 	   #-R ${fixed_T1_lowres} \
-     #${outPrefix}_xfm1Warp.nii.gz ${outPrefix}_xfm0GenericAffine.mat \
+     #${Prefix}_xfm1Warp.nii.gz ${Prefix}_xfm0GenericAffine.mat \
 	   #${icaDir}_itk_transform_Func_To_T1.txt
 
 # REAL # interpo = kNN
-# apply warp to the time image series
+# apply warp to the time image series -R reference template - use warp transform files previously computed
 ${ANTSPATH}WarpTimeSeriesImageMultiTransform 4 ${icaDir}_unwarped.nii.gz ${icaDir}_unwarped_Coreg.nii.gz \
 	-R ${fixed_T1_lowres} \
-  ${outPrefix}_xfm1Warp.nii.gz ${outPrefix}_xfm0GenericAffine.mat \
+  ${Prefix}_xfm1Warp.nii.gz ${Prefix}_xfm0GenericAffine.mat \
 	${icaDir}_itk_transform_Func_To_T1.txt
 
 

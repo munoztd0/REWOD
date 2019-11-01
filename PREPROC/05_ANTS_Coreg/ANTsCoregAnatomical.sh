@@ -4,11 +4,11 @@
 # LAST MODIFIED BY : DAVID MUNOZ TORD on APRIL 2019
 
 home=$(eval echo ~$user)
-
+ANTSPATH=${home}/REWOD/CODE/PREPROC/05_ANTS_Coreg/
 
 # set this to the directory containing antsRegistration
 #ANTSPATH=/usr/local/ANTs/build/bin/
-ANTSPATH=${home}/REWOD/CODE/PREPROC/05_ANTS_Coreg/
+
 
 # ITK thread count
 ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=1
@@ -48,14 +48,14 @@ echo "Done Flirt to downsample T1  $(date +"%T")"
 # Define target space (fixed) T1 & lowres T1 mask & normal masks file names
 fixed_T1=${standardAnatDir}CIT168_T1w_MNI.nii.gz
 fixed_T1lowres=${standardAnatDir}CIT168_T1w_MNI_lowres.nii.gz
-fixed_mask=${standardAnatDir}`basename ${fixed_T1} .nii.gz`_mask.nii.gz
+fixed_T1=${standardAnatDir}CIT168_T1w_MNI_mask.nii.gz
 
 # Define subject images (moving) T1/T2 & masks file names
 moving_T1=${subAnatDir}sub-${subjID}_ses-second_run-01_T1w_reoriented_brain.nii.gz
-moving_mask=${subAnatDir}`basename ${moving_T1} .nii.gz`_mask.nii.gz
+moving_mask=${subAnatDir}sub-${subjID}_ses-second_run-01_T1w_reoriented_brain_mask.nii.gz
 
 # Prefix for output transform files
-outPrefix=${moving_T1%%.nii.gz}
+Prefix=${moving_T1%%.nii.gz}
 
 #############
 echo "anat dir: ${subAnatDir}"
@@ -63,15 +63,15 @@ echo "fixed T1: ${fixed_T1}"
 echo "fixed mask: ${fixed_mask}"
 echo "moving T1: ${moving_T1}"
 echo "moving mask: ${moving_mask}"
-echo "out prefix: ${outPrefix}"
+echo "prefix: ${Prefix}"
 
 
-# apply warp to the T1 anatomical (also check coreg quality)
+# apply warp to the T1 anatomical (also check coreg quality) -R reference_image - use warp transform files previously computed
 echo "Apply ANTs wrap to T1 at $(date +"%T")"
 
 ${ANTSPATH}WarpImageMultiTransform 3 ${moving_T1} ${subAnatDir}sub-${subjID}_ses-second_run-01_T1w_reoriented_brain_ANTsCoreg.nii.gz \
         -R ${fixed_T1lowres} \
-        ${outPrefix}_xfm1Warp.nii.gz ${outPrefix}_xfm0GenericAffine.mat
+        ${Prefix}_xfm1Warp.nii.gz ${Prefix}_xfm0GenericAffine.mat
 
 echo "Done ANTs warp to T1 at $(date +"%T")"
 

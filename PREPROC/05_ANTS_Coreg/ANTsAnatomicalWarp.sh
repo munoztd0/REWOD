@@ -43,11 +43,11 @@ standardAnatDir=${home}/REWOD/DERIVATIVES/PREPROC/CANONICALS/
 # Define target space (fixed) T1 & masks file names
 fixed_T1=${standardAnatDir}CIT168_T1w_MNI.nii.gz
 
-fixed_mask=${standardAnatDir}`basename ${fixed_T1} .nii.gz`_mask.nii.gz
+fixed_mask=${standardAnatDir}CIT168_T1w_MNI_mask.nii.gz
 
 # Define subject images (moving) T1 & masks file names
 moving_T1=${subAnatDir}sub-${subjID}_ses-second_run-01_T1w_reoriented_brain.nii.gz
-moving_mask=${subAnatDir}`basename ${moving_T1} .nii.gz`_mask.nii.gz
+moving_mask=${subAnatDir}sub-${subjID}_ses-second_run-01_T1w_reoriented_brain_mask.nii.gz
 
 # Prefix for output transform files
 outPrefix=${moving_T1%%.nii.gz}
@@ -77,7 +77,7 @@ echo "Converting fsl transformation to ras format at $(date +"%T")"
 
 ${ANTSPATH}c3d_affine_tool -ref $fixed_T1 -src $moving_T1 tmp_sub-${subjID}.mat -fsl2ras -oitk itk_transformation_sub-${subjID}.txt
 
-# shape the mask
+# shape the MASK
 echo "Applying affine transformation to mask at $(date +"%T")"
 
 ${ANTSPATH}WarpImageMultiTransform 3 $fixed_mask $moving_mask -R $moving_T1 -i itk_transformation_sub-${subjID}.txt
@@ -99,7 +99,7 @@ ${ANTSPATH}antsRegistration \
    --interpolation Linear \
    -o [ ${outPrefix}_xfm, ${outPrefix}_warped.nii.gz ]
 
-
+# outputs : _xfm0GenericAffine.mat _xfm1Warp.nii.gz _xfm1InverseWarp.nii.gz #!!
 
 
  echo  "Finished ants registration at $(date +"%T")"

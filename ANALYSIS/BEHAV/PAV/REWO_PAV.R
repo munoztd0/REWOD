@@ -214,28 +214,23 @@ lik.BF
 
 #data manip
 # get RT and Liking means by condition (with baseline)
-bcRT = ddply(REWOD_PAV.clean, .(condition), summarise,  RT = mean(RT, na.rm = TRUE)) 
 
-## exctract SEM RTs
-x = std.error(RT_minus$RT)
-y = std.error(RT_plus$RT)
+df <- summarySE(REWOD_PAV.clean, measurevar="RT", groupvars=c("id", "condition"))
+bcRT <- summarySEwithin(df,
+                                measurevar = "RT",
+                                withinvars = "condition", 
+                                idvar = "id")
 
-bcRT$Se <- x[1]
-bcRT$Se[2] <- y[1]
+
 
 
 # get liking  means by participant (with baseline)
-bcLIK = ddply(ratings, .(condition), summarise, liking_ratings = mean(liking_ratings, na.rm = TRUE))
 
-
-## extract SEM ratings
-x = std.error(LIK_minus$liking_ratings)
-y = std.error(LIK_plus$liking_ratings)
-z = std.error(LIK_base$liking_ratings)
-
-bcLIK$Se <- x[1]
-bcLIK$Se[2] <- y[1]
-bcLIK$Se[3] <- z[1]
+df <- summarySE(ratings, measurevar="liking_ratings", groupvars=c("id", "condition"))
+bcLIK <- summarySEwithin(df,
+                        measurevar = "liking_ratings",
+                        withinvars = "condition", 
+                        idvar = "id")
 
 
 ###################### do the plot ###########################
@@ -264,7 +259,7 @@ bcLIK$condition = factor(bcLIK$condition,levels(bcLIK$condition)[c(2,1,3)])
 ggplot() + 
   geom_bar(bcLIK, mapping = aes(x = condition, y = liking_ratings), stat = "identity", fill = "white") +
   geom_point(bcRT, mapping = aes(x = condition, y = RT)) +
-  geom_errorbar(bcRT, mapping = aes(x = condition, y = RT, ymin=bcRT$RT-bcRT$Se, ymax=bcRT$RT+bcRT$Se), width=.1, color = 'black')+
+  geom_errorbar(bcRT, mapping = aes(x = condition, y = RT, ymin=bcRT$RT-bcRT$se, ymax=bcRT$RT+bcRT$se), width=.1, color = 'black')+
   geom_line(bcRT, mapping = aes(x = condition, y = RT, group =1), color = 'black', lty = 4) + 
   theme(plot.margin = margin(2, 2, 2, 2, "cm")) +
   ylim(0, 490) + 
@@ -280,7 +275,7 @@ foo <- barplot(bcLIK$liking_ratings,names.arg=bcLIK$condition,xlab="Pavlovian St
 
 
 for (i in 1:length(bcLIK)){
-  arrows(x0=foo[i],y0=bcLIK$liking_ratings[i]-bcLIK$Se[i],y1=bcLIK$liking_ratings[i]+bcLIK$Se[i],angle=90,code=3,length=0.05)
+  arrows(x0=foo[i],y0=bcLIK$liking_ratings[i]-bcLIK$se[i],y1=bcLIK$liking_ratings[i]+bcLIK$se[i],angle=90,code=3,length=0.05)
 }
   ##
 

@@ -26,6 +26,7 @@ REWOD_INST <- read.delim(file.path(analysis_path,'REWOD_INSTRU_ses_first.txt'), 
 REWOD_INST$id                       <- factor(REWOD_INST$id)
 REWOD_INST$session                  <- factor(REWOD_INST$session)
 REWOD_INST$rewarded_response        <- factor(REWOD_INST$rewarded_response)
+REWOD_INST$trial        <- factor(REWOD_INST$trial)
 
 ## remove sub 8 (we dont have scans)
 REWOD_INST <- subset (REWOD_INST,!id == '8') 
@@ -33,37 +34,25 @@ REWOD_INST <- subset (REWOD_INST,!id == '8')
 #REWOD_INST <- filter(REWOD_INST, rewarded_response == 2)
 
 
-# 
-data_summary <- function(data, varname, groupnames){
-  require(plyr)
-  summary_func <- function(x, col){
-    c(mean = mean(x[[col]], na.rm=TRUE),
-      sd = sd(x[[col]], na.rm=TRUE))
-  }
-  data_sum<-ddply(data, groupnames, .fun=summary_func,
-                  varname)
-  data_sum <- rename(data_sum, c("mean" = varname))
-  return(data_sum)
-}
-
-dfTRIAL <- data_summary(REWOD_INST, varname="n_grips", groupnames=c("trial"))
-
-o = length(dfTRIAL$sd)
-for(x in 1:o){
-  dfTRIAL$sem[x] <- dfTRIAL$sd[x]/sqrt(length(dfTRIAL$sd))
-  }
 
 
+df <- summarySE(REWOD_INST, measurevar="n_grips", groupvars=c("id", "trial"))
+dfTRIAL <- summarySEwithin(df,
+                         measurevar = "n_grips",
+                         withinvars = "trial", 
+                         idvar = "id")
 
+
+dfTRIAL$trial        <- as.numeric(dfTRIAL$trial)
 ##plot n_grips to see the trajectory of learning (overall average by trials)
 
 
 ggplot(dfTRIAL, aes(x = trial, y = n_grips)) +
     geom_point() + geom_line(group=1) +
-    geom_errorbar(aes(ymin=n_grips-sem, ymax=n_grips+sem), color='grey', width=.2,
+    geom_errorbar(aes(ymin=n_grips-se, ymax=n_grips+se), color='grey', width=.3,
                   position=position_dodge(0.05), linetype = "dashed") +
     theme_classic() +
-    scale_y_continuous(expand = c(0, 0), limits = c(10,16)) + #, breaks = c(9.50, seq.int(10,15, by = 1)), ) +
+    scale_y_continuous(expand = c(0, 0), limits = c(10,14)) + #, breaks = c(9.50, seq.int(10,15, by = 1)), ) +
     scale_x_continuous(expand = c(0, 0), limits = c(0,25), breaks=c(0, seq.int(1,25, by = 3))) + #,breaks=c(seq.int(1,24, by = 2), 24), limits = c(0,24)) + 
     labs(x = "Trial
           ",

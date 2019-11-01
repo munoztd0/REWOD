@@ -52,7 +52,7 @@ flirt -in ${funcScan}_mean_bias.nii.gz -ref ${magImage}_warped_bias.nii.gz -dof 
 # since we used the magnitude as a reference we need to invert the transformation matrix before applying it
 convert_xfm -omat ${magImage}_EPIalign_inverted.mat -inverse ${magImage}_EPIalign.mat
 
-# apply transformation matrix to the rad image // that's the matrix we use to unwarp
+# apply transformation matrix to the rad image // that's the matrix we got from before
 flirt -in ${mapImage}.nii.gz -ref ${funcScan}_mean_bias.nii.gz -init ${magImage}_EPIalign_inverted.mat -applyxfm -out ${mapImage}_EPIalign.nii.gz
 
 #######################
