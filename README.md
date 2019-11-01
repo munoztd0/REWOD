@@ -2,7 +2,8 @@ These are the the codes used for preprocessing and analyzing behavioral and func
 
 Flow chart od the pipeline:
 
-[preproc.pdf](https://github.com/munoztd0/REWOD/files/3799325/preproc.pdf)
+![preproc](https://user-images.githubusercontent.com/43644805/68050984-a3112c00-fce6-11e9-9b82-1dd139973e59.png)
+
 
 Folders are organised in BIDS format (see in each folder for further info)
 
