@@ -206,10 +206,10 @@ alt.est.id <- influence(model=my.model, group="id")
 # LIKING ------------------------------------------------------------------
 
 
-main.model.lik = lmer(perceived_liking ~ condition + trialxcondition + perceived_intensity + (1+condition|id), data = REWOD_HED, REML=FALSE)
+main.model.lik = lmer(perceived_liking ~ condition + trialxcondition  + (1+condition|id), data = REWOD_HED, REML=FALSE)
 summary(main.model.lik)
 
-null.model.lik = lmer(perceived_liking ~ condition + trialxcondition  + (1+condition|id), data = REWOD_HED, REML=FALSE)
+null.model.lik = lmer(perceived_liking ~ trialxcondition  + (1+condition|id), data = REWOD_HED, REML=FALSE)
 
 test = anova(main.model.lik, null.model.lik, test = 'Chisq')
 test

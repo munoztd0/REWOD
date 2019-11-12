@@ -8,7 +8,7 @@ function GLM_01_ndLevel()
 % last modified on JULY 2019 by David MUNOZ
 
 do_ttest = 1;
-remove = 1;
+remove = 0;
 removesub = {'sub-24'} ; %list of removed subj
 removedsub = '24'; 
 

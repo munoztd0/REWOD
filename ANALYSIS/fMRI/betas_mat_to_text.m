@@ -11,16 +11,16 @@ home = pwd;
 homedir = [home '/REWOD'];
 
 %% def var
-task = 'hedonic'; %
+task = 'PIT'; %
 glm = 'GLM-02';
-threshold = '0.01';
-con_name = 'Baliki';
-con_name_orig = 'R_NoR';
+
+con_name = 'R_NoR';
+con_name_orig = 'CSp_CSm';
 
 
 
 %% create database
-in_dir        = fullfile (homedir, '/DERIVATIVES/ANALYSIS/', task, 'ROI', threshold, glm, con_name, 'betas');
+in_dir        = fullfile (homedir, '/DERIVATIVES/ANALYSIS/', task, 'ROI', con_name, 'betas');
 out_dir   = fullfile(homedir, '/DERIVATIVES/ANALYSIS/', task, 'ROI');
 
 
@@ -46,5 +46,6 @@ T = cell2table(database(2:end,:),'VariableNames',database(1,:));
  
 % Write the table to a CSV file
 %writetable(T, ['extracted_betas_' con_name '.txt'],'Delimiter','\t');
+%writetable(T, ['extracted_betas_' con_name_orig '.txt'],'Delimiter','\t');
 writetable(T, ['extracted_betas_' con_name_orig '_via_' con_name '.txt'],'Delimiter','\t');
 clear all
