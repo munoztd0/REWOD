@@ -2,7 +2,7 @@ These are the the codes used for preprocessing and analyzing behavioral and func
 
 Flow chart od the pipeline:
 
-[Figure_preproc.pdf](https://github.com/munoztd0/REWOD/files/3944767/Figure_preproc.pdf)
+![Figure_preproc.pdf](https://github.com/munoztd0/REWOD/files/3944767/Figure_preproc.pdf)
 
 Folders are organised in BIDS format (see in each folder for further info)
 
@@ -10,7 +10,6 @@ Folders are organised in BIDS format (see in each folder for further info)
 Please note that not these scripts have been modified for reproducibility purpose (e.g. code flexibility) and are then not exactly the same used by us. The scripts should work as it is but some of them might need to be adapted.
 
 Codes and data from the REWOD project
-David Munoz david.munoz@etu.unige.ch
 
 This folder contains all codes and data necessary to reproduce the behavioral and MRI analyses
 
