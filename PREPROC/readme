@@ -1,9 +1,9 @@
 Folder Stucture in BIDS format
 DATA ->  CANONICALS (for standard space)
-          STUDY -> DERIVED (for preprocessing) -> ICA_ANTS -> sub-XX -> ses-XXXXX -> anat
+          STUDY -> DERIVED (for preprocessing) -> sub-XX -> ses-XXXXX -> anat
                                                                                   -> fmaps
                                                                                   -> func
-                -> RAW (untouched raw files)   -> ICA_ANTS -> sub-XX -> ses-XXXXX -> anat
+                -> RAW (untouched raw files)   -> sub-XX -> ses-XXXXX -> anat
                                                                                   -> fmaps
                                                                                   -> func
                 -> CLEAN (after preprocessing is done)
